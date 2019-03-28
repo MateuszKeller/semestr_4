@@ -17,11 +17,131 @@ void wypisz(double ** dane,int wiersze, int kolumny){
 
 }
 
+int policz(int N, int n, int nr_populacji, double ** dane){
+    int ilosc = 0;
+    for(int i = 0; i < N; i++){
+        if(dane[i][1] == 0){
+            ilosc = ilosc + 1;
+        }
+    }
+    return ilosc;
+}
+
+void przepisz(int nr_populacji, int N, int cecha, int n, double * lista, double ** dane){
+    int j = 0;
+    for (int i = 0 ; i < N; i++){
+        if(dane[i][n] == nr_populacji){
+            lista[j] = dane[i][cecha];
+            j = j + 1;
+        }
+    }
+}
+
+void sortuj(int ilosc, double * lista){
+    double temp;
+    for(int i = 0; i < ilosc ; i++){
+        for (int j = 1; j < ilosc; j++){
+            if (lista[j] < lista[j - 1]){
+                temp = lista[j];
+                lista[j] = lista[j-1];
+                lista[j-1]=temp;
+            }
+        }
+    }
+}
+
+double srednia_arytmetyczna(int ilosc, double * lista){
+    double suma = 0;
+    for (int i = 0; i < ilosc; i++){
+        suma = suma + lista[i];
+    }
+    suma = suma/ilosc;
+    return suma;
+}
+
+double srednia_harmoniczna(int ilosc, double * lista){
+    double suma = 0;
+    for(int i = 0; i < ilosc; i++){
+            suma = suma + 1.0/lista[i];
+    }
+    suma = ilosc/suma;
+    return suma;
+}
+
+double srednia_geometryczna(int ilosc, double * lista){
+    double iloczyn = 1;
+    for(int i = 0; i < ilosc; i++){
+        iloczyn = iloczyn * lista[i];
+    }
+    iloczyn = pow(iloczyn,1.0/ilosc);
+    return iloczyn;
+}
+
+double dominanta(int ilosc, double * lista){
+    double dominanta;
+    int c;
+    double w;
+    int maxc = 0;
+    double maxw;
+    for (int i = 0; i < ilosc; i++){
+        w = lista[i];
+        c = 0;
+        for(int j = 0; j < ilosc; j++){
+            if (w == lista[j]) {c++;}
+        }
+        if(c > maxc){
+            maxc = c;
+            maxw = w;
+        }
+    }
+    if(maxc == 1){
+        cout<<"Nie mozna wskazac dominanty - wartosci sa unikatowe"<<endl;
+        return 0;
+    }
+    else {
+        cout<< "Element " << maxw << "wystepuje " << maxc << "razy" << endl;
+        return maxw;
+    }
+}
+
+double mediana(int ilosc, double * lista){
+    double mediana;
+    if(ilosc%2 == 0){
+        mediana = (lista[ilosc/2] + lista[ilosc/2 + 1])/2;
+    }
+    else mediana = lista[(ilosc + 1)/2];
+    return mediana;
+}
+
+double moment_centralny(int ilosc, int k, double * lista, double srednia_aryt){
+    double moment_centr = 0;
+    for(int j = 0; j < ilosc; j++){
+        moment_centr = moment_centr + pow(lista[j]-srednia_aryt,k);
+    }
+    moment_centr = moment_centr/(ilosc-1);
+    return moment_centr;
+}
+
+
 double st_swobody(int nr_populacji_1,int nr_populacji_2,double ** raport){
     double st_swobody;
     st_swobody = pow((raport[0][7]/raport[0][0] + raport[1][7]/raport[1][0]),2)/(pow(raport[0][7]/raport[0][0],2)/(raport[0][0]-1)+pow(raport[1][7]/raport[1][0],2)/(raport[1][0]-1));
     return st_swobody;
-    }
+}
+
+double roznica_srednich (int nr_populacji_1, int nr_populacji_2, double ** raport){
+    double z;
+    z = (raport[1][1] - raport[0][1])/sqrt(raport[0][7]/raport[0][0]+raport[1][7]/raport[1][0]);
+    return z;
+}
+
+double prawdopodobienstwo(double z){
+    double p;
+    z = -fabs(z);
+    p = 2*(1/2.0*(1.0+erf(z/sqrt(2.0))));
+    return p;
+}
+
 
 int main()
 {
@@ -29,10 +149,10 @@ int main()
     cout << "Hello world!" << endl;
 
     ifstream wejscie;
-        string nazwa;
+        string nazwa = "217107.txt";
 
-        cout << "Wprowadz nazwe pliku z danymi: ";
-        getline( cin ,nazwa );
+        //cout << "Wprowadz nazwe pliku z danymi: ";
+        //getline( cin ,nazwa );
         wejscie.open(nazwa.c_str());
 
         if (wejscie.good() == false) {cout << "Nie mozna odczytac danych z pliku"<<endl;}
@@ -67,6 +187,7 @@ int main()
                     wejscie>>dane[i][j];
                 }
         }
+        wejscie.close();
 
         //wypisz(dane,N,n+1);
 
@@ -80,154 +201,82 @@ int main()
 
         for(int cecha = 0; cecha < n; cecha++){
 
-        double suma_aryt;
-        double suma_harm;
+
         double iloczyn;
-        int ilosc;
-        double srednia_aryt;
-        double srednia_harm;
-        double srednia_geom;
+
+
+
 
             for(int nr_populacji = 0; nr_populacji < p; nr_populacji++){
 
-                    ilosc = 0;
+                int ilosc = policz(N, n, nr_populacji, dane);
+                double * lista = new double[ilosc];
+                przepisz(nr_populacji, N, cecha, n, lista, dane);
+                sortuj(ilosc,lista);
 
-            for(int i = 0; i < N; i++){
-                    if(dane[i][1] == nr_populacji){
-                        ilosc = ilosc + 1;
-                    }
-            }
+                double srednia_aryt = srednia_arytmetyczna(ilosc, lista);
+                double srednia_harm = srednia_harmoniczna(ilosc, lista);
+                double srednia_geom = srednia_geometryczna(ilosc, lista);
 
-            double * lista = new double[ilosc];
-
-            int j = 0;
-            for (int i = 0 ; i < N; i++){
-                if(dane[i][1] == nr_populacji){
-                    lista[j] = dane[i][cecha];
-                    j = j + 1;
-                }
-            }
-
-
-            double temp;
-
-            for(int i = 0; i < ilosc ; i++){
-                for (j = 1; j < ilosc; j++){
-                    if (lista[j] < lista[j - 1]){
-                        temp = lista[j];
-                        lista[j] = lista[j-1];
-                        lista[j-1]=temp;
-                    }
-                }
-            }
-
-
-
-                suma_aryt = 0;
-                suma_harm = 0;
-                iloczyn = 1;
-                for(int i = 0; i < ilosc; i++){
-                    suma_aryt = suma_aryt + lista[i];
-                    suma_harm = suma_harm + 1.0/lista[i];
-                    iloczyn = iloczyn * lista[i];
-
-                }
-
-
-                //cout<<"suma arytm "<<suma_aryt<<endl;
-                //cout<<"suma harm"<<suma_harm<<endl;
-                //cout<<"iloczyn "<<iloczyn<<endl;
-                cout<<"ilosc "<<ilosc<<endl;
-                srednia_aryt = suma_aryt/ilosc;
-                srednia_harm = ilosc/suma_harm;
-                srednia_geom = pow(iloczyn,1.0/ilosc);
+                cout<<"srednia arytmetyczna populacji "<< nr_populacji <<": "<<  srednia_aryt<<endl;
+                cout<<"srednia harmoniczna populacji "<< nr_populacji <<": "<<  srednia_harm<<endl;
+                cout<<"srednia geometryczna populacji "<< nr_populacji <<": "<< srednia_geom<<endl;
 
                 raport[nr_populacji][0] = ilosc;
                 raport[nr_populacji][1] = srednia_aryt;
                 raport[nr_populacji][2] = srednia_geom;
                 raport[nr_populacji][3] = srednia_harm;
+                //for(int i = 0; i < ilosc; i++){
+                 //   cout<<lista[i]<<endl;
+                //}
 
 
-                cout<<"srednia arytmetyczna populacji "<< nr_populacji <<": "<< setprecision(4)<< srednia_aryt<<endl;
-                cout<<"srednia harmoniczna populacji "<< nr_populacji <<": "<< setprecision(4)<< srednia_harm<<endl;
-                cout<<"srednia geometryczna populacji "<< nr_populacji <<": "<< setprecision(4)<< srednia_geom<<endl;
+                double domi = dominanta(ilosc,lista);
+
+                raport[nr_populacji][4] = domi;
+
+                double medi = mediana(ilosc, lista);
+                cout<<" mediana wynosi: " <<  medi <<endl;
+                raport[nr_populacji][5] = medi;
 
 
 
 
-            //wyznaczenie dominanty
 
 
-            double dominanta;
-            int c;
-            double w;
-            int maxc = 0;
-            double maxw;
 
-            for (int i = 0; i < ilosc; i++){
-                w = lista[i];
-                c = 0;
-                    for(j = 0; j < ilosc; j++){
-                            if (w == lista[j]) {c++;}
-                    }
-                    if(c > maxc){
-                        maxc = c;
-                        maxw = w;
-                    }
-                }
-                if(maxc == 1){
-                    cout<<"Nie mozna wskazac dominanty - wartosci sa unikatowe"<<endl;
-                    raport[nr_populacji][4] = NULL;
-                }
-                else {
-                        cout<< "Element " << maxw << "wystepuje " << maxc << "razy" << endl;
-                        raport[nr_populacji][4] = maxw;
-                }
-
-
-            double mediana;
-            if(ilosc%2 == 0){
-                mediana = (lista[ilosc/2] + lista[ilosc/2 + 1])/2;
-            }
-            else mediana = lista[(ilosc + 1)/2];
-            raport[nr_populacji][5] = mediana;
-
-            cout<<" mediana wynosi: " <<  setprecision(4)<< mediana <<endl;
 
             //k-ty moment centralny
 
-            double moment_centr = 0;
-            double odchylenie_standardowe;
-            double moment_stand3;
+                double moment_centr;
+                double odchylenie_standardowe;
+                double moment_stand3;
 
-            for(int k = 1; k <=4; k++){
-                for(int j = 0; j < ilosc; j++){
-                    moment_centr = moment_centr + pow(lista[j]-srednia_aryt,k);
-                }
-                moment_centr = moment_centr/(ilosc-1);
-                raport[nr_populacji][5+k] = moment_centr;
-                cout<<"Moment centralny "<< k <<"-go rzedu wynosi: "<< setprecision(4)<<  moment_centr <<endl;
-                if(k == 2){
+                for(int k = 1; k <=4; k++){
+                    moment_centr = moment_centralny(ilosc, k, lista, srednia_aryt);
+                    raport[nr_populacji][5+k] = moment_centr;
+                    cout<<"Moment centralny "<< k <<"-go rzedu wynosi: "<< setprecision(4)<<  moment_centr <<endl;
+                    if(k == 2){
                         odchylenie_standardowe = sqrt(moment_centr);
+                    }
+                    else if(k == 3){
+                        moment_stand3 = moment_centr/pow(odchylenie_standardowe,3);
+                    }
                 }
-                else if(k == 3){
-                    moment_stand3 = moment_centr/pow(odchylenie_standardowe,3);
-                }
-            }
 
-            raport[nr_populacji][10] = odchylenie_standardowe;
-            raport[nr_populacji][11] = moment_stand3;
-            cout << "Odchylenie standardowe wynosi: " << setprecision(4)<< odchylenie_standardowe << endl;
-            cout << "Moment standaryzowany 3-go rzedu wynosi: " <<  setprecision(4)<< moment_stand3 << endl;
+                raport[nr_populacji][10] = odchylenie_standardowe;
+                raport[nr_populacji][11] = moment_stand3;
+                cout << "Odchylenie standardowe wynosi: " << setprecision(4)<< odchylenie_standardowe << endl;
+                cout << "Moment standaryzowany 3-go rzedu wynosi: " <<  setprecision(4)<< moment_stand3 << endl;
 
              //kurtoza
 
-             double kurtoza;
-             kurtoza = moment_centr / pow(odchylenie_standardowe,4) - 3.0;
-             raport[nr_populacji][12] = kurtoza;
-             cout<<"kurtoza wynosi: "<<  setprecision(4) << kurtoza << endl;
+                double kurtoza;
+                kurtoza = moment_centr / pow(odchylenie_standardowe,4) - 3.0;
+                raport[nr_populacji][12] = kurtoza;
+                cout<<"kurtoza wynosi: "<<  setprecision(4) << kurtoza << endl;
 
-             delete [] lista;
+                delete [] lista;
             }
 
             //przygotowanie histogramow
@@ -320,19 +369,11 @@ int main()
         cout<<endl;
     }
 
-    double z;
-    z = (raport[1][1] - raport[0][1])/sqrt(raport[0][7]/raport[0][0]+raport[1][7]/raport[1][0]);
-
-    z = -fabs(z);
-    cout<<"z: "<<z<<endl;
-
-    double p;
-    p = 2*(1/2.0*(1.0+erf(z/sqrt(2.0))));
-    cout<<" p: "<<p<<endl;
 
 
-
-cout<<"st_swobody: "<<st_swobody(0,1,raport)<<endl;
+    cout<<"z: "<<roznica_srednich(0,1,raport)<<endl;
+    cout<<" p: "<<prawdopodobienstwo(roznica_srednich(0,1,raport))<<endl;
+    cout<<"st_swobody: "<<st_swobody(0,1,raport)<<endl;
 
 
 
