@@ -1,8 +1,10 @@
 #include <iostream>
+#include <cstdlib>
 #include <vector>
 #include <fstream>
 #include <math.h>
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 typedef vector<double> wiersz;
@@ -20,7 +22,7 @@ void wypisz(double ** dane,int wiersze, int kolumny){
 int policz(int N, int n, int nr_populacji, double ** dane){
     int ilosc = 0;
     for(int i = 0; i < N; i++){
-        if(dane[i][1] == 0){
+        if(dane[i][1] == nr_populacji){
             ilosc = ilosc + 1;
         }
     }
@@ -118,7 +120,7 @@ double moment_centralny(int ilosc, int k, double * lista, double srednia_aryt){
     for(int j = 0; j < ilosc; j++){
         moment_centr = moment_centr + pow(lista[j]-srednia_aryt,k);
     }
-    moment_centr = moment_centr/(ilosc-1);
+    moment_centr = moment_centr/(ilosc);
     return moment_centr;
 }
 
@@ -141,6 +143,99 @@ double prawdopodobienstwo(double z){
     p = 2*(1/2.0*(1.0+erf(z/sqrt(2.0))));
     return p;
 }
+
+bool drukuj_raport (int p, int cecha, double ** raport, double z, double prawd, double st)
+{
+    ofstream wyjscie;
+    wyjscie.open("raport.txt",std::ios_base::app);
+    if(wyjscie.good()==false)return false;
+    else{
+            wyjscie.precision(4);
+            wyjscie << fixed;
+            wyjscie << "STATYSTYKI DLA CECHY (KOLUMNY) " << cecha <<": " << endl;
+            wyjscie << endl;
+        for (int i = 0 ; i < p ; i++){
+            wyjscie << "Populacja " << i <<endl;
+            wyjscie << "ilosc N: " << raport[i][0] << endl;
+            wyjscie << "srednia arytmetyczna: " << setprecision(3) << raport[i][1] << endl;
+            wyjscie << "srednia geometryczna: " << raport[i][2] << endl;
+            wyjscie << "srednia harmoniczna: " << raport[i][3] << endl;
+            wyjscie << "dominanta: " << raport[i][4] << endl;
+            wyjscie << "mediana: " << raport[i][5] << endl;
+            wyjscie << "moment centralny 1-go rzedu: " << raport[i][6] << endl;
+            wyjscie << "moment centralny 2-go rzedu: " << raport[i][7] << endl;
+            wyjscie << "moment centralny 3-go rzedu: " << raport[i][8] << endl;
+            wyjscie << "moment centralny 4-go rzedu: " << raport[i][9] << endl;
+            wyjscie << "odchylenie standardowe " << raport[i][10] << endl;
+            wyjscie << "moment standaryzowany 3-go rzedu: " << raport[i][11] << endl;
+            wyjscie << "kurtoza: " << raport[i][12] << endl;
+            wyjscie << endl;
+        }
+        wyjscie << "standaryzowana roznica srednich: " << z << endl;
+        wyjscie << "prawdopodobienstwo: " << p << endl;
+        wyjscie << "ilosc stopni swobody rozkladu t-Studenta" << st << endl;
+        if( p < 0.05){
+            wyjscie << "H0 odrzucona(H1 jest mozliwa)" << endl;
+        }
+        else wyjscie << "H0 jest mozliwa" << endl;
+        wyjscie << "-------------------------------------------------------------" <<endl;
+        wyjscie << endl;
+    }
+    wyjscie.close();
+    return true;
+}
+
+bool plik_dla_gpl (char zapis[],char numer[], int cecha, int p, int k, double minv, double range, double ** histogram){
+    int x = floor(cecha/10);
+    zapis[9]= numer[x];
+    zapis[10] = numer[cecha%10];
+    cout <<zapis<<endl;
+    ofstream wyjscie(zapis);
+    if(wyjscie.good()==false){
+            cout<<"nie mozna zapisac do pliku"<<endl;
+            return false;
+    }
+        wyjscie.precision(2);
+        wyjscie << fixed;
+        wyjscie <<"'\'\ ";
+        for (int a = 0; a < p; a++){
+            wyjscie << a << " ";
+        }
+        wyjscie << endl;
+        for (int i = 0 ; i < k ; i++){
+            wyjscie<<(minv+i*range)<<"-"<<(minv+(i+1)*range)<<" ";
+        for(int j = 0; j < p; j++){
+            wyjscie<<histogram[i][j]<<" ";
+        }
+        wyjscie<<endl;
+        }
+    wyjscie.close();
+
+    ofstream wyjscie2("skrypt.gpl");
+    if(wyjscie2.good()==false)return false;
+    wyjscie2 << "reset" << endl;
+    wyjscie2 << "set title 'Rozklad parametru "<< cecha <<" w populacjach obiektow badanych klas'" << endl;
+    wyjscie2 << "set key fixed right top vertical Right noreverse noenhanced autotitle nobox" << endl;
+    wyjscie2 << "set style data histograms" << endl;
+    wyjscie2 << "set style histogram clustered gap 1" << endl;
+    wyjscie2 << "set term png" << endl;
+    wyjscie2 << "set output 'out"<< floor(cecha/10)<<cecha%10 << ".png'" << endl;
+    wyjscie2 << "set xtics nomirror rotate by -45" << endl;
+    wyjscie2 << "set boxwidth 0.9 absolute" << endl;
+    wyjscie2 << "set xtics ()" << endl;
+    wyjscie2 << "set style fill solid 1.0 border lt -1" <<endl;
+    wyjscie2 << "plot '"<< zapis << "' using 2:xtic(1) title columnheader(2) lt rgb '#406090',\\" << endl;
+    wyjscie2<<"'' u 3 title columnheader(3) lt rgb '#40FF00'" << endl;
+    wyjscie2.close();
+    return true;
+}
+
+bool skrypt(int cecha, string nazwa)
+{
+
+}
+
+
 
 
 int main()
@@ -166,17 +261,18 @@ int main()
         wejscie.close();
             cout << "ilosc wierszy: " << N <<endl;
 
-        int p = 2;
-        //cout<<"wprowadz ilosc badanych populacji: "<<endl;
-        //cin>>p;
+        int p;
+        cout<<"wprowadz ilosc badanych populacji: "<<endl;
+        cin>>p;
+
         double ** dane = new double*[N];
         int n = 1;
 
         for(int i = 0; i <N; i++){
             dane[i] = new double[n+1];
         }
-        //cout<<"wprowadz ilosc badanych cech: "<<endl;
-        //cin>>n;
+        cout<<"wprowadz ilosc badanych atrybutow: "<<endl;
+        cin>>n;
 
         wejscie.open(nazwa.c_str());
 
@@ -189,27 +285,21 @@ int main()
         }
         wejscie.close();
 
-        //wypisz(dane,N,n+1);
-
-        //yznaczenie srednich
-
         double ** raport = new double *[p];
         for(int i = 0; i < p; i++){
             raport[i] = new double[13];
         }
 
+        char numer[10] = {'0','1','2','3','4','5','6','7','8','9'};
+        char zapis[16] = {'h','i','s','t','o','g','r','a','m','0','0','.','t','x','t'};
 
         for(int cecha = 0; cecha < n; cecha++){
-
-
-        double iloczyn;
-
-
-
-
             for(int nr_populacji = 0; nr_populacji < p; nr_populacji++){
 
                 int ilosc = policz(N, n, nr_populacji, dane);
+
+                cout<<"ilosc "<<ilosc<<endl;
+
                 double * lista = new double[ilosc];
                 przepisz(nr_populacji, N, cecha, n, lista, dane);
                 sortuj(ilosc,lista);
@@ -226,25 +316,13 @@ int main()
                 raport[nr_populacji][1] = srednia_aryt;
                 raport[nr_populacji][2] = srednia_geom;
                 raport[nr_populacji][3] = srednia_harm;
-                //for(int i = 0; i < ilosc; i++){
-                 //   cout<<lista[i]<<endl;
-                //}
-
 
                 double domi = dominanta(ilosc,lista);
-
                 raport[nr_populacji][4] = domi;
 
                 double medi = mediana(ilosc, lista);
                 cout<<" mediana wynosi: " <<  medi <<endl;
                 raport[nr_populacji][5] = medi;
-
-
-
-
-
-
-
 
             //k-ty moment centralny
 
@@ -255,7 +333,7 @@ int main()
                 for(int k = 1; k <=4; k++){
                     moment_centr = moment_centralny(ilosc, k, lista, srednia_aryt);
                     raport[nr_populacji][5+k] = moment_centr;
-                    cout<<"Moment centralny "<< k <<"-go rzedu wynosi: "<< setprecision(4)<<  moment_centr <<endl;
+                    cout<<"Moment centralny "<< k <<"-go rzedu wynosi: "<< moment_centr <<endl;
                     if(k == 2){
                         odchylenie_standardowe = sqrt(moment_centr);
                     }
@@ -266,15 +344,15 @@ int main()
 
                 raport[nr_populacji][10] = odchylenie_standardowe;
                 raport[nr_populacji][11] = moment_stand3;
-                cout << "Odchylenie standardowe wynosi: " << setprecision(4)<< odchylenie_standardowe << endl;
-                cout << "Moment standaryzowany 3-go rzedu wynosi: " <<  setprecision(4)<< moment_stand3 << endl;
+                cout << "Odchylenie standardowe wynosi: " << odchylenie_standardowe << endl;
+                cout << "Moment standaryzowany 3-go rzedu wynosi: " << moment_stand3 << endl;
 
              //kurtoza
 
                 double kurtoza;
                 kurtoza = moment_centr / pow(odchylenie_standardowe,4) - 3.0;
                 raport[nr_populacji][12] = kurtoza;
-                cout<<"kurtoza wynosi: "<<  setprecision(4) << kurtoza << endl;
+                cout<<"kurtoza wynosi: "<< kurtoza << endl;
 
                 delete [] lista;
             }
@@ -286,26 +364,25 @@ int main()
             double ** histogram = new double*[k];
 
 
-        for(int i = 0; i <k; i++){
-            histogram[i] = new double[p];
-        }
+            for(int i = 0; i <k; i++){
+                histogram[i] = new double[p];
+            }
 
-        double maxv = dane[0][cecha];
-        double minv = dane[0][cecha];
-        double temp;
+            double maxv = dane[0][cecha];
+            double minv = dane[0][cecha];
+            double temp;
 
-        for (int i = 0; i < N; i++){
+            for (int i = 0; i < N; i++){
                 if(dane[i][cecha] > maxv) maxv = dane[i][cecha];
                 else if (dane[i][cecha] < minv) minv = dane[i][cecha];
-        }
-        cout<<"max " << maxv<<endl;
-        cout<<"min " << minv << endl;
+            }
+            cout<<"max " << maxv<<endl;
+            cout<<"min " << minv << endl;
 
-        double range = (maxv - minv)/k; //rozpietosc przedizalu
+            double range = (maxv - minv)/k; //rozpietosc przedizalu
 
-
-        for(int i = 0; i <k; i++){
-            for(int j = 0; j < p; j++){
+            for(int i = 0; i <k; i++){
+                for(int j = 0; j < p; j++){
                     histogram[i][j] = 0;
                     for (int m = 0; m < N; m++){
 
@@ -313,80 +390,31 @@ int main()
                             histogram[i][j] = histogram[i][j] + 1;
                         }
                     }
+                }
             }
-        }
+
+            plik_dla_gpl(zapis, numer, cecha, p, k, minv, range, histogram);
 
 
-
-        /*temp = 0;
-        for (int i = 0; i < k; i++){
-                cout<< minv + i* range << " ";
-            for(int j = 0; j < p; j++){
-                cout<< histogram[i][j] << " ";
+            for(int i = 0; i < p; i++){
+                for (int j = 0; j < 13; j++){
+                    cout<<raport[i][j]<<"   ";
+                }
+                cout<<endl;
             }
-            cout<<endl;
 
+            double z = roznica_srednich(0,1,raport);
+            double prawd = prawdopodobienstwo(-fabs(z));
+            double st = st_swobody(0,1,raport);
+
+            cout<<"z: "<< z <<endl;
+            cout<<" p: "<< prawd <<endl;
+            cout<<"st_swobody: "<< st <<endl;
+
+            drukuj_raport(p,cecha,raport, z, p, st);
+            skrypt(cecha, nazwa);
+            system("gnuplot -p -e \"load 'skrypt.gpl'\"");
         }
-
-        //if(maxv > minv + k * range)cout<<"tak"<<endl;
-        //else cout<<"nie"<<endl;
-
-        //cout<<maxv<<endl;
-        //cout<<minv + (k) * range<<endl;
-
-        /*for (int i = 0; i < p; i++){
-                temp = 0;
-            for (int j = 0; j < N; i++){
-                if(dane[i][0]>maxv - range){temp = temp+1;
-                cout<<temp; }
-            }
-        }*/
-       // ---------------------------------------
-
-        char numer[10] = {'0','1','2','3','4','5','6','7','8','9'};
-        char zapis[16] = {'h','i','s','t','o','g','r','a','m','0','0','.','t','x','t'};
-        int x = floor(cecha/10) ;
-
-
-        zapis[9]= numer[x];
-        zapis[10] = numer[cecha%10];
-        cout <<zapis<<endl;
-    ofstream wyjscie(zapis);
-    if(wyjscie.good()==false)cout<<"nie mozna zapisac do pliku"<<endl;
-    for (int i = 0 ; i < k ; i++){
-            wyjscie<<setprecision(2)<<(minv+i*range)<<"-"<<setprecision(2)<<(minv+(i+1)*range)<<" ";
-        for(int j = 0; j < p; j++){
-            wyjscie<<histogram[i][j]<<" ";
-        }
-        wyjscie<<endl;
-    }
-    wyjscie.close();
-
-    for(int i = 0; i < p; i++){
-        for (int j = 0; j < 13; j++){
-            cout<<raport[i][j]<<"   ";
-        }
-        cout<<endl;
-    }
-
-
-
-    cout<<"z: "<<roznica_srednich(0,1,raport)<<endl;
-    cout<<" p: "<<prawdopodobienstwo(roznica_srednich(0,1,raport))<<endl;
-    cout<<"st_swobody: "<<st_swobody(0,1,raport)<<endl;
-
-
-
-        }
-
-
-
-
-
-
-
-
-
 
         return 0;
 
