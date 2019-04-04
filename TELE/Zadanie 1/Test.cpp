@@ -5,6 +5,9 @@
 
 using std::fstream;
 using std::ios;
+
+
+
 void test(const char * nazwa, bool binarnie)
 {
 	std::ofstream plik(nazwa, binarnie ? std::ios::binary : std::ios::out);
@@ -63,7 +66,7 @@ void testy()
 	std::cout << T;
 }
 
-int main()
+int main2()
 {
 	testy();
 
