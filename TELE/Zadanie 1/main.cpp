@@ -1,71 +1,89 @@
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <vector>
-#include <bitset>
-
+#include <iostream>
 #include "Kodowanie.h"
 
 int main()
 {
-	testMacierzy8x16(false);
+	bool TESTY = true;
 
-	cout << "----------------" << endl;
-	fstream input("plik_testowy.txt", ios::in | ios::binary);
-	fstream output("plik_testowy.bin", ios::out | ios::binary);
+	if (TESTY) { testMacierzy8x16(false); cout << "++++++++++++++++" << endl; }
 
-	std::vector <bool> PlikB;
-	char T;
+	string FSTART = "plik_testowy.txt"; string FMID = "plik_posredni.txt"; string FEND = "plik_wynikowy.txt";
+	fstream input(FSTART, ios::in | ios::binary);
+	fstream output(FMID, ios::out | ios::binary);
+		
+	vector <bool> WektorT; // Wektor w którym zapisywany jest bajt z pliku wejsciowego.
+	char T; // Zmienna na wczytany z pliku B.
 
 	while (input.get(T))
 	{
+		if (TESTY) cout << "----" << T << endl;
 		if (T != EOF)
 		{
-			BajtNaBit(T, PlikB);
-			cout << "T: "; WypiszWektor(PlikB);
+			BajtNaBit(T, WektorT);
+			if (TESTY) { cout << "T: "; WypiszWektor(WektorT, 0); }
 
-			KodujBajt(PlikB, false);
-			cout << "\nHamming:"; WypiszWektor(PlikB);
+			KodujBajt(WektorT, false);
+			if (TESTY) { cout << "Hamming:"; WypiszWektor(WektorT, 8); }
 
-			ZapiszBajt(PlikB, output, false);
+			ZapiszBajt(WektorT, output, true);
+			WektorT.clear();
 		}
 				
 	}
+
 	input.close();
 	output.close();
+	system("pause");
 
-	std::vector <bool> WektorBledu;
-	input.open("plik_testowy.bin", ios::in | ios::binary);
+	if (TESTY) cout << "-----------------------------------" << endl;
+
+	vector <bool> WektorR;
+	vector <bool> BP;
+	vector <int> BlednyBit;
+
+	input.open(FMID, ios::in | ios::binary);
+	output.open(FEND, ios::out | ios::binary);
+	
 	while (input.get(T))
 	{
-		while (T != EOF)
+		if (T != EOF && T != '\n')
 		{
-			if (T == '0')
-			{
-				WektorBledu.push_back(false);
-			}
-			else
-			{
-				WektorBledu.push_back(true);
-			}
+			CharNaBajt(T, WektorR, input);
+			cout << "Odebrany bajt:     ";  WypiszWektor(WektorR, 8);
+			
+			IloczynHE(BP, WektorR);
+
+			if (TESTY) { cout << "BP: "; WypiszWektor(BP, 0); }
+			
+			BlednyBit.push_back(WykrywanieBledu(BP));
+			
+			bool temp = false;
+			for (unsigned int i = 0; i < BlednyBit.size(); i++)
+				if (BlednyBit[i] != 0)
+				{
+					PoprawBit(WektorR, BlednyBit[i]);
+					temp = true;
+				}
+			if (temp) { cout << "Poprawiony wektor: ";  WypiszWektor(WektorR, 8); }
+
+			cout << endl;
 		}
-	}
-	//SzukajBledu()
+
+		BlednyBit.clear();
+		BP.clear();
+
+		ZapiszBajt(WektorR, output, false);
+		WektorR.clear();
+			
+			
+
 		
-	/*
-	TODO 
-		Kodowanie:
-			Mno¿enie macierzy H 4x8 z T 8x1 - macierz przez bajt  // E 12x1  tak jak T z bitami parzystkoœci
-			 wynik idzie do sumy
-			 suma%2 jako P[i] (i <1;4>)
-			 cod Hamminga to:	 1  2  3  4  5  6  7  8  9  10 11 12
-								(P1,P2,D1,P3,D2,D3,D4,P4,D5,D6,D7,D8)
-								    
-									D   D D D   D D D D
-								0 1 0 0 1 1 0 1 1 0 0 1
+	}
 
+	
+	cout << "FIN?\n";
 
-	*/
 
 	cout << endl;
 	system("pause");
