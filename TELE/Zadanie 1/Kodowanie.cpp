@@ -3,11 +3,12 @@
 // ----------------------------------------------- //
 void testMacierzy8x16(bool TEST)
 {
-	const vector<int> T = { 42, 202, 21, 54, 26, 184, 137, 255, 128, 64, 32,16,8,4,2,1 }; // { 17, 55, 107, 211, 173, 85, 153, 255, 128, 64, 32,16,8,4,2,1 };
+	const vector<int> T = { 42, 202, 21, 54, 26, 184, 137, 255, 128, 64, 32,16,8,4,2,1 }; 
+	 //{ 17, 55, 107, 211, 173, 85, 153, 225, 128, 64, 32,16,8,4,2,1 };
 	for (int i = 0; i < 16; i++)
 	{
 		if (TEST) cout << i << ". :\n";
-		for (int j = i + 1; j < 16; j++)
+		for (int j = 0; j < 16; j++)
 		{
 			int W = T[i] + T[j];
 
@@ -46,7 +47,7 @@ int Mnozenie(vector<bool>& Wektor)
 	return 0;
 }
 
-void KodujBajt(vector<bool> &Wektor, bool TestSum)
+void IloczynHT(vector<bool> &Wektor, bool TestSum)
 {
 	int suma = 0;
 	for (int Wiersze = 0; Wiersze < X; Wiersze++)
@@ -74,7 +75,7 @@ void ZapiszBajt(vector<bool>& Wektor, fstream & wyjscie, bool CzyBlad)
 			wyjscie.put(Wektor[i] + '0');
 		wyjscie.put('\n');
 	}
-	else // No idea how most of this works ?!?!
+	else // Ke
 	{
 		int Pozycja = 7;
 		for (int i = 1; i <= ilosc; i++) {
@@ -96,6 +97,7 @@ void ZapiszBajt(vector<bool>& Wektor, fstream & wyjscie, bool CzyBlad)
 
 void CharNaBajt(char B, vector<bool>& Wektor, fstream &plik)
 {
+
 	while (B != '\n')
 	{
 		Wektor.push_back(B == '1');
@@ -112,30 +114,51 @@ void IloczynHE(vector <bool> &bParzystosci, vector<bool> &Wektor)
 			suma += Wektor[Kolumny] * H[Wiersze][Kolumny];
 
 		bParzystosci.push_back(suma % 2);
-		//suma = 0;
 	}
 }
 
-int WykrywanieBledu(vector<bool> bParzystosci)
+void WykrywanieBledu(vector<bool> bParzystosci, vector <int> &WektorBledow, bool &CzyWystapilBlad)
 {
-	int temp = 0, ERR = 0;
+	// 1 b³¹d bitowy
+	int ERR = 0;
 	for (int Kolumny = 0; Kolumny < Y; Kolumny++)
 	{
 		for (int Wiersze = 0; Wiersze < X; Wiersze++)
 			if (bParzystosci[Wiersze] == H[Wiersze][Kolumny])
-				temp++;
-		if (temp == X)
+				ERR++;
+		if (ERR == X)
 		{
-			ERR = Kolumny + 1;
-			cout << "Blad w kolumnie " << ERR << endl;
+			cout << "Blad w kolumnie " << Kolumny+1 << endl;
+			WektorBledow.push_back(Kolumny + 1);
+			CzyWystapilBlad = true;
+			return;
 		}
-		temp = 0;
+		ERR = 0;
 	}
-	return ERR;
+
+	// 2 b³êdy bitowe
+	ERR = 0;
+	for (int Kolumny = 0; Kolumny < Y; Kolumny++)
+		for (int Kolumny2 = 0; Kolumny2 < Y; Kolumny2++)
+			if (Kolumny2 > Kolumny)
+			{
+				for (int Wiersze = 0; Wiersze < X; Wiersze++)
+					if ((H[Wiersze][Kolumny] + H[Wiersze][Kolumny2]) %2 == bParzystosci[Wiersze])
+						ERR++;
+				if (ERR == X)
+				{
+					cout << "Blad w kolumnach " << Kolumny + 1 << " i " << Kolumny2+1 << endl;
+					
+					WektorBledow.push_back(Kolumny+1);
+					WektorBledow.push_back(Kolumny2+1);
+					CzyWystapilBlad = true;
+					return;
+				}
+				ERR = 0;
+			}
 }
 
 void PoprawBit(vector<bool>& Wektor, int MiejsceBledu)
 {
-	cout << "DAFUQ\n";
 	Wektor[MiejsceBledu-1] = !Wektor[MiejsceBledu-1];
 }

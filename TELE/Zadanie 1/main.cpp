@@ -1,29 +1,48 @@
+/*
+	Semestr 4 Telekomunikacja.
+		Kody korekcji b³êdów bitowych.
+
+*/
 #include <string>
 #include <iostream>
 #include "Kodowanie.h"
 
+/*PLIKI
+	plik_testowy.txt	plik_wynikowy.txt
+
+	PDF.pdf		Wynik.pdf
+
+	S.jpg		E.jpg
+
+	I.ico		W.ico
+*/
+
 int main()
 {
-	bool TESTY = true;
+	bool TESTY = false;
 
 	if (TESTY) { testMacierzy8x16(false); cout << "++++++++++++++++" << endl; }
 
-	string FSTART = "plik_testowy.txt"; string FMID = "plik_posredni.txt"; string FEND = "plik_wynikowy.txt";
+	string FSTART = "in\\"; FSTART.append("plik_testowy.txt");
+	const string FMID = "plik_posredni.txt"; 
+	string FEND = "out\\"; FEND.append("plik_wynikowy.txt");
+	
+
 	fstream input(FSTART, ios::in | ios::binary);
 	fstream output(FMID, ios::out | ios::binary);
+	if (input.fail() || output.fail()) { cout << "BLAD!!!"; return -1; }
 		
 	vector <bool> WektorT; // Wektor w którym zapisywany jest bajt z pliku wejsciowego.
 	char T; // Zmienna na wczytany z pliku B.
 
 	while (input.get(T))
 	{
-		if (TESTY) cout << "----" << T << endl;
-		if (T != EOF)
+		if (!input.eof())
 		{
 			BajtNaBit(T, WektorT);
-			if (TESTY) { cout << "T: "; WypiszWektor(WektorT, 0); }
+			if (TESTY) { cout << T << " -> T: "; WypiszWektor(WektorT, 0); }
 
-			KodujBajt(WektorT, false);
+			IloczynHT(WektorT, false);
 			if (TESTY) { cout << "Hamming:"; WypiszWektor(WektorT, 8); }
 
 			ZapiszBajt(WektorT, output, true);
@@ -45,29 +64,34 @@ int main()
 	input.open(FMID, ios::in | ios::binary);
 	output.open(FEND, ios::out | ios::binary);
 	
+	if (input.fail() || output.fail()) { cout << "BLAD!!!"; return -1; }
+
 	while (input.get(T))
 	{
-		if (T != EOF && T != '\n')
+		if (!input.eof())
 		{
-			CharNaBajt(T, WektorR, input);
-			cout << "Odebrany bajt:     ";  WypiszWektor(WektorR, 8);
-			
-			IloczynHE(BP, WektorR);
+			if ( T != '\n' )
+			{
+				bool WystapilBlad = false;
+				CharNaBajt(T, WektorR, input);
+				IloczynHE(BP, WektorR);
 
-			if (TESTY) { cout << "BP: "; WypiszWektor(BP, 0); }
-			
-			BlednyBit.push_back(WykrywanieBledu(BP));
-			
-			bool temp = false;
-			for (unsigned int i = 0; i < BlednyBit.size(); i++)
-				if (BlednyBit[i] != 0)
-				{
-					PoprawBit(WektorR, BlednyBit[i]);
-					temp = true;
-				}
-			if (temp) { cout << "Poprawiony wektor: ";  WypiszWektor(WektorR, 8); }
+				if (TESTY) { cout << "BP: "; WypiszWektor(BP, 0); }
+				WykrywanieBledu(BP, BlednyBit, WystapilBlad);
 
-			cout << endl;
+				if (WystapilBlad) { cout << "Odebrany bajt:     ";  WypiszWektor(WektorR, 8); }
+				for (unsigned int i = 0; i < BlednyBit.size(); i++)
+					if (BlednyBit[i] != 0)
+					{
+							
+						PoprawBit(WektorR, BlednyBit[i]);
+					}
+					if (WystapilBlad) 
+					{	
+						cout << "Poprawiony wektor: ";  WypiszWektor(WektorR, 8); 
+						cout << "--                                --" << endl;
+					}
+			}
 		}
 
 		BlednyBit.clear();
@@ -75,17 +99,12 @@ int main()
 
 		ZapiszBajt(WektorR, output, false);
 		WektorR.clear();
-			
-			
-
-		
 	}
 
-	
-	cout << "FIN?\n";
+	input.close();
+	output.close();
+	cout << "FIN\n";
 
-
-	cout << endl;
 	system("pause");
 	return 0;
 }
