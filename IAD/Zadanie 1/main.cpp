@@ -1,39 +1,49 @@
 #include <iostream>
-#include <cstdlib>
-#include <vector>
 #include <fstream>
-#include <math.h>
-#include <iomanip>
+#include <string>
+#include <vector>
 #include <sstream>
+#include <math.h>
+#include <cstdlib>
 
 using namespace std;
-typedef vector<double> wiersz;
 
-void wypisz(double ** dane,int wiersze, int kolumny){
-    for(int i = 0; i < wiersze; i++){
-        for (int j = 0; j < kolumny; j++){
-            cout<<dane[i][j]<<" ";
-        }
-        cout<<endl;
-    }
+struct rekord {
+    vector<double> atrybut;
+    int populacja;
+};
 
-}
+struct raport {
+int ilosc;
+double srednia_arytmetyczna;
+double srednia_geometryczna;
+double srednia_harmoniczna;
+double dominanta;
+double mediana;
+double moment_centralny_1;
+double moment_centralny_2;
+double moment_centralny_3;
+double moment_centralny_4;
+double odchylenie_standardowe;
+double moment_standaryzowany_3;
+double kurtoza;
+};
 
-int policz(int N, int n, int nr_populacji, double ** dane){
+int policz(int N, int nr_populacji, rekord * dane){
     int ilosc = 0;
     for(int i = 0; i < N; i++){
-        if(dane[i][1] == nr_populacji){
+        if (dane[i].populacja == nr_populacji){
             ilosc = ilosc + 1;
         }
     }
     return ilosc;
 }
 
-void przepisz(int nr_populacji, int N, int cecha, int n, double * lista, double ** dane){
+void przepisz(int nr_populacji, int N, int cecha, double * lista, rekord * dane){
     int j = 0;
     for (int i = 0 ; i < N; i++){
-        if(dane[i][n] == nr_populacji){
-            lista[j] = dane[i][cecha];
+        if(dane[i].populacja == nr_populacji){
+            lista[j] = dane[i].atrybut[cecha];
             j = j + 1;
         }
     }
@@ -41,12 +51,12 @@ void przepisz(int nr_populacji, int N, int cecha, int n, double * lista, double 
 
 void sortuj(int ilosc, double * lista){
     double temp;
-    for(int i = 0; i < ilosc ; i++){
-        for (int j = 1; j < ilosc; j++){
-            if (lista[j] < lista[j - 1]){
+    for(int i = 0; i < ilosc; i++){
+        for(int j = 1; j < ilosc; j++){
+            if(lista[j] < lista[j-1]){
                 temp = lista[j];
                 lista[j] = lista[j-1];
-                lista[j-1]=temp;
+                lista[j-1]= temp;
             }
         }
     }
@@ -115,81 +125,19 @@ double mediana(int ilosc, double * lista){
     return mediana;
 }
 
-double moment_centralny(int ilosc, int k, double * lista, double srednia_aryt){
+double moment_centralny(int ilosc, int k, int nr_populacji, double * lista, raport * raporty){
     double moment_centr = 0;
     for(int j = 0; j < ilosc; j++){
-        moment_centr = moment_centr + pow(lista[j]-srednia_aryt,k);
+        moment_centr = moment_centr + pow(lista[j]-raporty[nr_populacji].srednia_arytmetyczna,k);
     }
     moment_centr = moment_centr/(ilosc);
     return moment_centr;
 }
 
-
-double st_swobody(int nr_populacji_1,int nr_populacji_2,double ** raport){
-    double st_swobody;
-    st_swobody = pow((raport[0][7]/raport[0][0] + raport[1][7]/raport[1][0]),2)/(pow(raport[0][7]/raport[0][0],2)/(raport[0][0]-1)+pow(raport[1][7]/raport[1][0],2)/(raport[1][0]-1));
-    return st_swobody;
-}
-
-double roznica_srednich (int nr_populacji_1, int nr_populacji_2, double ** raport){
-    double z;
-    z = (raport[1][1] - raport[0][1])/sqrt(raport[0][7]/raport[0][0]+raport[1][7]/raport[1][0]);
-    return z;
-}
-
-double prawdopodobienstwo(double z){
-    double p;
-    z = -fabs(z);
-    p = 2*(1/2.0*(1.0+erf(z/sqrt(2.0))));
-    return p;
-}
-
-bool drukuj_raport (int p, int cecha, double ** raport, double z, double prawd, double st)
-{
-    ofstream wyjscie;
-    wyjscie.open("raport.txt",std::ios_base::app);
-    if(wyjscie.good()==false)return false;
-    else{
-            wyjscie.precision(4);
-            wyjscie << fixed;
-            wyjscie << "STATYSTYKI DLA CECHY (KOLUMNY) " << cecha <<": " << endl;
-            wyjscie << endl;
-        for (int i = 0 ; i < p ; i++){
-            wyjscie << "Populacja " << i <<endl;
-            wyjscie << "ilosc N: " << raport[i][0] << endl;
-            wyjscie << "srednia arytmetyczna: " << setprecision(3) << raport[i][1] << endl;
-            wyjscie << "srednia geometryczna: " << raport[i][2] << endl;
-            wyjscie << "srednia harmoniczna: " << raport[i][3] << endl;
-            wyjscie << "dominanta: " << raport[i][4] << endl;
-            wyjscie << "mediana: " << raport[i][5] << endl;
-            wyjscie << "moment centralny 1-go rzedu: " << raport[i][6] << endl;
-            wyjscie << "moment centralny 2-go rzedu: " << raport[i][7] << endl;
-            wyjscie << "moment centralny 3-go rzedu: " << raport[i][8] << endl;
-            wyjscie << "moment centralny 4-go rzedu: " << raport[i][9] << endl;
-            wyjscie << "odchylenie standardowe " << raport[i][10] << endl;
-            wyjscie << "moment standaryzowany 3-go rzedu: " << raport[i][11] << endl;
-            wyjscie << "kurtoza: " << raport[i][12] << endl;
-            wyjscie << endl;
-        }
-        wyjscie << "standaryzowana roznica srednich: " << z << endl;
-        wyjscie << "prawdopodobienstwo: " << p << endl;
-        wyjscie << "ilosc stopni swobody rozkladu t-Studenta" << st << endl;
-        if( p < 0.05){
-            wyjscie << "H0 odrzucona(H1 jest mozliwa)" << endl;
-        }
-        else wyjscie << "H0 jest mozliwa" << endl;
-        wyjscie << "-------------------------------------------------------------" <<endl;
-        wyjscie << endl;
-    }
-    wyjscie.close();
-    return true;
-}
-
-bool plik_dla_gpl (char zapis[],char numer[], int cecha, int p, int k, double minv, double range, double ** histogram){
+bool plik_dla_gpl (char zapis[],char numer[], int cecha, int k, double minv, double range, double ** histogram, vector <string> populacje){
     int x = floor(cecha/10);
     zapis[9]= numer[x];
     zapis[10] = numer[cecha%10];
-    cout <<zapis<<endl;
     ofstream wyjscie(zapis);
     if(wyjscie.good()==false){
             cout<<"nie mozna zapisac do pliku"<<endl;
@@ -198,15 +146,15 @@ bool plik_dla_gpl (char zapis[],char numer[], int cecha, int p, int k, double mi
         wyjscie.precision(2);
         wyjscie << fixed;
         wyjscie <<"'\'\ ";
-        for (int a = 0; a < p; a++){
-            wyjscie << a << " ";
+        for (int a = 0; a < populacje.size(); a++){
+            wyjscie << populacje[a] << " ";
         }
         wyjscie << endl;
         for (int i = 0 ; i < k ; i++){
             wyjscie<<(minv+i*range)<<"-"<<(minv+(i+1)*range)<<" ";
-        for(int j = 0; j < p; j++){
-            wyjscie<<histogram[i][j]<<" ";
-        }
+            for(int j = 0; j < populacje.size(); j++){
+                wyjscie<<histogram[i][j]<<" ";
+            }
         wyjscie<<endl;
         }
     wyjscie.close();
@@ -219,204 +167,296 @@ bool plik_dla_gpl (char zapis[],char numer[], int cecha, int p, int k, double mi
     wyjscie2 << "set style data histograms" << endl;
     wyjscie2 << "set style histogram clustered gap 1" << endl;
     wyjscie2 << "set term png" << endl;
-    wyjscie2 << "set output 'out"<< floor(cecha/10)<<cecha%10 << ".png'" << endl;
+    wyjscie2 << "set output 'histogram"<< floor(cecha/10)<<cecha%10 << ".png'" << endl;
     wyjscie2 << "set xtics nomirror rotate by -45" << endl;
     wyjscie2 << "set boxwidth 0.9 absolute" << endl;
     wyjscie2 << "set xtics ()" << endl;
     wyjscie2 << "set style fill solid 1.0 border lt -1" <<endl;
-    wyjscie2 << "plot '"<< zapis << "' using 2:xtic(1) title columnheader(2) lt rgb '#406090',\\" << endl;
-    wyjscie2<<"'' u 3 title columnheader(3) lt rgb '#40FF00'" << endl;
+    wyjscie2 << "plot '"<< zapis << "' using 2:xtic(1) title columnheader(2)";
+    for(int i = 3; i < populacje.size() + 2; i++){
+        wyjscie2<<",\\"<<endl;
+        wyjscie2<<"'' u "<<i<<" title columnheader("<<i<<")";
+    }
     wyjscie2.close();
+
     return true;
 }
 
-bool skrypt(int cecha, string nazwa)
-{
+double st_swobody(int nr_populacji_1,int nr_populacji_2,raport * raporty){
+    double st_swobody;
+    double s1 = raporty[nr_populacji_1].moment_centralny_2;
+    double s2 = raporty[nr_populacji_2].moment_centralny_2;
+    double N1 = raporty[nr_populacji_1].ilosc;
+    double N2 = raporty[nr_populacji_2].ilosc;
 
+    st_swobody = pow((s1/N1+s2/N2),2.0);
+    st_swobody = st_swobody/(pow(s1/N1,2)/(N1-1)+pow(s2/N2,2)/(N2-1));
+    return st_swobody;
 }
 
+double roznica_srednich (int nr_populacji_1, int nr_populacji_2, raport * raporty){
+    double z;
+    double m1 = raporty[nr_populacji_1].srednia_arytmetyczna;
+    double m2 = raporty[nr_populacji_2].srednia_arytmetyczna;
+    double ro1 = raporty[nr_populacji_1].moment_centralny_2;
+    double ro2 = raporty[nr_populacji_2].moment_centralny_2;
+    double N1 = raporty[nr_populacji_1].ilosc;
+    double N2 = raporty[nr_populacji_2].ilosc;
+    z = m1 - m2;
+    z = z/sqrt(ro1/N1 + ro2/N2);
+    z = fabs(z);
+    return z;
+}
 
+double prawdopodobienstwo(double z){
+    double p;
+    z = -fabs(z);
+    p = 2*(1/2.0*(1.0+erf(z/sqrt(2.0))));
+    return p;
+}
 
+bool drukuj_raport (int cecha, raport * raporty, vector<string> populacje)
+{
+    ofstream wyjscie;
+    wyjscie.open("raport.txt",std::ios_base::app);
+    if(wyjscie.good()==false)return false;
+    else{
+            wyjscie.precision(4);
+            wyjscie << fixed;
+            wyjscie << "STATYSTYKI DLA CECHY (KOLUMNY) " << cecha <<": " << endl;
+            wyjscie << endl;
+        for (int i = 0 ; i < populacje.size() ; i++){
+            wyjscie << "Populacja " << populacje[i] <<endl;
+            wyjscie << "ilosc N: " << raporty[i].ilosc << endl;
+            wyjscie << "srednia arytmetyczna: " << raporty[i].srednia_arytmetyczna << endl;
+            wyjscie << "srednia geometryczna: " << raporty[i].srednia_geometryczna << endl;
+            wyjscie << "srednia harmoniczna: " << raporty[i].srednia_harmoniczna << endl;
+            wyjscie << "dominanta: " << raporty[i].dominanta << endl;
+            wyjscie << "mediana: " << raporty[i].mediana << endl;
+            wyjscie << "moment centralny 1-go rzedu: " << raporty[i].moment_centralny_1 << endl;
+            wyjscie << "moment centralny 2-go rzedu: " << raporty[i].moment_centralny_2 << endl;
+            wyjscie << "moment centralny 3-go rzedu: " << raporty[i].moment_centralny_3 << endl;
+            wyjscie << "moment centralny 4-go rzedu: " << raporty[i].moment_centralny_4 << endl;
+            wyjscie << "odchylenie standardowe " << raporty[i].odchylenie_standardowe << endl;
+            wyjscie << "moment standaryzowany 3-go rzedu: " << raporty[i].moment_standaryzowany_3 << endl;
+            wyjscie << "kurtoza: " << raporty[i].kurtoza << endl;
+            wyjscie << endl;
+        }
+        return true;
+    }
+}
+
+bool drukuj_raport2(double z, double prawd, double st, int nr_populacji_1, int nr_populacji_2, vector<string> populacje){
+    ofstream wyjscie;
+    wyjscie.open("raport.txt",std::ios_base::app);
+    if(wyjscie.good()==false)return false;
+    else{
+        wyjscie <<"Porownanie populacji " << populacje[nr_populacji_1] << " oraz " << populacje[nr_populacji_2] <<": "<<endl;
+        wyjscie << "standaryzowana roznica srednich: " << z << endl;
+        wyjscie << "prawdopodobienstwo: " << prawd << endl;
+        wyjscie << "ilosc stopni swobody rozkladu t-Studenta" << st << endl;
+        if( prawd < 0.01){
+            wyjscie << "H0 odrzucona(H1 jest mozliwa)" << endl;
+        }
+        else wyjscie << "H0 jest mozliwa" << endl;
+        wyjscie << "-------------------------------------------------------------" <<endl;
+        wyjscie << endl;
+
+    wyjscie.close();
+    return true;
+    }
+}
 
 int main()
 {
-    int N; //ilosc wierszy w pliku
-    cout << "Hello world!" << endl;
+    int N;                              //ilosc wierszy w pliku
 
     ifstream wejscie;
-        string nazwa = "217107.txt";
+    string nazwa;
+    cout << "Wprowadz nazwe pliku z danymi: ";
+    getline( cin ,nazwa );
+    wejscie.open(nazwa.c_str());
 
-        //cout << "Wprowadz nazwe pliku z danymi: ";
-        //getline( cin ,nazwa );
-        wejscie.open(nazwa.c_str());
+    if (wejscie.good() == false) {cout << "Nie mozna odczytac danych z pliku"<<endl;}
 
-        if (wejscie.good() == false) {cout << "Nie mozna odczytac danych z pliku"<<endl;}
-        string linia;
-        N = 0;
+    string linia;
+    N = 0;
 
-        while (getline(wejscie, linia))
-            {
-            N++;
+    while (getline(wejscie, linia)) N++;
+
+    wejscie.close();
+    cout << "ilosc wierszy: " << N <<endl;
+
+    rekord * dane = new rekord[N];      //deklaracja tablicy na dane
+
+    wejscie.open(nazwa.c_str());
+
+    //obliczenie iloœci atrybutów
+
+    string s;
+    int n = 0;          //ilosc badanych atrybutow
+    getline(wejscie,s);
+    size_t pos = 0;
+    char delimiter ;
+
+    cout<<"Wczytaj separator danych w pliku: (jesli spacja wybierz 0)"<<endl;
+    cin>>delimiter;
+    if(delimiter == '0') delimiter = ' ';
+    string delimiter_s (1,delimiter);
+    while ((pos = s.find(delimiter_s)) != std::string::npos) {
+            s.erase(0, pos + delimiter_s.length());
+            n ++;
+    }
+
+    wejscie.close();
+    //cout<<n<<endl;
+
+    vector <string> populacje;      //vector ze spisem populacji
+    wejscie.open(nazwa.c_str());
+
+    string temp;
+    double temp2;
+
+    //wczytanie danych do tablicy i zamiana etykiet na int
+
+    for (int j = 0; j < N; j++){
+        for(int i = 0; i < n; i++){
+            getline(wejscie,temp,delimiter);
+            stringstream przeksztalc(temp);
+            przeksztalc>>temp2;
+            dane[j].atrybut.push_back(temp2);
+        }
+        getline(wejscie,temp);
+        int kontrola = 0;
+        for(int k = 0; k < populacje.size(); k++){
+            if(temp == populacje[k]){
+                    dane[j].populacja = k;
+                    kontrola ++;
+                    break;
             }
-        wejscie.close();
-            cout << "ilosc wierszy: " << N <<endl;
-
-        int p;
-        cout<<"wprowadz ilosc badanych populacji: "<<endl;
-        cin>>p;
-
-        double ** dane = new double*[N];
-        int n = 1;
-
-        for(int i = 0; i <N; i++){
-            dane[i] = new double[n+1];
         }
-        cout<<"wprowadz ilosc badanych atrybutow: "<<endl;
-        cin>>n;
-
-        wejscie.open(nazwa.c_str());
-
-    //zapisanie danych z pliku do tablicy
-
-        for (int i = 0; i < N; i++){
-                for (int j = 0; j <= n; j++){
-                    wejscie>>dane[i][j];
-                }
-        }
-        wejscie.close();
-
-        double ** raport = new double *[p];
-        for(int i = 0; i < p; i++){
-            raport[i] = new double[13];
+        if(kontrola == 0){
+            populacje.push_back(temp);
+            dane[j].populacja = populacje.size()-1;
         }
 
-        char numer[10] = {'0','1','2','3','4','5','6','7','8','9'};
-        char zapis[16] = {'h','i','s','t','o','g','r','a','m','0','0','.','t','x','t'};
+    }
+    //cout<<"pop"<< populacje.size();
+    //populacje.pop_back();
 
-        for(int cecha = 0; cecha < n; cecha++){
-            for(int nr_populacji = 0; nr_populacji < p; nr_populacji++){
+    int p = populacje.size();    //ilość populacji
 
-                int ilosc = policz(N, n, nr_populacji, dane);
 
-                cout<<"ilosc "<<ilosc<<endl;
+   /* for (int i = 0; i < N; i++){
+        for(int j = 0; j < n; j++) cout <<dane[i].atrybut[j]<<" ";
+            cout<<dane[i].populacja<<endl;
+            }*/
+    wejscie.close();
+    raport * raporty = new raport[p];
 
-                double * lista = new double[ilosc];
-                przepisz(nr_populacji, N, cecha, n, lista, dane);
-                sortuj(ilosc,lista);
 
-                double srednia_aryt = srednia_arytmetyczna(ilosc, lista);
-                double srednia_harm = srednia_harmoniczna(ilosc, lista);
-                double srednia_geom = srednia_geometryczna(ilosc, lista);
 
-                cout<<"srednia arytmetyczna populacji "<< nr_populacji <<": "<<  srednia_aryt<<endl;
-                cout<<"srednia harmoniczna populacji "<< nr_populacji <<": "<<  srednia_harm<<endl;
-                cout<<"srednia geometryczna populacji "<< nr_populacji <<": "<< srednia_geom<<endl;
+    char numer[10] = {'0','1','2','3','4','5','6','7','8','9'};
+    char zapis[16] = {'h','i','s','t','o','g','r','a','m','0','0','.','t','x','t'};
+    for(int cecha = 0; cecha < n; cecha++){
+        for (int nr_populacji = 0; nr_populacji < p; nr_populacji ++){
+            cout<<"Statystyki dla populacji " << populacje[nr_populacji]<<": "<<endl;
+            int ilosc = policz(N,nr_populacji,dane);
+            cout<<"ilosc: "<<ilosc<<endl;
 
-                raport[nr_populacji][0] = ilosc;
-                raport[nr_populacji][1] = srednia_aryt;
-                raport[nr_populacji][2] = srednia_geom;
-                raport[nr_populacji][3] = srednia_harm;
+            double * lista = new double[ilosc];
+            przepisz(nr_populacji, N, cecha, lista, dane);
 
-                double domi = dominanta(ilosc,lista);
-                raport[nr_populacji][4] = domi;
 
-                double medi = mediana(ilosc, lista);
-                cout<<" mediana wynosi: " <<  medi <<endl;
-                raport[nr_populacji][5] = medi;
+            sortuj(ilosc,lista);
+//for(int i = 0; i < ilosc;i++){cout<<lista[i]<<endl;}
+            double srednia_aryt = srednia_arytmetyczna(ilosc,lista);
+            double srednia_harm = srednia_harmoniczna(ilosc,lista);
+            double srednia_geom = srednia_geometryczna(ilosc, lista);
 
-            //k-ty moment centralny
+            raporty[nr_populacji].ilosc = ilosc;
+            raporty[nr_populacji].srednia_arytmetyczna = srednia_aryt;
+            raporty[nr_populacji].srednia_harmoniczna = srednia_harm;
+            raporty[nr_populacji].srednia_geometryczna = srednia_geom;
 
-                double moment_centr;
-                double odchylenie_standardowe;
-                double moment_stand3;
+            cout<<"srednia arytmetyczna populacji "<< nr_populacji <<": "<<  srednia_aryt<<endl;
+            cout<<"srednia harmoniczna populacji "<< nr_populacji <<": "<<  srednia_harm<<endl;
+            cout<<"srednia geometryczna populacji "<< nr_populacji <<": "<< srednia_geom<<endl;
 
-                for(int k = 1; k <=4; k++){
-                    moment_centr = moment_centralny(ilosc, k, lista, srednia_aryt);
-                    raport[nr_populacji][5+k] = moment_centr;
-                    cout<<"Moment centralny "<< k <<"-go rzedu wynosi: "<< moment_centr <<endl;
-                    if(k == 2){
-                        odchylenie_standardowe = sqrt(moment_centr);
+            double domi = dominanta(ilosc,lista);
+            raporty[nr_populacji].dominanta = domi;
+
+            double medi = mediana(ilosc, lista);
+            cout<<"Mediana: " <<  medi <<endl;
+            raporty[nr_populacji].mediana = medi;
+
+            raporty[nr_populacji].moment_centralny_1 = moment_centralny(ilosc, 1, nr_populacji, lista, raporty );
+            raporty[nr_populacji].moment_centralny_2 = moment_centralny(ilosc, 2, nr_populacji, lista, raporty );
+            raporty[nr_populacji].moment_centralny_3 = moment_centralny(ilosc, 3, nr_populacji, lista, raporty );
+            raporty[nr_populacji].moment_centralny_4 = moment_centralny(ilosc, 4, nr_populacji, lista, raporty );
+
+            cout<<"Moment centarlny 1-go rzedu: "<<raporty[nr_populacji].moment_centralny_1<<endl;
+            cout<<"Moment centarlny 2-go rzedu: "<<raporty[nr_populacji].moment_centralny_2<<endl;
+            cout<<"Moment centarlny 3-go rzedu: "<<raporty[nr_populacji].moment_centralny_3<<endl;
+            cout<<"Moment centarlny 4-go rzedu: "<<raporty[nr_populacji].moment_centralny_4<<endl;
+
+            raporty[nr_populacji].odchylenie_standardowe = sqrt(raporty[nr_populacji].moment_centralny_2);
+            raporty[nr_populacji].moment_standaryzowany_3 = raporty[nr_populacji].moment_centralny_3/pow(raporty[nr_populacji].odchylenie_standardowe,3);
+
+            cout << "Odchylenie standardowe: " << raporty[nr_populacji].odchylenie_standardowe<<endl;
+            cout << "Moment standaryzowany 3-go rzedu: " << raporty[nr_populacji].moment_standaryzowany_3 <<endl;
+
+            raporty[nr_populacji].kurtoza = raporty[nr_populacji].moment_centralny_4/pow(raporty[nr_populacji].odchylenie_standardowe,4)-3.0;
+            cout << "Kurtoza: " << raporty[nr_populacji].kurtoza << endl;
+
+            delete [] lista;
+            cout << endl;
+        }
+
+        int k = sqrt(N);
+        double ** histogram = new double *[k];
+
+        for(int i = 0; i < k; i++){
+            histogram[i] = new double[populacje.size()];
+            }
+
+        double maxv = dane[0].atrybut[cecha];
+        double minv = dane[0].atrybut[cecha];
+
+        for(int i = 0; i < N; i++){
+            if(dane[i].atrybut[cecha] > maxv) maxv = dane[i].atrybut[cecha];
+            else if (dane[i].atrybut[cecha] < minv) minv = dane[i].atrybut[cecha];
+        }
+
+        double range = (maxv - minv)/k;
+        for(int i = 0; i < k; i++){
+            for(int j = 0; j < populacje.size(); j++){
+                histogram[i][j] = 0;
+                for(int m = 0;m < N; m++){
+                    if(dane[m].populacja == j && dane[m].atrybut[cecha] >= minv + i*range && dane[m].atrybut[cecha] <= minv + (i+1)*range){
+                        histogram[i][j] = histogram[i][j]+1;
                     }
-                    else if(k == 3){
-                        moment_stand3 = moment_centr/pow(odchylenie_standardowe,3);
-                    }
-                }
-
-                raport[nr_populacji][10] = odchylenie_standardowe;
-                raport[nr_populacji][11] = moment_stand3;
-                cout << "Odchylenie standardowe wynosi: " << odchylenie_standardowe << endl;
-                cout << "Moment standaryzowany 3-go rzedu wynosi: " << moment_stand3 << endl;
-
-             //kurtoza
-
-                double kurtoza;
-                kurtoza = moment_centr / pow(odchylenie_standardowe,4) - 3.0;
-                raport[nr_populacji][12] = kurtoza;
-                cout<<"kurtoza wynosi: "<< kurtoza << endl;
-
-                delete [] lista;
-            }
-
-            //przygotowanie histogramow
-
-            int k = sqrt(N); //ilosc przedzialow
-
-            double ** histogram = new double*[k];
-
-
-            for(int i = 0; i <k; i++){
-                histogram[i] = new double[p];
-            }
-
-            double maxv = dane[0][cecha];
-            double minv = dane[0][cecha];
-            double temp;
-
-            for (int i = 0; i < N; i++){
-                if(dane[i][cecha] > maxv) maxv = dane[i][cecha];
-                else if (dane[i][cecha] < minv) minv = dane[i][cecha];
-            }
-            cout<<"max " << maxv<<endl;
-            cout<<"min " << minv << endl;
-
-            double range = (maxv - minv)/k; //rozpietosc przedizalu
-
-            for(int i = 0; i <k; i++){
-                for(int j = 0; j < p; j++){
-                    histogram[i][j] = 0;
-                    for (int m = 0; m < N; m++){
-
-                        if(dane[m][n] == j && dane[m][cecha] >= minv + i*range && dane[m][cecha] <= minv + (i+1)*range ){
-                            histogram[i][j] = histogram[i][j] + 1;
-                        }
-                    }
                 }
             }
-
-            plik_dla_gpl(zapis, numer, cecha, p, k, minv, range, histogram);
-
-
-            for(int i = 0; i < p; i++){
-                for (int j = 0; j < 13; j++){
-                    cout<<raport[i][j]<<"   ";
-                }
-                cout<<endl;
-            }
-
-            double z = roznica_srednich(0,1,raport);
-            double prawd = prawdopodobienstwo(-fabs(z));
-            double st = st_swobody(0,1,raport);
-
-            cout<<"z: "<< z <<endl;
-            cout<<" p: "<< prawd <<endl;
-            cout<<"st_swobody: "<< st <<endl;
-
-            drukuj_raport(p,cecha,raport, z, p, st);
-            skrypt(cecha, nazwa);
-            system("gnuplot -p -e \"load 'skrypt.gpl'\"");
         }
 
-        return 0;
-
-
+        plik_dla_gpl(zapis, numer, cecha, k, minv, range, histogram, populacje);
+        system("gnuplot -p -e \"load 'skrypt.gpl'\"");
+        drukuj_raport(cecha, raporty, populacje);
+        double z;
+        double prawd;
+        double st;
+        for(int i = 0; i < populacje.size(); i++){
+            for (int j = i+1; j < populacje.size(); j++){
+                z = roznica_srednich(i,j,raporty);
+                prawd = prawdopodobienstwo(-fabs(z));
+                st = st_swobody(i,j,raporty);
+                cout<<"z: "<<z<<endl;
+                cout<<"prawd: "<<prawd<<endl;
+                cout<<"st: "<<st<<endl;
+                drukuj_raport2(z,prawd,st,i,j,populacje);
+            }
+        }
+    }
+    return 0;
 }
