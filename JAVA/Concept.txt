@@ -1,0 +1,42 @@
+Zdarzenie: (1)
+	Dodaj()
+	Usun()
+	Zmien()
+	Wypisz()
+	
+	tytul
+	data (start/koniec ?)
+	godzina (start/koniec ?)
+	notatka (opis)
+	miejsce
+	~przypomnienie
+
+Alarm: (2)
+	Dodaj()
+	Usun()
+	Zmien()
+	
+Graficzny kalendarz: (3)
+	?
+	Zapewne coś w stylu "klikamy na kafelek z dniem to możemy dodać zdarzenie.
+	
+System:
+	Konwersja: (4)
+		?
+		
+	Kasowanie starych zdarzen(5)
+	
+	Filtrowanie (5)
+	
+	Bazadanych/ XML: (6)
+		Zapis()
+		Odczyt()
+	
+Ustawienia: (7)
+	?
+	
+O programie: (8)
+	nazwa
+	wersja
+	autorzy
+	opis
