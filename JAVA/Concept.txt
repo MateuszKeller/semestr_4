@@ -1,30 +1,35 @@
-Zdarzenie: (1)
-	Dodaj()
-	Usun()
-	Zmien()
+Event: (1) // klasa przechowyuj¹ca wydarzenia
+	~metody dostêpowe do zmiennych
 	Wypisz()
 	
 	tytul
-	data (start/koniec ?)
-	godzina (start/koniec ?)
+	start (data i godzina) 
+	koniec (data i godzina)
 	notatka (opis)
 	miejsce
 	~przypomnienie
 
 Alarm: (2)
-	Dodaj()
-	Usun()
-	Zmien()
+	czas
+	dzwiek
 	
 Graficzny kalendarz: (3)
 	?
-	Zapewne coÅ› w stylu "klikamy na kafelek z dniem to moÅ¼emy dodaÄ‡ zdarzenie.
+	Zapewne coœ w stylu "klikamy na kafelek z dniem to mo¿emy dodaæ zdarzenie.
 	
 System:
+
+Meneger: // klasa ogarniaj¹ca aplikacje (najpewniej rozdrobni sie to na ró¿ne klasy)
+	Eventy
+	DodajEvent()
+	UsunEvent()
+	EdytujEvent() <- Dodaj/Usun/Zmien_Alarm()
+	
+	
 	Konwersja: (4)
 		?
 		
-	Kasowanie starych zdarzen(5)
+	Kasowanie starych zdarzeñ(5)
 	
 	Filtrowanie (5)
 	
