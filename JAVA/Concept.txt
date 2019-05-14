@@ -8,6 +8,9 @@ Event: (1) // klasa przechowyuj¹ca wydarzenia
 	notatka (opis)
 	miejsce
 	~przypomnienie
+	
+	kolor (wybierany z listy)
+
 
 Alarm: (2)
 	czas
@@ -16,8 +19,23 @@ Alarm: (2)
 Graficzny kalendarz: (3)
 	?
 	Zapewne coœ w stylu "klikamy na kafelek z dniem to mo¿emy dodaæ zdarzenie.
+POLECANE:
+	* JAVAFX
+	* SCENE BUILDER
+	
+PRZYDATNE:
+	* SPLITPANE -> Kalendarz | Opcje
+	* JTABLE -> Kontakty
+	* TABBEDPANE -> Zak³adki(Kalendarz/KOntakty/Zdarzenia)
+	* COMOBOX -> Filtrowanie, zdarzeñ po "kolorach"?
+	* MENU -> menu + MENUITEM
+	* PROGRESSBAR -> Export (?)
+	* TOOLTIPS -> dymki podpowiedzi ?????
+	* FILECHOOSER -> Export/import 
 	
 System:
+
+MAIN (?)
 
 Meneger: // klasa ogarniaj¹ca aplikacje (najpewniej rozdrobni sie to na ró¿ne klasy)
 	Eventy
