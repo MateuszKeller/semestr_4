@@ -1,11 +1,12 @@
-#include <iostream>
-#include <fstream>
-#include <math.h>
-#include <cstdlib>
-#include <algorithm>
-#include <random>
+//#include <iostream>
+//#include <fstream>
+//#include <math.h>
+//#include <cstdlib>
+//#include <algorithm>
+//#include <random>
 
-#include "Group.h"
+//#include "Point.h"
+#include "Header.h"
 
 using namespace std;
 
@@ -18,22 +19,8 @@ Algorytm Kohonena
 	http://algolytics.com/download/AdvancedMiner_documentation/userdoc/bk10pt02ch25.html
 
 Algorytm gazu neuronowego
-	
 
 */
-
-void Open(fstream &);
-void WczytajDane(fstream &, vector<Point> &);
-
-void Wypisz(vector<Point> A) { for (auto X : A) cout << X.ToString() << endl; }
-void Wypisz(vector<Group> A) { for (auto X : A) cout << X.ToString() << endl; }
-
-void KSrednie();
-void Kohonen();
-void GazNeuronowy();
-
-int Random(int); 
-void CenterOfMass(vector<Point> &);
 
 
 /*
@@ -47,125 +34,75 @@ void CenterOfMass(vector<Point> &);
 	attract.txt
 	
 */
+
+void KSrednie(vector <Point> &, vector<Centroid> &);
+void Kohonen();
+void GazNeuronowy();
+
+
+
 int main()
 {
 	fstream input;
-	vector<Point> Points;	vector<Group> Groups;
-	int K;
-
+	vector<Point> Points;	vector<Centroid> Centroids;
+	
 	Open(input);	
 	WczytajDane(input, Points);
 
-	cout << "Podaj K: "; cin >> K;
-	for (int i = 0; i < K; i++)
-	{
-		Group temp(Points[Random(Points.size())]);
-		Groups.push_back(temp);
-		Groups[i].Center.Grupa = i;
-	}
+	KSrednie(Points, Centroids);
 
-	Wypisz(Groups);
+	/*PickingCentroids(Points, Centroids, K);
 
-	for (auto P : Points)
-	{
-		double Dist = 0.0;
-		int g = -1;
-
-		for (auto G : Groups)
-		{
-			/*if (P == G.Center)
-				continue;*/
-			if(Dist < P.Distance(G.Center))
-			{
-				Dist = P.Distance(G.Center);
-				g = G.Center.Grupa;
-			}
-		}
-		P.Grupa = g;
-		Groups[g].Points.push_back(P);
-	}
+	Wypisz(Centroids);
+	cout << endl;
+	AssignmentToGroups(Points, Centroids);
+	cout << "C --------------\n";
+	Wypisz(Centroids);
 		
-	Wypisz(Groups);
+	CenterOfMass(Points, Centroids);
+	cout << "C --------------\n";
+	Wypisz(Centroids);
 
-	input.close();
+	cout << "P --------------\n";
+	Wypisz(Points);*/
+
 	system("PAUSE");
 	return 0;
 }
 
-void Open(fstream &input)
+void KSrednie(vector <Point> & Points, vector<Centroid> & Centroids)
 {
-	cout << "Wybierz plik: \n" << "1. attract.txt\n" << "2. attract_small.txt\n" << "3. inny\n";
-	string name;
-	int ch;		cin >> ch;
-
-	switch (ch)
-	{
-	case 1:
-		name = "attract.txt";
-		break;
-
-	case 2:
-		name = "attract_small.txt";
-		break;
-
-	case 3:
-		//cout << "Wpisz nazwe pliku: "; cin >> name;
-		name = "A.txt";
-		break;
-
-	default:
-		return;
-		break;
-	}
-
-	input.open(name);
-}
-
-void WczytajDane(fstream &input, vector<Point> &Points)
-{
-	while (!input.eof())
-	{
-		stringstream line; string s;
-		double x, y;
-		getline(input, s);
-		size_t comma = s.find(',');
-
-		line.str(s.substr(0, comma - 1));	line >> x;	line.clear();
-		line.str(s.substr(comma + 1));		line >> y;	line.clear();
-
-		Point temp(x, y);
-		Points.push_back(temp);
-	}
-}
-
-int Random(int Size)
-{
-	random_device rd;
-	mt19937 mt(rd());
-	uniform_int_distribution<int> dist(1, Size);
+	int K;	cout << "Podaj K: "; cin >> K;
+	PickCentroids(Points, Centroids, K);
 	
-	return dist(mt);
-}
+	AssignmentToGroups(Points, Centroids);
+	Wypisz(Centroids);	cout << "----------" << endl;
 
-void CenterOfMass(vector<Group> & Groups)
-{
-	double x = 0, y = 0;
-	for (auto X : Groups)
+	//vector<Centroid> C = Centroids;
+
+	vector<Centroid> Memory; int i = 0;
+	do
 	{
-		for (auto P : X.Points)
-		{
-			x += P.x;
-			y += P.y;
-		}
+		i++;
+		Memory = Centroids;
+		CenterOfMass(Points, Centroids);
+		AssignmentToGroups(Points, Centroids);
 
-		x /= X.Points.size();
-		y /= X.Points.size();
+	} while (!DoCentroidsRepeat(Centroids, Memory) || i == 100);
 
-		Point temp(x, y);
-		X.Center = temp;
-	}
-		
-	
+	Wypisz(Centroids);	cout << "----------" << i << endl << endl << endl;
+
+	//Centroids = C;
+	//Wypisz(Centroids);	cout << "----------" << endl;
+
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	vector<Centroid> Memory = Centroids;
+	//	CenterOfMass(Points, Centroids);
+	//	AssignmentToGroups(Points, Centroids);
+
+	//}
+
+	//Wypisz(Centroids);	cout << "----------" << endl << endl << endl;
 
 }
-

@@ -15,9 +15,20 @@ public:
 
 	int Grupa = -1;
 
+	Point();
 	Point(double x, double y);
 	~Point();
 
 	std::string ToString();
 	double Distance(Point);
+
+};
+
+class Centroid : public Point
+{
+public:
+	Centroid(const Point &);
+	int PointsInClaster = 0;
+
+	std::string ToString();
 };
