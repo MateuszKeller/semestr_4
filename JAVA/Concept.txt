@@ -1,4 +1,4 @@
-Event: (1) // klasa przechowyuj¹ca wydarzenia
+#DONE Event: (1) // klasa przechowyuj¹ca wydarzenia
 	~metody dostêpowe do zmiennych
 	Wypisz()
 	
@@ -8,9 +8,9 @@ Event: (1) // klasa przechowyuj¹ca wydarzenia
 	notatka (opis)
 	miejsce
 	~przypomnienie
+	~kontakt
 	
 	kolor (wybierany z listy)
-
 
 Alarm: (2)
 	czas
@@ -25,7 +25,7 @@ POLECANE:
 	
 PRZYDATNE:
 	* SPLITPANE -> Kalendarz | Opcje
-	* JTABLE -> Kontakty
+	* JTABLE -> Kontakty, Dni miesi¹ca
 	* TABBEDPANE -> Zak³adki(Kalendarz/KOntakty/Zdarzenia)
 	* COMOBOX -> Filtrowanie, zdarzeñ po "kolorach"?
 	* MENU -> menu + MENUITEM
@@ -35,19 +35,19 @@ PRZYDATNE:
 	
 System:
 
-MAIN (?)
+MAIN:
+	Glowna pentla programu (?)
 
 Meneger: // klasa ogarniaj¹ca aplikacje (najpewniej rozdrobni sie to na ró¿ne klasy)
-	Eventy
-	DodajEvent()
-	UsunEvent()
+#DONE	Eventy/DodajEvent()/UsunEvent()
+
 	EdytujEvent() <- Dodaj/Usun/Zmien_Alarm()
 	
 	
 	Konwersja: (4)
 		?
 		
-	Kasowanie starych zdarzeñ(5)
+#DONE 	Kasowanie starych zdarzeñ(5)
 	
 	Filtrowanie (5)
 	
@@ -57,6 +57,9 @@ Meneger: // klasa ogarniaj¹ca aplikacje (najpewniej rozdrobni sie to na ró¿ne kl
 	
 Ustawienia: (7)
 	?
+	ON/OFF Dzwieki
+	FullScreen?
+	Po ilu usuwac wydarzenia
 	
 O programie: (8)
 	nazwa

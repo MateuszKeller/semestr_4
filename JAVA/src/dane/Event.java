@@ -1,50 +1,55 @@
 package dane;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.LocalTime;
 
 public class Event {
 
-	private String tittle;
-	private LocalDateTime start;
-	private LocalDateTime end;
-	private DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEEE dd MMMM HH:mm");
-	private String note;
-	private String place;
-	private Alarm notification = null;
-	//Kolor -- private Kolor kolor = null; ??? //
+	String tittle;
+	LocalDateTime start;
+	LocalDateTime end;
+	DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEEE dd MMMM HH:mm");
+	String note = "";
+	String place = "";
+	Alarm notification = null;
+	Contact person = null;
+	//Kolor --  ??? //
 	
 	 
 
-	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place) // konstruktor bez przypomnienia
+
+
+
+	public Event(String tittle, LocalDateTime start, LocalDateTime end)//, String note, String place) 
 	{
 		this.tittle = tittle;
 		this.start = start;
 		this.end = end;
-		this.note = note;
-		this.place = place;
+		//this.note = note;
+		//this.place = place;
 	}
 	
-	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place, LocalTime notification) // konstruktor z przypomnieniem
-	{
-		this.tittle = tittle;
-		this.start = start;
-		this.end = end;
-		this.note = note;
-		this.place = place;
-		this.notification = new Alarm(notification);
-		
-	}
+	
+//	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place, LocalTime notification)
+//	{
+//		this.tittle = tittle;
+//		this.start = start;
+//		this.end = end;
+//		this.note = note;
+//		this.place = place;
+//		this.notification = new Alarm(notification);
+//		
+//	}
 	
 	public String toString()
 	{	
 		String ret = "Wydarzenie " + tittle + "\n" +
 				start.format(dateFormat) + " - " + end.format(dateFormat) + "\n ";
 		
-		if(notification != null)
-			ret += notification.toString();
-			
-		return ret + "\n " + place + "\n " + note; 
+		if(notification != null)	ret += notification.toString();
+		if(place != "")	ret+= place + "\n";
+		if(note != "")	ret+= note + "\n";
+		
+		return ret; 
 	}
 
 	// GET/SET-ers
@@ -66,6 +71,7 @@ public class Event {
 	public Alarm getNotification() { return notification; }
 	public void setNotification(Alarm notification) { this.notification = notification; }
 
-	
+	public Contact getPerson() { return person; }
+	public void setPerson(Contact person) { this.person = person; }
 		
 }

@@ -21,14 +21,20 @@ import system.Controller;
 public class Application {
 
 	private JFrame frame;
+	public JFrame getFrame() {
+		return frame;
+	}
+
+
 	private JTable calendarTable;
 	private JTable contactsTable;
 	private Controller control;
 
+	
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+	public void mainApplication(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
