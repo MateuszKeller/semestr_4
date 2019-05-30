@@ -1,3 +1,10 @@
+
+## Java - related
+**/*.class
+**/bin/
+
+
+
 ## User defined
 _*
 
