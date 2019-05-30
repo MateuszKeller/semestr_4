@@ -2,10 +2,10 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="F:/Repoes/semestr4/JAVA/libs/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="F:/Repoes/semestr4/JAVA/libs/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="F:/Repoes/semestr4/JAVA/libs/hsqldb.jar"/>
-	<classpathentry kind="lib" path="F:/Repoes/semestr4/JAVA/libs/jackcess-2.0.8.jar"/>
-	<classpathentry kind="lib" path="F:/Repoes/semestr4/JAVA/libs/ucanaccess-2.0.9.4.jar"/>
+	<classpathentry kind="lib" path="libs/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="libs/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="libs/hsqldb.jar"/>
+	<classpathentry kind="lib" path="libs/jackcess-2.0.8.jar"/>
+	<classpathentry kind="lib" path="libs/ucanaccess-2.0.9.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
