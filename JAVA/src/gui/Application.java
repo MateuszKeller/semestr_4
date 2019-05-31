@@ -1,20 +1,20 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSplitPane;
-import java.awt.BorderLayout;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import javax.swing.JTabbedPane;
-import javax.swing.JPanel;
-import javax.swing.JTable;
 import javax.swing.JLabel;
-import javax.swing.JPopupMenu;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 
 import system.Controller;
 
@@ -26,11 +26,11 @@ public class Application {
 	}
 
 
-	private JTable calendarTable;
+	private CalendarTable calendarTable;
 	private JTable contactsTable;
 	private Controller control;
 
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -53,6 +53,9 @@ public class Application {
 	public Application() {
 		initialize();
 		control = new Controller();
+
+		control.addListener(calendarTable);
+
 	}
 
 
@@ -154,6 +157,7 @@ public class Application {
 			}			
 		});
 		
+		
 		JSplitPane splitPane = new JSplitPane();
 		frame.getContentPane().add(splitPane, BorderLayout.CENTER);
 		
@@ -163,8 +167,9 @@ public class Application {
 		JPanel calendarPane = new JPanel();
 		calendarView.addTab("Calendar", null, calendarPane, null);
 		
-		calendarTable = new JTable();
-		calendarPane.add(calendarTable);
+		calendarTable = new CalendarTable();
+		calendarPane.add(new JScrollPane(calendarTable));
+		
 		
 		JPanel contactsPane = new JPanel();
 		calendarView.addTab("Contacts", null, contactsPane, null);

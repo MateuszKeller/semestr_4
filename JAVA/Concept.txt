@@ -19,6 +19,9 @@ Alarm: (2)
 Graficzny kalendarz: (3)
 	?
 	Zapewne coœ w stylu "klikamy na kafelek z dniem to mo¿emy dodaæ zdarzenie.
+	szerokoœæ/wysokoœæ kolumn (w³o¿yæ w scroll pane?)
+	kolor wybranej komórki - setSelectionBackground???
+	
 POLECANE:
 	* JAVAFX
 	* SCENE BUILDER
