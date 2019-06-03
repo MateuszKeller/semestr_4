@@ -12,7 +12,7 @@
 	
 	kolor (wybierany z listy)
 
-Alarm: (2)
+#DONE Alarm: (2)
 	czas
 	dzwiek
 	
@@ -54,7 +54,7 @@ Meneger: // klasa ogarniaj¹ca aplikacje (najpewniej rozdrobni sie to na ró¿ne kl
 	
 	Filtrowanie (5)
 	
-	Bazadanych/ XML: (6)
+	Bazadanych/ #DONE XML: (6)
 		Zapis()
 		Odczyt()
 	

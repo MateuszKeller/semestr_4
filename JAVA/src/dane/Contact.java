@@ -7,6 +7,7 @@ public class Contact {
 	String email;
 	String phone;
 	
+	public Contact() { }
 	public Contact(String imieNazwisko) { this.name = imieNazwisko; }
 	
 	public String getName() { return name; }
@@ -21,5 +22,14 @@ public class Contact {
 	public String getPhone() { return phone; }
 	public void setPhone(String telefon) { this.phone = telefon; }
 	
-	
+	public String toString()
+	{	
+		String ret =  name + "\n";
+		
+		if(company != null)	ret += company + " ";
+		if(email != null)	ret+= email + " ";
+		if(phone != null)	ret+= phone;
+		
+		return ret + "\n"; 
+	}
 }

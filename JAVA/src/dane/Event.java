@@ -2,7 +2,7 @@ package dane;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Event {
+public class Event implements java.io.Serializable {
 
 	String tittle;
 	LocalDateTime start;
@@ -12,13 +12,8 @@ public class Event {
 	String place = "";
 	Alarm notification = null;
 	Contact person = null;
-	//Kolor --  ??? //
-	
-	 
 
-
-
-
+	public Event() {}
 	public Event(String tittle, LocalDateTime start, LocalDateTime end)//, String note, String place) 
 	{
 		this.tittle = tittle;
@@ -42,12 +37,12 @@ public class Event {
 	
 	public String toString()
 	{	
-		String ret = "Wydarzenie " + tittle + "\n" +
-				start.format(dateFormat) + " - " + end.format(dateFormat) + "\n ";
+		String ret = "\nWydarzenie " + tittle + "\n" +
+				start.format(dateFormat) + " - " + end.format(dateFormat);
 		
-		if(notification != null)	ret += notification.toString();
-		if(place != "")	ret+= place + "\n";
-		if(note != "")	ret+= note + "\n";
+		if(notification != null)	ret += "\n" + notification.toString();
+		if(place != "")	ret+= "\n" + place;
+		if(note != "")	ret+= "\n" + note;
 		
 		return ret; 
 	}
@@ -73,5 +68,8 @@ public class Event {
 
 	public Contact getPerson() { return person; }
 	public void setPerson(Contact person) { this.person = person; }
+	
+	public void playAlarmSound() { notification.playSound(); }
+	public void stopAlarmSound() { notification.stopSound(); }
 		
 }
