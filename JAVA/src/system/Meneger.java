@@ -3,35 +3,19 @@ package system;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.io.*;
-import java.sql.*;
-import java.beans.*;
 import dane.*;
-//import java.time.Duration;
-//import java.time.LocalDateTime;
-//import java.time.LocalTime;
-//import java.time.format.DateTimeFormatter;
-//import java.util.ArrayList;
-//import java.util.Iterator;
-//import java.beans.XMLEncoder;
-//import java.beans.XMLDecoder;
-//import java.beans.Encoder;
-//import java.beans.Expression;
-//import java.beans.PersistenceDelegate;
-//import dane.Alarm;
-//import dane.Contact;
-//import dane.Event;
+import system.Transmiter;
+
 
 public class Meneger {
 
 	static ArrayList<Event> eventy = new ArrayList<Event>();
 	static ArrayList<Contact> kontakty = new ArrayList<Contact>();
+	
+	static Transmiter xPort = new Transmiter();
+	
 	static Duration whenToRemove = Duration.ofDays(10);
 
-	static String database = "Organizer.accdb";
-	static Connection conn;
-	static java.sql.Statement s;
-	static ResultSet rs;
 	static String sound;
 
 	public static void main(String[] args) {
@@ -63,13 +47,15 @@ public class Meneger {
 		Event e3 = e1; // new Event(e1.getTittle(), e1.getStart(), e1.getEnd());
 		// eventy.remove(e3);
 		System.out.println(eventy);
-
 		oldEventsGo();
 
 		System.out.println(eventy);
 		System.out.println("--------------------");
-		bdImportKontakty();
-
+		System.out.println(kontakty);
+		xPort.bdImportKontakty(kontakty);
+		
+		System.out.println("---------IMPORT-----------");
+		System.out.println(kontakty);
 		// System.out.println(kontakty); System.out.println("--------------------");
 
 		LocalDateTime test = LocalDateTime.now();
@@ -93,13 +79,12 @@ public class Meneger {
 		
 		String xmlFile = "test.xml";
 		eventy.add(e4_f);
-		xmlExport(xmlFile);
+		xPort.xmlExport(xmlFile, eventy);
 		
 		System.out.println("--------------------");
 		eventy.clear();
-		System.out.println(eventy);
 		
-		xmlImport(xmlFile);
+		eventy = xPort.xmlImport(xmlFile, eventy);
 		System.out.println(eventy);
 		
 		
@@ -179,87 +164,6 @@ public class Meneger {
 			}
 
 		}
-	}
-
-	// DATABASE
-	static public void bdImportKontakty() {
-		try {
-			conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
-			s = conn.createStatement();
-			rs = s.executeQuery("SELECT * FROM Kontakty");
-
-			String ret;
-			while (rs.next()) {
-				String company = "";
-				String email = "";
-				String phone = "";
-				ret = rs.getString("id") + ". " + rs.getString("name") + " ";
-				if (rs.getString("email") != null) {
-					company = rs.getString("company");
-					ret += company + " ";
-				}
-				if (rs.getString("email") != null) {
-					email = rs.getString("email");
-					ret += email + " ";
-				}
-				if (rs.getString("phone") != null) {
-					phone = rs.getString("phone");
-					ret += phone + " ";
-				}
-
-				addContact(rs.getString("name"), company, email, phone);
-				System.out.println(ret);
-			}
-
-			conn.close();
-		} catch (Exception ee) { System.out.println(ee); }
-	}
-
-	public void bdExportKontakty() 
-	{
-
-	}
-
-	public void bdImportEventy() 
-	{
-		        
-	}
-	
-	//XML
-	public static void xmlExport(String file)
-	{
-		try {
-			
-			XMLEncoder e = new XMLEncoder( new BufferedOutputStream( new FileOutputStream(file)));
-
-			e.setPersistenceDelegate( LocalDateTime.class, // Event -- start, end
-					new PersistenceDelegate() { @Override
-		            	protected Expression instantiate(Object localDateTime, Encoder encdr){
-		                	return new Expression(localDateTime, LocalDateTime.class, "parse",
-		                			new Object[]{ localDateTime.toString() });
-						}
-					});
-			 
-			e.setPersistenceDelegate( LocalTime.class, // Alarm -- before
-					new PersistenceDelegate() { @Override
-						protected Expression instantiate(Object localTime, Encoder encdr){
-		                	return new Expression(localTime, LocalTime.class, "parse",
-		                			new Object[]{ localTime.toString() });
-						}
-					});
-				
-			e.writeObject(eventy);
-			e.close();
-		} catch (FileNotFoundException e1) { e1.printStackTrace(); }
-	}
-	
-	public static void xmlImport(String file)
-	{
-		try {
-			XMLDecoder	d = new XMLDecoder( new BufferedInputStream( new FileInputStream(file)));
-			eventy = (ArrayList<Event>) d.readObject();
-			d.close();
-		} catch (FileNotFoundException e) { e.printStackTrace(); }
 	}
 	
 }
