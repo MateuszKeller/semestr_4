@@ -17,6 +17,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
 import system.Controller;
+import system.events.DisplayedDateChanged;
 
 public class Application {
 
@@ -54,7 +55,7 @@ public class Application {
 		initialize();
 		control = new Controller();
 
-		control.addListener(calendarTable);
+		control.registerListener(DisplayedDateChanged.class, calendarTable);
 
 	}
 

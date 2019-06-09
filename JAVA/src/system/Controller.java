@@ -3,25 +3,37 @@ package system;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
+
+import dane.Event;
+import system.events.InternalEvent;
+import system.events.InternalEventListener;
 
 public class Controller {
 	
 	private List <DisplayedDateChangeListener> listeners = new ArrayList<>();
+	private Map<Class<? extends InternalEvent>, List<InternalEventListener>> listenersMap = new HashMap<>();
 	
-	public void addListener(DisplayedDateChangeListener l) {
-		listeners.add(l);
+	public void registerListener(Class<? extends InternalEvent> eventType, InternalEventListener listener) {
+		List<InternalEventListener> listenersForEvent = listenersMap.get(eventType); 
+		if(listenersForEvent == null) {
+			listenersForEvent = new ArrayList<>();
+			listenersForEvent.add(listener);
+			listenersMap.put(eventType, listenersForEvent);
+		}
+		else listenersForEvent.add(listener);
 	}
 	
-	public void removeListener(DisplayedDateChangeListener l) {
-		listeners.remove(l);
-	}
-	
-	public void notifyListeners(LocalDate newDate) {
-		for(int i = 0; i < listeners.size(); i++) {
-			listeners.get(i).dateChange(newDate);
+	public void notifyListeners(InternalEvent e) {
+		List<InternalEventListener> listenersForEvent = listenersMap.get(e.getClass()); 
+		if(listenersForEvent != null) {
+			for (int i = 0; i < listenersForEvent.size(); i++){
+				listenersForEvent.get(i).anEventOccurred(e);
+			}
 		}
 	}
 	
