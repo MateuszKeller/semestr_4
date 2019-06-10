@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import dane.Event;
+import system.events.DisplayedDateChanged;
 import system.events.InternalEvent;
 import system.events.InternalEventListener;
 
@@ -64,6 +65,13 @@ public class Controller {
 	}
 	public void showAboutProgramWindow(){
 		showMessage("about Program");
+	}
+
+	public void changeDisplayedDate(int selectedMonth) {
+		LocalDate now = LocalDate.now();
+		LocalDate newDate = LocalDate.of(now.getYear(), selectedMonth+1, 1);
+		notifyListeners(new DisplayedDateChanged(newDate, new ArrayList<Event>()));
+		
 	}
 	
 	
