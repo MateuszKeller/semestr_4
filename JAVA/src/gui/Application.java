@@ -37,6 +37,21 @@ public class Application {
 
 	//TODO przenieœæ wszystkie mnitemy itd jako pola klasy
 	//stworzyæ funkcjê dodaj¹c¹ listenery
+	private JMenuBar menuBar;
+	private JMenu mnMain;
+	private JMenuItem mntmSettings;
+	private JMenuItem mntmClose;
+	private JMenu mnImport;
+	private JMenuItem mntmFromXML;
+	private JMenuItem mntmFromOutlook;
+	private JMenuItem mntmFromDatabase;
+	private JMenu mnExport;
+	private JMenuItem mntmToXML;
+	private JMenuItem mntmToOutlook;
+	private JMenuItem mntmToDatabase;
+	private JMenu mnHelp;
+	private JMenuItem mntmAboutProgram;
+	private JTabbedPane mainPane;
 
 	private CalendarTable calendarTable;
 	private JTable contactsTable;
@@ -77,6 +92,7 @@ public class Application {
 		control.registerListener(DisplayedDateChanged.class, calendarTable);
 
 		addCalendarListeners();	
+		addMenuListeners();
 	}
 
 
@@ -149,35 +165,14 @@ public class Application {
 		});
 	}
 	
-	
-	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	public void addMenuListeners() {
 		
-		JMenuBar menuBar = new JMenuBar();
-		frame.setJMenuBar(menuBar);
-		
-		JMenu mnMain = new JMenu("Main");
-		menuBar.add(mnMain);
-		
-		JMenuItem mntmSettings = new JMenuItem("Settings");
-		mnMain.add(mntmSettings);
 		mntmSettings.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent arg0) {
 				control.showSettingsWindow();			
 			}		
 		});
 		
-		JMenuItem mntmClose = new JMenuItem("Close");
-		mnMain.add(mntmClose);
-		
-		JMenu mnImport = new JMenu("Import");
-		menuBar.add(mnImport);
-		
-		JMenuItem mntmFromXML = new JMenuItem("from XML");
-		mnImport.add(mntmFromXML);
 		mntmFromXML.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -185,8 +180,6 @@ public class Application {
 			}			
 		});
 		
-		JMenuItem mntmFromOutlook = new JMenuItem("from Outlook");
-		mnImport.add(mntmFromOutlook);
 		mntmFromOutlook.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -194,8 +187,6 @@ public class Application {
 			}			
 		});
 		
-		JMenuItem mntmFromDatabase = new JMenuItem("from Database");
-		mnImport.add(mntmFromDatabase);
 		mntmFromDatabase.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -203,11 +194,6 @@ public class Application {
 			}			
 		});
 		
-		JMenu mnExport = new JMenu("Export");
-		menuBar.add(mnExport);
-		
-		JMenuItem mntmToXML = new JMenuItem("to XML");
-		mnExport.add(mntmToXML);
 		mntmToXML.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -215,8 +201,6 @@ public class Application {
 			}			
 		});
 		
-		JMenuItem mntmToOutlook = new JMenuItem("to Outlook");
-		mnExport.add(mntmToOutlook);
 		mntmToOutlook.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -224,8 +208,6 @@ public class Application {
 			}			
 		});
 		
-		JMenuItem mntmToDatabase = new JMenuItem("to Database");
-		mnExport.add(mntmToDatabase);
 		mntmToDatabase.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
@@ -233,43 +215,71 @@ public class Application {
 			}			
 		});
 		
-		JMenu mnHelp = new JMenu("Help");
-		menuBar.add(mnHelp);
-		
-		JMenuItem mntmAboutProgram = new JMenuItem("About Program");
-		mnHelp.add(mntmAboutProgram);
 		mntmAboutProgram.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
 				control.showAboutProgramWindow();			
 			}			
 		});
-
+	}
+	
+	private void initialize() {
+		frame = new JFrame();
+		frame.setBounds(100, 100, 450, 300);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		mnMain = new JMenu("Main");
+		menuBar.add(mnMain);
+		
+		mntmSettings = new JMenuItem("Settings");
+		mnMain.add(mntmSettings);
+		
+		mntmClose = new JMenuItem("Close");
+		mnMain.add(mntmClose);
+		
+		mnImport = new JMenu("Import");
+		menuBar.add(mnImport);
+		
+		mntmFromXML = new JMenuItem("from XML");
+		mnImport.add(mntmFromXML);
+		
+		mntmFromOutlook = new JMenuItem("from Outlook");
+		mnImport.add(mntmFromOutlook);
+		
+		mntmFromDatabase = new JMenuItem("from Database");
+		mnImport.add(mntmFromDatabase);
+		
+		mnExport = new JMenu("Export");
+		menuBar.add(mnExport);
+		
+		mntmToXML = new JMenuItem("to XML");
+		mnExport.add(mntmToXML);
+		
+		mntmToOutlook = new JMenuItem("to Outlook");
+		mnExport.add(mntmToOutlook);
+		
+		mntmToDatabase = new JMenuItem("to Database");
+		mnExport.add(mntmToDatabase);
+		
+		mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
+		
+		mntmAboutProgram = new JMenuItem("About Program");
+		mnHelp.add(mntmAboutProgram);
+	
 		addEventButtonCal = new JButton("add event");
 		addEventButtonEv = new JButton("add event");
 		addContactButton = new JButton("add contact");
 		
-		JTabbedPane mainPane = new JTabbedPane(JTabbedPane.TOP);
+		mainPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.add(mainPane);
 		
 		mainPane.addTab("Calendar", createCalendarOptionsPane());
 		mainPane.addTab("Contacts", createContactsOptionsPane());
 		mainPane.addTab("Events", createEventsOptionsPane());
-		
-		
-		//JPanel optionsView = new ComboBoxMonth();
-		
-		//JComponent newContentPane = new ComboBoxMonth();
-		//newContentPane.setOpaque(true);
-		//optionsView.setCon
-		
-		//ComboBoxMonth box1 = new ComboBoxMonth();
-		//optionsView.add(box1);
-		
-		/*optionsView.setLayout(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.gridx = 1;
-		optionsView.add(box1, constraints);*/
 		
 	}
 
