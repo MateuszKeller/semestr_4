@@ -7,18 +7,18 @@ import dane.*;
 import system.Transmiter;
 
 
-public class Meneger {
+public class Manager {
 
-	static ArrayList<Event> eventy = new ArrayList<Event>();
-	static ArrayList<Contact> kontakty = new ArrayList<Contact>();
-	
-	static Transmiter xPort = new Transmiter();
-	
-	static Duration whenToRemove = Duration.ofDays(10);
+	private ArrayList<Event> eventy = new ArrayList<Event>();
+	private ArrayList<Contact> kontakty = new ArrayList<Contact>();
 
-	static String sound;
+	private Transmiter xPort = new Transmiter();
 
-	public static void main(String[] args) {
+	private Duration whenToRemove = Duration.ofDays(10);
+
+	private String sound;
+
+	public void testMain(String[] args) {
 
 		sound = args[0];
 		LocalDateTime date = LocalDateTime.now();
@@ -47,13 +47,13 @@ public class Meneger {
 		Event e3 = e1; // new Event(e1.getTittle(), e1.getStart(), e1.getEnd());
 		// eventy.remove(e3);
 		System.out.println(eventy);
-		oldEventsGo();
+		removeExpiredEvents();
 
 		System.out.println(eventy);
 		System.out.println("--------------------");
 		System.out.println(kontakty);
 		xPort.bdImportKontakty(kontakty);
-		
+
 		System.out.println("---------IMPORT-----------");
 		System.out.println(kontakty);
 		// System.out.println(kontakty); System.out.println("--------------------");
@@ -63,35 +63,44 @@ public class Meneger {
 		test = test.minusMinutes(t.getMinute());
 
 		// System.out.println("T: " + test);
-		scream();
-		
+		playAlarm();
+
 		//e3.setNotification(new Alarm(t));
 		//e3.playAlarmSound();
-		
+
 		sDate = LocalDateTime.parse("2019-06-01T00:00:00");
 		LocalDateTime eDate = LocalDateTime.parse("2019-06-02T12:00:00");
-		
+
 		Event e4_f = new Event("TEST", sDate, eDate);
 		e4_f.setPlace("TU");
 		e4_f.setNote("COS");
 		e4_f.setPerson(kontakty.get(0));
 		e4_f.setNotification(new Alarm(t, sound));
-		
+
 		String xmlFile = "test.xml";
 		eventy.add(e4_f);
 		xPort.xmlExport(xmlFile, eventy);
-		
+
 		System.out.println("--------------------");
 		eventy.clear();
-		
+
 		eventy = xPort.xmlImport(xmlFile, eventy);
 		System.out.println(eventy);
-		
-		
-
 	}
+
+	public Manager() {}
 	
-	public Meneger(String sound) {}
+	public ArrayList<Event> getEventsInMonth(int year, int month){
+		ArrayList<Event> events = new ArrayList<Event>(); 
+		for(int i = 0; i < eventy.size(); i++) {
+			if(eventy.get(i).getStart().getYear() == year || eventy.get(i).getEnd().getYear() == year) {
+				if(eventy.get(i).getStart().getMonthValue() == month || eventy.get(i).getEnd().getMonthValue() == month ) {
+					events.add(eventy.get(i));
+				}
+		    }
+		}
+		return events; 
+	}
 
 	// EVENTS
 	public void addEvent(String tittle, LocalDateTime start, LocalDateTime end, String note, String place,
@@ -114,7 +123,7 @@ public class Meneger {
 	}
 
 	// CONTACTS
-	public static void addContact(String name, String company, String email, String phone) {
+	public void addContact(String name, String company, String email, String phone) {
 		Contact temp = new Contact(name);
 
 		if (company != "")
@@ -132,7 +141,7 @@ public class Meneger {
 	}
 
 	// FUNCTIONS
-	static public void oldEventsGo() {
+	public void removeExpiredEvents() {
 		Iterator<Event> it = eventy.iterator();
 
 		while (it.hasNext()) {
@@ -148,7 +157,7 @@ public class Meneger {
 
 	}
 
-	public static void scream() {
+	public void playAlarm() {
 		Iterator<Event> it = eventy.iterator();
 
 		while (it.hasNext()) {
@@ -165,5 +174,5 @@ public class Meneger {
 
 		}
 	}
-	
+
 }

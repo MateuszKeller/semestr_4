@@ -3,11 +3,11 @@ package system;
 import java.awt.EventQueue;
 
 import gui.Application;
-import system.Meneger;
+import system.Manager;
 
 public class Main {
 
-	static Meneger manager;
+	static Manager manager;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		

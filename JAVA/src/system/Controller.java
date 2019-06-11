@@ -1,6 +1,7 @@
 package system;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class Controller {
 	
 	private List <DisplayedDateChangeListener> listeners = new ArrayList<>();
 	private Map<Class<? extends InternalEvent>, List<InternalEventListener>> listenersMap = new HashMap<>();
+	private Manager manager = Controller.createManager();
 	
 	public void registerListener(Class<? extends InternalEvent> eventType, InternalEventListener listener) {
 		List<InternalEventListener> listenersForEvent = listenersMap.get(eventType); 
@@ -70,8 +72,19 @@ public class Controller {
 	public void changeDisplayedDate(int selectedMonth, int selectedYear) {
 		LocalDate now = LocalDate.now();
 		LocalDate newDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
-		notifyListeners(new DisplayedDateChanged(newDate, new ArrayList<Event>()));
+		ArrayList<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
 		
+		notifyListeners(new DisplayedDateChanged(newDate, events));
+		
+	}
+	
+	public static Manager createManager() {
+		Manager manager = new Manager();
+		manager.addEvent("example event 1", LocalDateTime.of(2019, 6, 20 , 8, 0), LocalDateTime.of(2019, 6, 21, 9, 0), "ex 1", "Polibuda", null, null);
+		manager.addEvent("example event 2", LocalDateTime.of(2019, 6, 21, 8, 0), LocalDateTime.of(2019, 6, 21, 12, 0), "ex 2", "domek", null, null);
+		manager.addEvent("example event 3", LocalDateTime.of(2019, 6, 21, 11, 0), LocalDateTime.of(2019, 7, 10, 9, 0), "ex 3", "Ciechocinek", null, null);
+		
+		return manager;
 	}
 	
 	

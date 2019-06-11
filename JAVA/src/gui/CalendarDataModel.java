@@ -1,6 +1,7 @@
 package gui;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,15 +47,32 @@ public class CalendarDataModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int row, int col) {
+		String msg; 
+		int currentCell = calculateCellNumber(row, col);
+		msg = String.valueOf(currentCell);
+		if(currentCell != 0) {
+		LocalDateTime now = LocalDateTime.of(dateToDisplay.getYear(), dateToDisplay.getMonthValue(), currentCell, 0, 0, 1);
+		LocalDateTime now1 = LocalDateTime.of(dateToDisplay.getYear(), dateToDisplay.getMonthValue(), currentCell, 23, 59, 59);
+
+		for(int i = 0; i < eventsToDisplay.size(); i++) {
+			if(now1.isAfter(eventsToDisplay.get(i).getStart()) && now.isBefore(eventsToDisplay.get(i).getEnd())) {
+				msg = msg + " " + eventsToDisplay.get(i).getTittle();
+				}
+			}
+		}
+		return msg;
+	}
+	
+	public int calculateCellNumber(int row, int col) {
 		int firstDay = dateToDisplay.minusDays(dateToDisplay.getDayOfMonth()).getDayOfWeek().getValue()-1;
 		int cellNumber = row*7 + col;
 		int daysInMonth = dateToDisplay.lengthOfMonth();
-		String empty = "-";
+		//String empty = "-";
 		int currentCell = cellNumber - firstDay;
 		if(currentCell < 1 || currentCell > daysInMonth)
-			return empty;
+			return 0;
 		else
-		return String.valueOf(currentCell);
+		return currentCell;
 	}
 
 }
