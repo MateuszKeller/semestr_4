@@ -107,23 +107,41 @@ public class Application {
 		calendarTable = new CalendarTable(); 
 		calendarView.setLeftComponent(calendarTable);
 		
-		JPanel calendarOptionsPane = new JPanel(); 
-		JLabel options = new JLabel("calendar options"); 	
+		JPanel calendarOptionsPane = new JPanel(new GridBagLayout()); 
+		GridBagConstraints c = new GridBagConstraints();
+		
+		LocalDate now = LocalDate.now();
 		
 		monthsCombo = new JComboBox<String>(months);
-		yearsCombo = new JComboBox<String>(years);
-		LocalDate now = LocalDate.now();
 		monthsCombo.setSelectedIndex(now.getMonthValue() - 1);
-		yearsCombo.setSelectedIndex(now.getYear() - 2018);
-		//monthsCombo.setPreferredSize(new Dimension(10,10)); ustawiæ wielkoœæ comboboxa!!!
-		//monthsCombo.setPrototypeDisplayValue("XXXXXXXXXXXX");
+		monthsCombo.setPreferredSize(new Dimension(500,20)); //ustawiæ wielkoœæ comboboxa!!!
+		//monthsCombo.setPrototypeDisplayValue("xXXxxxxxxxxx");
 		
-		calendarOptionsPane.setLayout(new BoxLayout(calendarOptionsPane, BoxLayout.Y_AXIS ));
-		calendarOptionsPane.add(options);
-		calendarOptionsPane.add(monthsCombo);
-		calendarOptionsPane.add(yearsCombo);
-		calendarOptionsPane.add(addEventButtonCal);
-		calendarOptionsPane.add(Box.createVerticalGlue());
+		c.gridx = 0; 
+		c.gridy = 0;
+		c.anchor = GridBagConstraints.CENTER; 
+		c.fill = GridBagConstraints.NONE;
+		calendarOptionsPane.add(monthsCombo, c);
+		//JLabel options = new JLabel("calendar options"); 	
+		
+		
+		yearsCombo = new JComboBox<String>(years);
+		yearsCombo.setSelectedIndex(now.getYear() - 2018);
+		monthsCombo.setPreferredSize(new Dimension(100,20)); //ustawiæ wielkoœæ comboboxa!!!
+		monthsCombo.setPrototypeDisplayValue("xXXxxx");
+		c.gridx = 1; 
+		c.gridy = 0;
+		calendarOptionsPane.add(yearsCombo, c);
+		
+		c.gridx = 1; 
+		c.gridy = 1;
+		calendarOptionsPane.add(addEventButtonCal,c);
+		
+		//calendarOptionsPane.add(options);
+		
+		
+		
+		//calendarOptionsPane.add(Box.createVerticalGlue());
 		
 		
 		calendarView.setRightComponent(calendarOptionsPane);
