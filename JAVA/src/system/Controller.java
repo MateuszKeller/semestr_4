@@ -67,9 +67,9 @@ public class Controller {
 		showMessage("about Program");
 	}
 
-	public void changeDisplayedDate(int selectedMonth) {
+	public void changeDisplayedDate(int selectedMonth, int selectedYear) {
 		LocalDate now = LocalDate.now();
-		LocalDate newDate = LocalDate.of(now.getYear(), selectedMonth+1, 1);
+		LocalDate newDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
 		notifyListeners(new DisplayedDateChanged(newDate, new ArrayList<Event>()));
 		
 	}

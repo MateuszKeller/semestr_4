@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -63,7 +64,9 @@ public class Application {
 		{"January", "February", "March", "April", 
 				"May", "June", "July", "August", 
 				"September", "October", "November", "December"};
+	private String [] years = {"2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"};
 	private JComboBox<String> monthsCombo; 
+	private JComboBox<String> yearsCombo;
 
 
 
@@ -108,11 +111,17 @@ public class Application {
 		JLabel options = new JLabel("calendar options"); 	
 		
 		monthsCombo = new JComboBox<String>(months);
+		yearsCombo = new JComboBox<String>(years);
+		LocalDate now = LocalDate.now();
+		monthsCombo.setSelectedIndex(now.getMonthValue() - 1);
+		yearsCombo.setSelectedIndex(now.getYear() - 2018);
 		//monthsCombo.setPreferredSize(new Dimension(10,10)); ustawiæ wielkoœæ comboboxa!!!
+		//monthsCombo.setPrototypeDisplayValue("XXXXXXXXXXXX");
 		
 		calendarOptionsPane.setLayout(new BoxLayout(calendarOptionsPane, BoxLayout.Y_AXIS ));
 		calendarOptionsPane.add(options);
 		calendarOptionsPane.add(monthsCombo);
+		calendarOptionsPane.add(yearsCombo);
 		calendarOptionsPane.add(addEventButtonCal);
 		calendarOptionsPane.add(Box.createVerticalGlue());
 		
@@ -158,8 +167,17 @@ public class Application {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stu
-				control.changeDisplayedDate(monthsCombo.getSelectedIndex());
+				control.changeDisplayedDate(monthsCombo.getSelectedIndex(), yearsCombo.getSelectedIndex());
 				System.out.println("wykonano");
+				
+			}
+		});
+		
+		yearsCombo.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),yearsCombo.getSelectedIndex());
 				
 			}
 		});
