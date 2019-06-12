@@ -10,6 +10,7 @@ import system.DisplayedDateChangeListener;
 import system.events.DisplayedDateChanged;
 import system.events.InternalEvent;
 import system.events.InternalEventListener;
+import system.events.ResizeListener;
 
 public class CalendarTable extends JTable implements InternalEventListener{
 	
@@ -31,11 +32,6 @@ public class CalendarTable extends JTable implements InternalEventListener{
 			DisplayedDateChanged newEvent = (DisplayedDateChanged) e; 
 			model.setDataToDisplay(newEvent.getNewDate(), newEvent.getEvents());
 			this.resizeAndRepaint();
-		}
-			
-		
+		}		
 	}
-
-	
-
 }

@@ -30,6 +30,7 @@ import javax.swing.JTable;
 
 import system.Controller;
 import system.events.DisplayedDateChanged;
+import system.events.ResizeListener;
 
 
 public class Application {
@@ -71,8 +72,6 @@ public class Application {
 	private JComboBox<String> monthsCombo; 
 	private JComboBox<String> yearsCombo;
 
-
-
 	/**
 	 * Launch the application.
 	 */
@@ -110,7 +109,7 @@ public class Application {
 		
 		calendarView.setResizeWeight(0.8);
 		calendarTable = new CalendarTable(); 
-		//calendarTable.setRowHeight(calendarTable.getRowHeight() );
+		calendarTable.setRowHeight(calendarTable.getRowHeight() + ((int)frame.getSize().getHeight() - 180 - calendarTable.getRowHeight())/6 );
 		
 		
 		calendarView.setLeftComponent(calendarTable);
@@ -122,8 +121,6 @@ public class Application {
 		
 		monthsCombo = new JComboBox<String>(months);
 		monthsCombo.setSelectedIndex(now.getMonthValue() - 1);
-		monthsCombo.setPreferredSize(new Dimension(500,20)); //ustawiæ wielkoœæ comboboxa!!!
-		//monthsCombo.setPrototypeDisplayValue("xXXxxxxxxxxx");
 		
 		c.gridx = 0; 
 		c.gridy = 0;
@@ -144,6 +141,13 @@ public class Application {
 		c.gridx = 1; 
 		c.gridy = 1;
 		calendarOptionsPane.add(addEventButtonCal,c);
+		addEventButtonCal.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent arg0) {
+				control.addEvent(EventAddingDialog.showDialog());
+				
+			}			
+		});
 		
 		//calendarOptionsPane.add(options);
 		
@@ -271,7 +275,7 @@ public class Application {
 	
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		menuBar = new JMenuBar();

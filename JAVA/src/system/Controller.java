@@ -87,5 +87,9 @@ public class Controller {
 		return manager;
 	}
 	
+	public void addEvent(Event e) {
+		manager.addEvent(e);
+	}
+	
 	
 }

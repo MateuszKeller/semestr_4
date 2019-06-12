@@ -133,6 +133,13 @@ public class Manager {
 
 		eventy.add(temp);
 	}
+	
+	public void addEvent(Event e) {
+		if(e != null) {
+		eventy.add(e);
+		System.out.println("event dodany");
+		}
+	}
 
 	public void deleteEvent(int numberOfEvent) {
 		eventy.remove(numberOfEvent);
