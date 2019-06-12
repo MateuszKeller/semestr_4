@@ -37,7 +37,7 @@ public class Event implements java.io.Serializable {
 	
 	public String toString()
 	{	
-		String ret = "\nWydarzenie " + tittle + "\n" +
+		String ret = "\n\nWydarzenie " + tittle + "\n" +
 				start.format(dateFormat) + " - " + end.format(dateFormat);
 		
 		if(notification != null)	ret += "\n" + notification.toString();

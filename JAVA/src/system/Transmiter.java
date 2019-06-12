@@ -18,11 +18,12 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import dane.Event;
+import dane.Alarm;
 import dane.Contact;
 
 public class Transmiter {
 
-	static String database = "Organizer.accdb";
+	static String database = "Organizer.accdb";//"Organizer.accdb";
 	static Connection conn;
 	static java.sql.Statement s;
 	static ResultSet rs;
@@ -34,10 +35,10 @@ public class Transmiter {
 				s = conn.createStatement();
 				rs = s.executeQuery("SELECT * FROM Kontakty");
 
-				String ret;
+				String ret; int id = 0;
 				while (rs.next()) {
 					Contact temp = new Contact(rs.getString("name"));
-					ret = rs.getString("id") + ". " + rs.getString("name") + " ";
+					ret = id + ". " + rs.getString("name") + " ";
 					if (rs.getString("email") != null) {
 						temp.setCompany(rs.getString("company"));
 						ret += rs.getString("company") + " ";
@@ -52,20 +53,98 @@ public class Transmiter {
 					}
 					kontakty.add(temp);
 					System.out.println(ret);
+					id++;
 				}
 
 				conn.close();
 			} catch (Exception ee) { System.out.println(ee); }
 		}
 
-		public void bdExportKontakty() 
+		public void bdExportKontakty(ArrayList<Contact> kontakty) 
 		{
+			try {
+				conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
+				s = conn.createStatement();
+				s.executeUpdate("DELETE FROM Kontakty");
+				
+				for(int i = 0; i<kontakty.size(); i++)
+				{
+					String query = "INSERT INTO Kontakty VALUES (";
+					query += "\"" + kontakty.get(i).getName() + "\", ";
+					query += "\"" + kontakty.get(i).getCompany() + "\", ";
+					query += "\"" + kontakty.get(i).getEmail() + "\", ";
+					query += "\"" + kontakty.get(i).getPhone() + "\");";
+					
+					System.out.println(query);
+					s.executeUpdate(query);
+				}
 
+				conn.close();
+			} catch (Exception ee) { System.out.println(ee); }
 		}
 
-		public void bdImportEventy() 
+		public void bdImportEventy(ArrayList<Event> eventy, ArrayList<Contact> kontakty) 
 		{
-			        
+			try {
+				conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
+				s = conn.createStatement();
+				rs = s.executeQuery("SELECT * FROM Wydarzenia");
+
+				String ret; int id = 0;
+				while (rs.next()) {
+					
+					LocalDateTime start = LocalDateTime.parse(rs.getString("start"));
+					LocalDateTime end = LocalDateTime.parse(rs.getString("end"));
+					
+					Event temp = new Event(rs.getString("tittle"),start, end);
+					ret = id + ". " + rs.getString("tittle") + " S-" + start.toString()+ " E-" + end.toString() + " ";
+					if (rs.getString("note") != "") {
+						temp.setNote(rs.getString("note"));
+						ret += rs.getString("note") + " ";
+					}
+					if (rs.getString("place") != "") {
+						temp.setPlace(rs.getString("place"));
+						ret += rs.getString("place") + " ";
+					}
+					if(rs.getString("sound") != "" && rs.getString("before") != ""){
+						LocalTime t = LocalTime.parse(rs.getString("before"));
+						temp.setNotification(new Alarm(t, rs.getString("sound")));
+					}
+					if(rs.getInt("contact") != -1){
+						temp.setPerson(kontakty.get(rs.getInt("contact")));
+						ret += rs.getString("contact")+ " ";
+					}
+						
+					eventy.add(temp);
+					System.out.println(ret);
+					id++;
+				}
+
+				conn.close();
+			} catch (Exception ee) { System.out.println(ee); }   
+		}
+		
+		public void bdExportEventy(ArrayList<Contact> kontakty) 
+		{
+			try {
+				conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
+				s = conn.createStatement();
+				s.executeUpdate("DELETE FROM Wydarzenia");
+				
+				for(int i = 0; i<kontakty.size(); i++)
+				{
+					String query = "INSERT INTO Kontakty VALUES (\"" + i + "\", ";
+					query += "\" " + kontakty.get(i).getName() + " \", ";
+					query += "\" " + kontakty.get(i).getCompany() + " \", ";
+					query += "\" " + kontakty.get(i).getEmail() + " \", ";
+					query += "\" " + kontakty.get(i).getPhone() + " \");";
+					
+					System.out.println(query);
+					s.executeUpdate(query);
+				}
+
+				conn.close();
+			} catch (Exception ee) { System.out.println(ee); }
 		}
 		
 		//XML
@@ -96,7 +175,7 @@ public class Transmiter {
 			} catch (FileNotFoundException e1) { e1.printStackTrace(); }
 		}
 		
-		public ArrayList<Event> xmlImport(String file, ArrayList<Event> eventy) // nie wiem czemu nie dzia³a przez referencje
+		public ArrayList<Event> xmlImport(String file, ArrayList<Event> eventy) // nie wiem czemu nie dzia³a bezpoœrednio do zmiennej w Managerze
 		{
 			try {
 				XMLDecoder	d = new XMLDecoder( new BufferedInputStream( new FileInputStream(file)));

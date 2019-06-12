@@ -9,12 +9,12 @@ import system.Transmiter;
 
 public class Manager {
 
-	private ArrayList<Event> eventy = new ArrayList<Event>();
-	private ArrayList<Contact> kontakty = new ArrayList<Contact>();
+	private ArrayList<Event> eventy;// = new ArrayList<Event>();
+	private ArrayList<Contact> kontakty;// = new ArrayList<Contact>();
 
-	private Transmiter xPort = new Transmiter();
+	private Transmiter xPort;// = new Transmiter();
 
-	private Duration whenToRemove = Duration.ofDays(10);
+	private Duration whenToRemove;// = Duration.ofDays(10);
 
 	private String sound;
 
@@ -86,9 +86,25 @@ public class Manager {
 
 		eventy = xPort.xmlImport(xmlFile, eventy);
 		System.out.println(eventy);
+		
+		System.out.println("--------------------");
+		//addContact("N_TEST", "C_TEST", "E_TEST", "P_TEST");
+		System.out.println(kontakty);
+		xPort.bdExportKontakty(kontakty);
+		
+		System.out.println("--------------------");
+		xPort.bdImportEventy(eventy, kontakty);
+		System.out.println(eventy);
 	}
 
-	public Manager() {}
+	public Manager() {
+		eventy = new ArrayList<Event>();
+		kontakty = new ArrayList<Contact>();
+
+		xPort = new Transmiter();
+
+		whenToRemove = Duration.ofDays(10);
+	}
 	
 	public ArrayList<Event> getEventsInMonth(int year, int month){
 		ArrayList<Event> events = new ArrayList<Event>(); 
