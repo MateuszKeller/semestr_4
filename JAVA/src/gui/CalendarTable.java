@@ -19,9 +19,10 @@ public class CalendarTable extends JTable implements InternalEventListener{
 		super();
 		model = new CalendarDataModel();
 		super.setModel(model);
+		setDefaultRenderer(CalendarDay.class, new CalendarDayRenderer());
 		setColumnSelectionAllowed(false);
 		setRowSelectionAllowed(false);
-		setSelectionBackground(Color.CYAN);
+//		setSelectionBackground(Color.CYAN);
 	}
 
 	@Override

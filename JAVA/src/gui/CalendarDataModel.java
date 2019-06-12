@@ -3,7 +3,9 @@ package gui;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -13,10 +15,22 @@ public class CalendarDataModel extends AbstractTableModel {
 	
 	private LocalDate dateToDisplay = LocalDate.now(); 
 	private List<Event> eventsToDisplay = new ArrayList<Event>();
+	private Map<Integer, List<Event>> eventsAcrossDays = new HashMap<>();
 
 	public void setDataToDisplay(LocalDate dateToDisplay, List<Event> events) {
 		this.dateToDisplay = dateToDisplay;
 		this.eventsToDisplay = events;
+		
+		eventsAcrossDays = new HashMap<>();
+        for (int day = 1; day <= dateToDisplay.lengthOfMonth(); ++day) {
+            LocalDateTime dayBegin = LocalDateTime.of(dateToDisplay.getYear(), dateToDisplay.getMonth(), day, 0,0,1);
+            LocalDateTime dayEnd = LocalDateTime.of(dateToDisplay.getYear(), dateToDisplay.getMonth(), day, 23,59,59);
+            for (Event event : events) {
+                if(event.getStart().isBefore(dayEnd) && event.getEnd().isAfter(dayBegin)) {
+                    eventsAcrossDays.computeIfAbsent(day, none -> new ArrayList<>()).add(event);
+                }
+            }
+        }
 	}
 
 	private static final long serialVersionUID = -7100146141891377597L;
@@ -27,7 +41,7 @@ public class CalendarDataModel extends AbstractTableModel {
 	
 	@Override
 	public Class<?> getColumnClass(int arg0) {
-		return String.class;
+		return CalendarDay.class;
 	}
 
 	@Override
@@ -45,34 +59,21 @@ public class CalendarDataModel extends AbstractTableModel {
 		return 6;
 	}
 
+	private int getDayAt(int row, int col) {
+        int firstDay = dateToDisplay.minusDays(dateToDisplay.getDayOfMonth()).getDayOfWeek().getValue()-1;
+        int cellNumber = row*7 + col;
+        return cellNumber - firstDay;
+    }
+	
 	@Override
 	public Object getValueAt(int row, int col) {
-		String msg; 
-		int currentCell = calculateCellNumber(row, col);
-		msg = String.valueOf(currentCell);
-		if(currentCell != 0) {
-		LocalDateTime now = LocalDateTime.of(dateToDisplay.getYear(), dateToDisplay.getMonthValue(), currentCell, 0, 0, 1);
-		LocalDateTime now1 = LocalDateTime.of(dateToDisplay.getYear(), dateToDisplay.getMonthValue(), currentCell, 23, 59, 59);
+		int dayOfMonth = getDayAt(row, col);
 
-		for(int i = 0; i < eventsToDisplay.size(); i++) {
-			if(now1.isAfter(eventsToDisplay.get(i).getStart()) && now.isBefore(eventsToDisplay.get(i).getEnd())) {
-				msg = msg + " " + eventsToDisplay.get(i).getTittle();
-				}
-			}
-		}
-		return msg;
-	}
-	
-	public int calculateCellNumber(int row, int col) {
-		int firstDay = dateToDisplay.minusDays(dateToDisplay.getDayOfMonth()).getDayOfWeek().getValue()-1;
-		int cellNumber = row*7 + col;
-		int daysInMonth = dateToDisplay.lengthOfMonth();
-		//String empty = "-";
-		int currentCell = cellNumber - firstDay;
-		if(currentCell < 1 || currentCell > daysInMonth)
-			return 0;
-		else
-		return currentCell;
-	}
+        String dayLabel = dayOfMonth < 1 || dayOfMonth > dateToDisplay.lengthOfMonth()
+                ? "-"
+                : String.valueOf(dayOfMonth);
+        List<Event> eventsAtDay = eventsAcrossDays.get(dayOfMonth);
 
+        return new CalendarDay(dayLabel, eventsAtDay);
+	}
 }

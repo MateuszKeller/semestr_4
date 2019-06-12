@@ -3,8 +3,11 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
@@ -104,7 +107,12 @@ public class Application {
 	 */
 	public JSplitPane createCalendarOptionsPane () {
 		JSplitPane calendarView = new JSplitPane();
+		
+		calendarView.setResizeWeight(0.8);
 		calendarTable = new CalendarTable(); 
+		//calendarTable.setRowHeight(calendarTable.getRowHeight() );
+		
+		
 		calendarView.setLeftComponent(calendarTable);
 		
 		JPanel calendarOptionsPane = new JPanel(new GridBagLayout()); 
@@ -150,6 +158,7 @@ public class Application {
 	
 	public JSplitPane createContactsOptionsPane () {
 		JSplitPane contactsView = new JSplitPane();
+		contactsView.setResizeWeight(0.8);
 		JTable contactTable = new JTable(); 
 		contactsView.setLeftComponent(contactTable);
 		
@@ -165,6 +174,7 @@ public class Application {
 	
 	public JSplitPane createEventsOptionsPane () {
 		JSplitPane eventsView = new JSplitPane();
+		eventsView.setResizeWeight(0.8);
 		JTable eventsTable = new JTable(); 
 		eventsView.setLeftComponent(eventsTable);
 		
@@ -184,9 +194,9 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stu
+				// TODO Auto-generated method 
 				control.changeDisplayedDate(monthsCombo.getSelectedIndex(), yearsCombo.getSelectedIndex());
-				System.out.println("wykonano");
+				//System.out.println("wykonano");
 				
 			}
 		});
