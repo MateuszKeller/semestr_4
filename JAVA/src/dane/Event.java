@@ -1,5 +1,6 @@
 package dane;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 public class Event implements java.io.Serializable {
@@ -14,7 +15,7 @@ public class Event implements java.io.Serializable {
 	Contact person = null;
 
 	public Event() {}
-	public Event(String tittle, LocalDateTime start, LocalDateTime end)//, String note, String place) 
+	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place) 
 	{
 		this.tittle = tittle;
 		this.start = start;
@@ -23,17 +24,24 @@ public class Event implements java.io.Serializable {
 		//this.place = place;
 	}
 	
+	public Event(String tittle, LocalDateTime start, LocalDateTime end) 
+	{
+		this.tittle = tittle;
+		this.start = start;
+		this.end = end;
+	}
 	
-//	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place, LocalTime notification)
-//	{
-//		this.tittle = tittle;
-//		this.start = start;
-//		this.end = end;
-//		this.note = note;
-//		this.place = place;
-//		this.notification = new Alarm(notification);
-//		
-//	}
+	
+	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place, LocalTime notification)
+	{
+		this.tittle = tittle;
+		this.start = start;
+		this.end = end;
+		this.note = note;
+		this.place = place;
+		this.notification = new Alarm(notification);
+		
+	}
 	
 	public String toString()
 	{	

@@ -41,8 +41,8 @@ public class Controller {
 		}
 	}
 	
-	public void showMessage(String s){
-		JOptionPane.showMessageDialog(null, "coming soon", s, JOptionPane.INFORMATION_MESSAGE);
+	public void showMessage(String title, String content){
+		JOptionPane.showMessageDialog(null, content, title, JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void showSettingsWindow(){
@@ -55,19 +55,19 @@ public class Controller {
 		JOptionPane.showMessageDialog(null, "coming soon", "from XML", JOptionPane.INFORMATION_MESSAGE);
 	}
 	public void showFromDatabaseWindow(){
-		showMessage("from Database");
+		showMessage("from Database", "coming soon");
 	}
 	public void showToXMLWindow(){
-		showMessage("to XML");
+		showMessage("to XML", "coming soon");
 	}
 	public void showToOutlookWindow(){
-		showMessage("to Outlook");
+		showMessage("to Outlook", "coming soon");
 	}
 	public void showToDatabaseWindow(){
-		showMessage("to Database");
+		showMessage("to Database", "coming soon");
 	}
 	public void showAboutProgramWindow(){
-		showMessage("about Program");
+		showMessage("About Program","Projekt zaliczeniowy: \nPrzedmiot: programowanie komponentowe\nAutorzy:\nMarta Bielecka\nMateusz Keller");
 	}
 
 	public void changeDisplayedDate(int selectedMonth, int selectedYear) {

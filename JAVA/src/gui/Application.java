@@ -164,18 +164,10 @@ public class Application {
 		addEventButtonCal.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
-				control.addEvent(EventAddingDialog.showDialog());
-				
+				control.addEvent(EventAddingDialog.showDialog());		
 			}			
 		});
-		
-		//calendarOptionsPane.add(options);
-		
-		
-		
-		//calendarOptionsPane.add(Box.createVerticalGlue());
-		
-		
+	
 		calendarView.setRightComponent(calendarOptionsPane);
 		return calendarView;	
 	}
@@ -216,6 +208,13 @@ public class Application {
 		
 		eventsOptionsPane.add(options);
 		eventsOptionsPane.add(addEventButtonEv);
+		addEventButtonEv.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.addEvent(EventAddingDialog.showDialog());	
+			}
+		});
 		
 		eventsView.setRightComponent(eventsOptionsPane);
 		return eventsView;

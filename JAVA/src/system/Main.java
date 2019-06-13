@@ -2,6 +2,7 @@ package system;
 
 import java.awt.EventQueue;
 
+import dane.AppParameters;
 import gui.Application;
 import system.Manager;
 
@@ -10,9 +11,9 @@ public class Main {
 	static Manager manager;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
+		AppParameters.getInstance(args[0]);
 		manager = new Manager();
-		manager.testMain(args);
+//		manager.testMain(args);
 		
 		view();
 		

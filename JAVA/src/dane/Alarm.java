@@ -14,10 +14,11 @@ public class Alarm { //implements java.io.Serializable
 	ContinuousAudioDataStream loop;
 
 	public Alarm() {}
-	public Alarm(LocalTime before, String sound) 
+	
+	public Alarm(LocalTime before) 
 	{
 		this.before = before;
-		this.sound = sound;
+		this.sound = AppParameters.sound;
 		try 
 		{
 			audio = new AudioStream(new FileInputStream(sound) );

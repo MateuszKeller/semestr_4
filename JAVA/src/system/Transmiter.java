@@ -108,7 +108,7 @@ public class Transmiter {
 					}
 					if(rs.getString("sound") != "" && rs.getString("before") != ""){
 						LocalTime t = LocalTime.parse(rs.getString("before"));
-						temp.setNotification(new Alarm(t, rs.getString("sound")));
+						temp.setNotification(new Alarm(t));
 					}
 					if(rs.getInt("contact") != -1){
 						temp.setPerson(kontakty.get(rs.getInt("contact")));

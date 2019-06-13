@@ -4,9 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import com.sun.javafx.collections.SetAdapterChange;
 
 import dane.Event;
 
@@ -18,6 +21,9 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 
 import javax.swing.JComboBox;
@@ -41,13 +47,15 @@ public class EventAddingDialog extends JDialog {
 	private JButton cancelButton;
 	private JComboBox<String> StartMonthCombo;
 	private JComboBox<String> EndMonthCombo;
-	JRadioButton AlarmRadio;
+	private JCheckBox AlarmRadio;
 	private String [] months = 
 		{"January", "February", "March", "April", 
 				"May", "June", "July", "August", 
 				"September", "October", "November", "December"};
+//	private String[]
 	
 	private boolean okClicked = false;
+	private int setAlarm = 0;
 
 	/**
 	 * Launch the application.
@@ -79,11 +87,14 @@ public class EventAddingDialog extends JDialog {
 				int endMinute = Integer.parseInt(dialog.EndMinuteTextfield.getText());
 				
 				LocalDateTime endTime = LocalDateTime.of(endYear,endMonth, endDay, endHour, endMinute);
-				
-				Event event = new Event(title, startTime, endTime);
-	
-				dialog.dispose();
-				return event;
+//				if(dialog.setAlarm == 0) {
+//					Event event = new Event(title, startTime, endTime, note, place);
+//					dialog.dispose();
+//					return event;
+//				}else {
+//				
+//				dialog.dispose();
+//				return null;
 			}else {
 				return null;
 			}
@@ -381,11 +392,20 @@ public class EventAddingDialog extends JDialog {
 			EndMinuteTextfield.setColumns(10);
 		}
 		{
-			JRadioButton AlarmRadio = new JRadioButton("Alarm");
+			AlarmRadio = new JCheckBox("Alarm");
 			GridBagConstraints gbc_AlarmRadio = new GridBagConstraints();
 			gbc_AlarmRadio.insets = new Insets(0, 0, 0, 5);
 			gbc_AlarmRadio.gridx = 0;
 			gbc_AlarmRadio.gridy = 15;
+			AlarmRadio.addItemListener(new ItemListener() {
+				
+				@Override
+				public void itemStateChanged(ItemEvent e) {
+					setAlarm = e.getStateChange();
+//					if (setAlarm == 1) {System.out.println("true");}else {System.out.println("false");}	
+				}
+			});
+			AlarmRadio.setMnemonic(KeyEvent.VK_C);
 			contentPanel.add(AlarmRadio, gbc_AlarmRadio);
 		}
 		{

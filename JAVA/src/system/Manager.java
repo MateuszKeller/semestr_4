@@ -43,7 +43,7 @@ public class Manager {
 
 		Event e2 = new Event("2", sDate, date);
 		eventy.add(e2);
-		e1.setNotification(new Alarm(t, sound));
+		e1.setNotification(new Alarm(t));
 		Event e3 = e1; // new Event(e1.getTittle(), e1.getStart(), e1.getEnd());
 		// eventy.remove(e3);
 		System.out.println(eventy);
@@ -75,7 +75,7 @@ public class Manager {
 		e4_f.setPlace("TU");
 		e4_f.setNote("COS");
 		e4_f.setPerson(kontakty.get(0));
-		e4_f.setNotification(new Alarm(t, sound));
+		e4_f.setNotification(new Alarm(t));
 
 		String xmlFile = "test.xml";
 		eventy.add(e4_f);

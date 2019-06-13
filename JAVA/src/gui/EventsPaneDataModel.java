@@ -54,12 +54,12 @@ class EventsPaneDataModel extends AbstractTableModel {
         private final Event event;
 
         public DeletingButton(Event e) {
-            super("Usuñ!");
+            super("Delete");
             this.event = e;
             this.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("Usuwam zdarzenie: " + event.getTittle());
+                    System.out.println("Deleting event: " + event.getTittle());
                 }
             });
         }
