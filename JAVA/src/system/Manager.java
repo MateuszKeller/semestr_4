@@ -158,6 +158,10 @@ public class Manager {
 
 		kontakty.add(temp);
 	}
+	
+	public void addContact(Contact c) {
+		kontakty.add(c);
+	}
 
 	public void deleteContact(int numberOfContact) {
 		kontakty.remove(numberOfContact);

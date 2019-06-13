@@ -8,13 +8,21 @@ public class Contact {
 	String phone;
 	
 	public Contact() { }
+
 	public Contact(String imieNazwisko) {
 		this.name = imieNazwisko; 
 		this.company = "";
 		this.email = "";
 		this.phone = "";
 		}
-	
+
+	public Contact(String name, String company, String email, String phone) {
+		this.name = name;
+		this.company = company;
+		this.email = email;
+		this.phone = phone;
+	}
+
 	public String getName() { return name; }
 	public void setName(String imieNazwisko) { this.name = imieNazwisko; }
 	

@@ -1,5 +1,5 @@
 package system;
-
+//TODO zrobiæ nowy internalEvent - dodanie eventu przez dialog, notify kalendarz i listê zdarzeñ
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import dane.Contact;
 import dane.Event;
 import system.events.DisplayedDateChanged;
 import system.events.InternalEvent;
@@ -89,6 +90,10 @@ public class Controller {
 	
 	public void addEvent(Event e) {
 		manager.addEvent(e);
+	}
+	
+	public void addContact(Contact c) {
+		manager.addContact(c);
 	}
 	
 	

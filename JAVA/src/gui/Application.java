@@ -22,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -88,6 +89,25 @@ public class Application {
 		});
 	}
 
+	static class SafeActionListener implements ActionListener {
+		
+		private final ActionListener wrapped; 
+		
+		public SafeActionListener(ActionListener wrapped) {
+			this.wrapped = wrapped;
+		}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			try {
+				wrapped.actionPerformed(e);
+			}catch(Exception exc) {
+				String message = "Error ocurred: " + exc.getMessage();
+				JOptionPane.showMessageDialog(null, message, "Error!", JOptionPane.ERROR_MESSAGE);;
+				}
+			
+		}
+	}
+	
 	/**
 	 * Create the application.
 	 */
@@ -171,6 +191,15 @@ public class Application {
 		
 		contactsOptionsPane.add(options);
 		contactsOptionsPane.add(addContactButton);
+		
+		addContactButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.addContact(ContactAddingDialog.showDialog());
+				
+			}
+		});
 		
 		contactsView.setRightComponent(contactsOptionsPane);
 		return contactsView;
