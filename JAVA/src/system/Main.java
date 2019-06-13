@@ -13,7 +13,14 @@ public class Main {
 		// TODO Auto-generated method stub
 		AppParameters.getInstance(args[0]);
 		manager = new Manager();
-//		manager.testMain(args);
+		//manager.testMain(args);
+		
+		manager.importFromDatabase("Kontakty");
+		manager.importFromDatabase("Wydarzenia");
+		manager.exportFromXML("backup.xml");
+		
+//		System.out.println(manager.getKontakty());
+		System.out.println(manager.getEventy());
 		
 		view();
 		

@@ -16,52 +16,62 @@ public class Manager {
 
 	private Duration whenToRemove;// = Duration.ofDays(10);
 
-	private String sound;
+	public ArrayList<Event> getEventy() { return eventy; }
+	public ArrayList<Contact> getKontakty() { return kontakty; }
+	public Transmiter getTransmiter() { return xPort; }
+	public Duration getWhenToRemove() { return whenToRemove; }
+	public void setWhenToRemove(Duration whenToRemove) { this.whenToRemove = whenToRemove; }
 
 	public void testMain(String[] args) {
 
-		sound = args[0];
+System.out.println("--------------------DATA--------------------");
+		
 		LocalDateTime date = LocalDateTime.now();
-		System.out.println(date);
-		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEEE dd MMMM HH:mm");
-
-		String fDate = date.format(dateFormat);
-		System.out.println(fDate);
-
-		// LocalDateTime sDate = LocalDateTime.of(2019, 5, 8, 1, 57);
-		// 2007-12-03T10:15:30
 		LocalDateTime sDate = LocalDateTime.parse("2019-05-31T01:56:00");
-		System.out.println(sDate.toString());
-
-		fDate = sDate.format(dateFormat);
-		System.out.println(fDate);
-		System.out.println("--------------------");
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEEE dd MMMM HH:mm");
+		
+		// ------------------------------
+//		String fDate = date.format(dateFormat);
+//			System.out.println("date: " + date);
+//			System.out.println("fDate: " + fDate);
+//			System.out.println("sDate: " + sDate.toString());
+//
+//			fDate = sDate.format(dateFormat);
+//			System.out.println("fDate z sDate: " + fDate);
+		// ------------------------------	
+		System.out.println("--------------------+EVENTY+--------------------");
 
 		LocalTime t = LocalTime.parse("00:30");
 		Event e1 = new Event("1", sDate, date);
-		eventy.add(e1);
-
-		Event e2 = new Event("2", sDate, date);
-		eventy.add(e2);
 		e1.setNotification(new Alarm(t));
-		Event e3 = e1; // new Event(e1.getTittle(), e1.getStart(), e1.getEnd());
-		// eventy.remove(e3);
-		System.out.println(eventy);
-		removeExpiredEvents();
-
-		System.out.println(eventy);
-		System.out.println("--------------------");
-		System.out.println(kontakty);
+		Event e2 = new Event("2", sDate, date);
+		
+		eventy.add(e1);
+		eventy.add(e2);
+			//Event e3 = e1;
+			//eventy.remove(e3);	
+		// ------------------------------
+//			System.out.println("EVENTY:" + eventy);
+//			
+//			System.out.println("--------------------");
+//			removeExpiredEvents();
+//			System.out.println("--------------------");
+//			System.out.println("EVENTY PO R_EXP_EV:" + eventy);
+			// ------------------------------
+		System.out.println("--------------------+KONTAKTY+--------------------");
+		// ------------------------------
+//			System.out.println(kontakty);
+//			System.out.println("IMPORT:");
+		// ------------------------------
 		xPort.bdImportKontakty(kontakty);
-
-		System.out.println("---------IMPORT-----------");
-		System.out.println(kontakty);
+			System.out.println(kontakty);
 		// System.out.println(kontakty); System.out.println("--------------------");
 
-		LocalDateTime test = LocalDateTime.now();
-		test = test.minusHours(0);
-		test = test.minusMinutes(t.getMinute());
-
+		System.out.println("--------------------+CZAS+--------------------");
+//		LocalDateTime test = LocalDateTime.now();
+//		test = test.minusHours(0);
+//		test = test.minusMinutes(t.getMinute());
+		
 		// System.out.println("T: " + test);
 		playAlarm();
 
@@ -70,30 +80,36 @@ public class Manager {
 
 		sDate = LocalDateTime.parse("2019-06-01T00:00:00");
 		LocalDateTime eDate = LocalDateTime.parse("2019-06-02T12:00:00");
-
-		Event e4_f = new Event("TEST", sDate, eDate);
-		e4_f.setPlace("TU");
-		e4_f.setNote("COS");
+		Event e4_f = new Event("TEST e4_f", sDate, eDate);
+		e4_f.setPlace("MSC");
+		e4_f.setNote("NOTKA");
 		e4_f.setPerson(kontakty.get(0));
 		e4_f.setNotification(new Alarm(t));
-
-		String xmlFile = "test.xml";
 		eventy.add(e4_f);
+		
+		System.out.println("--------------------+XML+--------------------");
+		
+		String xmlFile = "test.xml";
 		xPort.xmlExport(xmlFile, eventy);
-
-		System.out.println("--------------------");
-		eventy.clear();
-
-		eventy = xPort.xmlImport(xmlFile, eventy);
-		System.out.println(eventy);
+//		eventy.clear();
+//		eventy = xPort.xmlImport(xmlFile, eventy);
 		
-		System.out.println("--------------------");
-		//addContact("N_TEST", "C_TEST", "E_TEST", "P_TEST");
-		System.out.println(kontakty);
-		xPort.bdExportKontakty(kontakty);
+//			System.out.println("EVENTY PO xmlImport: " + eventy);
 		
-		System.out.println("--------------------");
+		System.out.println("--------------------+BD+--------------------");
+
+//			System.out.println(kontakty);
+		//xPort.bdExportKontakty(kontakty);
+		
 		xPort.bdImportEventy(eventy, kontakty);
+//			System.out.println(eventy);
+		
+		//xPort.bdExportEventy(eventy, kontakty);
+		
+//		eventy.clear();
+//		System.out.println(eventy);
+//		
+//		xPort.bdImportEventy(eventy, kontakty);
 		System.out.println(eventy);
 	}
 
@@ -200,6 +216,28 @@ public class Manager {
 			}
 
 		}
+	}
+	
+	public void importFromDatabase(String table) {
+		if(table.equals("Kontakty"))
+			xPort.bdImportKontakty(kontakty);
+		if(table.equals("Wydarzenia"))
+			xPort.bdImportEventy(eventy, kontakty);
+	}
+	
+	public void exportFromDatabase(String table) {
+		if(table.equals("Kontakty"))
+			xPort.bdExportKontakty(kontakty);
+		if(table.equals("Wydarzenia"))
+			xPort.bdExportEventy(eventy, kontakty);
+	}
+	
+	public void importFromXML(String file) {
+		eventy = xPort.xmlImport(file, eventy);
+	}
+
+	public void exportFromXML(String file) {
+		xPort.xmlExport(file, eventy);
 	}
 
 }

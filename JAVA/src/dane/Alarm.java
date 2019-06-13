@@ -31,6 +31,8 @@ public class Alarm { //implements java.io.Serializable
 	
 	public LocalTime getBefore() { return before; }
 	public void setBefore(LocalTime before) { this.before = before; }
+	public String getSound() { return sound; }
+	public void setSound(String sound) { this.sound = sound; }
 
 	public String toString()
 	{
