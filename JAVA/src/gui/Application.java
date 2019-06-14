@@ -1,10 +1,11 @@
 package gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -12,6 +13,8 @@ import java.awt.event.ComponentEvent;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -21,6 +24,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -67,6 +71,11 @@ public class Application {
 	private JButton addEventButtonCal; 
 	private JButton addContactButton; 
 	private JButton addEventButtonEv;
+	private JRadioButton allEventsRadio;
+	private JRadioButton dayEventsRadio; 
+	private JRadioButton weekEventsRadio;
+	private JRadioButton monthEventsRadio;
+	private JRadioButton yearEventsRadio;
 	private String [] months = 
 		{"January", "February", "March", "April", 
 				"May", "June", "July", "August", 
@@ -227,10 +236,7 @@ public class Application {
 	
 	public JSplitPane createEventsOptionsPane () {
 		JSplitPane eventsView = new JSplitPane();
-		eventsView.setResizeWeight(0.8);
-//		JTable eventsTable = new JTable(); 
-//		eventsView.setLeftComponent(eventsTable);
-		
+		eventsView.setResizeWeight(0.8);		
 		eventsPane = new EventsPane(new EventsPane.EventRemover() {
 			@Override
 			public void removeEvent(Event e) {
@@ -238,12 +244,44 @@ public class Application {
 			}
 		});
 		eventsView.setLeftComponent(new JScrollPane(eventsPane));
-		
-		JPanel eventsOptionsPane = new JPanel(); 
-		JLabel options = new JLabel("contacts options"); 	
-		
+		JPanel eventsOptionsPane = new JPanel();
+		eventsOptionsPane.setLayout(new BoxLayout(eventsOptionsPane, BoxLayout.PAGE_AXIS)); 
+		JLabel options = new JLabel("contacts options"); 
 		eventsOptionsPane.add(options);
+		
+		
+		JLabel select = new JLabel("show events:");
+		eventsOptionsPane.add(select);
+		
+		allEventsRadio = new JRadioButton("all events");
+		eventsOptionsPane.add(allEventsRadio);//, gbc_ae);
+		
+		dayEventsRadio = new JRadioButton("today");
+		eventsOptionsPane.add(dayEventsRadio);
+		
+		weekEventsRadio = new JRadioButton("this week");
+		eventsOptionsPane.add(weekEventsRadio);
+		
+		monthEventsRadio = new JRadioButton("this month");
+		eventsOptionsPane.add(monthEventsRadio);
+		
+		yearEventsRadio = new JRadioButton("this year");
+		GridBagConstraints gbc_ye = new GridBagConstraints();
+		gbc_ye.insets = new Insets(0, 0, 5, 5);
+		gbc_ye.anchor = GridBagConstraints.WEST;
+		gbc_ye.gridx = 1;
+		gbc_ye.gridy = 7;
+		eventsOptionsPane.add(yearEventsRadio);
+		
+		ButtonGroup group = new ButtonGroup();
+		group.add(allEventsRadio);
+		group.add(dayEventsRadio);
+		group.add(weekEventsRadio);
+		group.add(monthEventsRadio);
+		group.add(yearEventsRadio);
+		
 		eventsOptionsPane.add(addEventButtonEv);
+		
 		addEventButtonEv.addActionListener(new ActionListener() {
 			
 			@Override
