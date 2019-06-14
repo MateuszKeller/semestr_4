@@ -18,9 +18,24 @@ import system.events.InternalEventListener;
 
 public class Controller {
 	
-	private List <DisplayedDateChangeListener> listeners = new ArrayList<>();
+//	private List <DisplayedDateChangeListener> listeners = new ArrayList<>();
+	private LocalDate displayedDate;
 	private Map<Class<? extends InternalEvent>, List<InternalEventListener>> listenersMap = new HashMap<>();
 	private Manager manager = Controller.createManager();
+	
+	public Controller() {
+		LocalDate now = LocalDate.now();
+		this.displayedDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
+	}
+			
+	public void initialize() {
+		refreshEventData();
+	}
+			
+	private void refreshEventData() {
+		notifyListeners(new DisplayedDateChanged(
+				displayedDate, manager.getEventsInMonth(displayedDate)));
+	}
 	
 	public void registerListener(Class<? extends InternalEvent> eventType, InternalEventListener listener) {
 		List<InternalEventListener> listenersForEvent = listenersMap.get(eventType); 
@@ -32,7 +47,8 @@ public class Controller {
 		else listenersForEvent.add(listener);
 	}
 	
-	public void notifyListeners(InternalEvent e) {
+//	public void notifyListeners(InternalEvent e) {
+	private void notifyListeners(InternalEvent e) {
 		List<InternalEventListener> listenersForEvent = listenersMap.get(e.getClass()); 
 		if(listenersForEvent != null) {
 			for (int i = 0; i < listenersForEvent.size(); i++){
@@ -71,12 +87,16 @@ public class Controller {
 	}
 
 	public void changeDisplayedDate(int selectedMonth, int selectedYear) {
-		LocalDate now = LocalDate.now();
-		LocalDate newDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
-		ArrayList<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
-		
-		notifyListeners(new DisplayedDateChanged(newDate, events));
-		
+//		LocalDate now = LocalDate.now();
+//		LocalDate newDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
+//		ArrayList<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
+//		
+//		notifyListeners(new DisplayedDateChanged(newDate, events));
+		displayedDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
+			
+		List<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
+		notifyListeners(new DisplayedDateChanged(displayedDate, events));
+		 		
 	}
 	
 	public static Manager createManager() {
@@ -90,11 +110,16 @@ public class Controller {
 	
 	public void addEvent(Event e) {
 		manager.addEvent(e);
+		refreshEventData();
 	}
 	
 	public void addContact(Contact c) {
 		manager.addContact(c);
 	}
 	
+	public void removeEvent(Event e) {
+		manager.deleteEvent(e);
+		refreshEventData();
+	}
 	
 }

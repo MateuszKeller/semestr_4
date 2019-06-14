@@ -1,11 +1,13 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.table.AbstractTableModel;
 
 import dane.Contact;
@@ -13,15 +15,19 @@ import dane.Contact;
 public class ContactsPaneDataModel extends AbstractTableModel {
 	
 	private List<Contact> contacts = new ArrayList<Contact>();
-	private static String[] columns = new String[] {"Name", "Company", "Phone number", "E-mail", "Delete"};
+	private static String[] columns = new String[] {"Name", "Company", "Phone number", "E-mail", ""};
 	
-	public void refreshContacts(List<Contact> cont) {
+	public void setContacts(List<Contact> cont) {
 		contacts = cont;
+	}
+	
+	public Contact removeContactAtRow (int row) {
+		return contacts.remove(row);
 	}
 	
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex == 4;
+		return false;
 	}
 	
 	@Override
@@ -44,7 +50,7 @@ public class ContactsPaneDataModel extends AbstractTableModel {
 		if (col<4) {
 			return String.class;
 		} else {
-			return JButton.class;
+			return JLabel.class;
 		}
 	}
 	
@@ -64,13 +70,7 @@ public class ContactsPaneDataModel extends AbstractTableModel {
 			});
 		}
 	}
-	
-	private JButton createDeletingButton() {
-		return new JButton() {
-			
-		};
-	}
-	
+		
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Contact c = contacts.get(rowIndex);
@@ -79,7 +79,12 @@ public class ContactsPaneDataModel extends AbstractTableModel {
 		case 1: return c.getCompany();
 		case 2: return c.getPhone();
 		case 3: return c.getEmail();
-		case 4: return new DeletingButton(c);
+		case 4:  JLabel deleter = new JLabel("Delete");
+				deleter.setHorizontalAlignment(JLabel.CENTER);
+				deleter.setOpaque(true);
+				deleter.setBackground(Color.GRAY);
+				deleter.setForeground(Color.WHITE);
+				return deleter;
 		}
 		return null;
 	}

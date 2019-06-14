@@ -64,9 +64,9 @@ public class EventAddingDialog extends JDialog {
 		try {
 			EventAddingDialog dialog = new EventAddingDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			System.out.println("OK clicked: " + dialog.okClicked);
+//			System.out.println("OK clicked: " + dialog.okClicked);
 			dialog.setVisible(true);
-			System.out.println("OK clicked: " + dialog.okClicked);
+//			System.out.println("OK clicked: " + dialog.okClicked);
 			if (dialog.okClicked) {
 				String title = dialog.TitleTexfield.getText();
 				String note = dialog.NoteTextfield.getText();

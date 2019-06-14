@@ -122,7 +122,12 @@ System.out.println("--------------------DATA--------------------");
 		whenToRemove = Duration.ofDays(10);
 	}
 	
-	public ArrayList<Event> getEventsInMonth(int year, int month){
+	public List<Event> getEventsInMonth(LocalDate yearAndMonth) {
+		return getEventsInMonth(yearAndMonth.getYear(), yearAndMonth.getMonthValue());
+	}
+	
+//	public ArrayList<Event> getEventsInMonth(int year, int month){
+	public List<Event> getEventsInMonth(int year, int month){
 		ArrayList<Event> events = new ArrayList<Event>(); 
 		for(int i = 0; i < eventy.size(); i++) {
 			if(eventy.get(i).getStart().getYear() == year || eventy.get(i).getEnd().getYear() == year) {
@@ -153,12 +158,16 @@ System.out.println("--------------------DATA--------------------");
 	public void addEvent(Event e) {
 		if(e != null) {
 		eventy.add(e);
-		System.out.println("event dodany");
+//		System.out.println("event dodany");
 		}
 	}
 
 	public void deleteEvent(int numberOfEvent) {
 		eventy.remove(numberOfEvent);
+	}
+	
+	public void deleteEvent(Event e) {
+		eventy.remove(e);
 	}
 
 	// CONTACTS

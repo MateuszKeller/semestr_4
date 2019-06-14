@@ -1,22 +1,19 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Rectangle;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.time.LocalDate;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -29,14 +26,15 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
+import dane.Event;
 import system.Controller;
 import system.events.DisplayedDateChanged;
-import system.events.ResizeListener;
 
 
 public class Application {
 
 	private JFrame frame;
+	private EventsPane eventsPane;
 	public JFrame getFrame() {
 		return frame;
 	}
@@ -89,7 +87,7 @@ public class Application {
 		});
 	}
 
-	static class SafeActionListener implements ActionListener {
+	static private class SafeActionListener implements ActionListener {
 		
 		private final ActionListener wrapped; 
 		
@@ -102,9 +100,8 @@ public class Application {
 				wrapped.actionPerformed(e);
 			}catch(Exception exc) {
 				String message = "Error ocurred: " + exc.getMessage();
-				JOptionPane.showMessageDialog(null, message, "Error!", JOptionPane.ERROR_MESSAGE);;
+				JOptionPane.showMessageDialog(null, message, "Error!", JOptionPane.ERROR_MESSAGE);
 				}
-			
 		}
 	}
 	
@@ -115,9 +112,12 @@ public class Application {
 		initialize();
 		control = new Controller();
 		control.registerListener(DisplayedDateChanged.class, calendarTable);
+		control.registerListener(DisplayedDateChanged.class, eventsPane);
 
 		addCalendarListeners();	
 		addMenuListeners();
+		
+		control.initialize();
 	}
 
 
@@ -129,10 +129,19 @@ public class Application {
 		
 		calendarView.setResizeWeight(0.8);
 		calendarTable = new CalendarTable(); 
-		calendarTable.setRowHeight(calendarTable.getRowHeight() + ((int)frame.getSize().getHeight() - 180 - calendarTable.getRowHeight())/6 );
+		//calendarTable.setRowHeight(calendarTable.getRowHeight() + ((int)frame.getSize().getHeight() - 180 - calendarTable.getRowHeight())/6 );
 		
 		
-		calendarView.setLeftComponent(calendarTable);
+		//calendarView.setLeftComponent(calendarTable);
+		calendarView.setLeftComponent(new JScrollPane(calendarTable));
+		calendarView.getLeftComponent().addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				JScrollPane scrollPane = (JScrollPane)e.getComponent();
+				JTable table = (JTable)scrollPane.getViewport().getView();
+				table.setRowHeight(scrollPane.getViewport().getHeight()/6);
+			}
+		});
 		
 		JPanel calendarOptionsPane = new JPanel(new GridBagLayout()); 
 		GridBagConstraints c = new GridBagConstraints();
@@ -164,8 +173,13 @@ public class Application {
 		addEventButtonCal.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
-				control.addEvent(EventAddingDialog.showDialog());		
-			}			
+//				control.addEvent(EventAddingDialog.showDialog());		
+//			}	
+				Event e = EventAddingDialog.showDialog();
+				if(e!= null) {
+					control.addEvent(e);
+				}
+			}
 		});
 	
 		calendarView.setRightComponent(calendarOptionsPane);
@@ -200,8 +214,16 @@ public class Application {
 	public JSplitPane createEventsOptionsPane () {
 		JSplitPane eventsView = new JSplitPane();
 		eventsView.setResizeWeight(0.8);
-		JTable eventsTable = new JTable(); 
-		eventsView.setLeftComponent(eventsTable);
+//		JTable eventsTable = new JTable(); 
+//		eventsView.setLeftComponent(eventsTable);
+		
+		eventsPane = new EventsPane(new EventsPane.EventRemover() {
+			@Override
+			public void removeEvent(Event e) {
+				control.removeEvent(e);
+			}
+		});
+		eventsView.setLeftComponent(new JScrollPane(eventsPane));
 		
 		JPanel eventsOptionsPane = new JPanel(); 
 		JLabel options = new JLabel("contacts options"); 	
