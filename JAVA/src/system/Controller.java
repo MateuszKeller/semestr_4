@@ -1,4 +1,5 @@
 package system;
+import java.io.File;
 //TODO zrobiæ nowy internalEvent - dodanie eventu przez dialog, notify kalendarz i listê zdarzeñ
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,8 +72,9 @@ public class Controller {
 	public void showSettingsWindow(){
 		JOptionPane.showMessageDialog(null, "ustawienia", "Ustawienia", JOptionPane.INFORMATION_MESSAGE);
 	}
-	public void showFromXMLWindow(){
-		JOptionPane.showMessageDialog(null, "coming soon", "from XML", JOptionPane.INFORMATION_MESSAGE);
+	public void importEventsFromXml(File file){
+        manager.importFromXML(file);
+        refreshEventData();
 	}
 	public void showFromOutlookWindow(){
 		JOptionPane.showMessageDialog(null, "coming soon", "from XML", JOptionPane.INFORMATION_MESSAGE);
@@ -80,15 +82,18 @@ public class Controller {
 	public void showFromDatabaseWindow(){
 		showMessage("from Database", "coming soon");
 	}
-	public void showToXMLWindow(){
-		showMessage("to XML", "coming soon");
+
+	public void exportEventsToXml(File file) {
+		manager.exportEventsToXml(file);
 	}
+
 	public void showToOutlookWindow(){
 		showMessage("to Outlook", "coming soon");
 	}
 	public void showToDatabaseWindow(){
 		showMessage("to Database", "coming soon");
 	}
+
 	public void showAboutProgramWindow(){
 		showMessage("About Program","Projekt zaliczeniowy: \nPrzedmiot: programowanie komponentowe\nAutorzy:\nMarta Bielecka\nMateusz Keller");
 	}

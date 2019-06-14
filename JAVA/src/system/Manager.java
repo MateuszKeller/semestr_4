@@ -1,5 +1,6 @@
 package system;
 
+import java.io.File;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -9,12 +10,10 @@ import system.Transmiter;
 
 public class Manager {
 
-	private ArrayList<Event> eventy;// = new ArrayList<Event>();
-	private ArrayList<Contact> kontakty;// = new ArrayList<Contact>();
-
-	private Transmiter xPort;// = new Transmiter();
-
-	private Duration whenToRemove;// = Duration.ofDays(10);
+	private ArrayList<Event> eventy = new ArrayList<>();
+	private ArrayList<Contact> kontakty = new ArrayList<>();
+	private Transmiter xPort = new Transmiter();
+	private Duration whenToRemove = Duration.ofDays(10);
 
 	public ArrayList<Event> getEventy() { return eventy; }
 	public ArrayList<Contact> getContacts() { return kontakty; }
@@ -91,7 +90,7 @@ System.out.println("--------------------DATA--------------------");
 		
 		System.out.println("--------------------+XML+--------------------");
 		
-		String xmlFile = "test.xml";
+		File xmlFile = new File("test.xml");
 		xPort.xmlExport(xmlFile, eventy);
 //		eventy.clear();
 //		eventy = xPort.xmlImport(xmlFile, eventy);
@@ -115,15 +114,6 @@ System.out.println("--------------------DATA--------------------");
 		System.out.println(eventy);
 	}
 
-	public Manager() {
-		eventy = new ArrayList<Event>();
-		kontakty = new ArrayList<Contact>();
-
-		xPort = new Transmiter();
-
-		whenToRemove = Duration.ofDays(10);
-	}
-	
 	public List<Event> getEventsInMonth(LocalDate yearAndMonth) {
 		return getEventsInMonth(yearAndMonth.getYear(), yearAndMonth.getMonthValue());
 	}
@@ -255,11 +245,11 @@ System.out.println("--------------------DATA--------------------");
 			xPort.bdExportEventy(eventy, kontakty);
 	}
 	
-	public void importFromXML(String file) {
-		eventy = xPort.xmlImport(file, eventy);
+	public void importFromXML(File file) {
+		eventy = new ArrayList<>(xPort.xmlImport(file));
 	}
 
-	public void exportFromXML(String file) {
+	public void exportEventsToXml(File file) {
 		xPort.xmlExport(file, eventy);
 	}
 

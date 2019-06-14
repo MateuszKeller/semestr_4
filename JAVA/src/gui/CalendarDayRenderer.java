@@ -27,24 +27,19 @@ public class CalendarDayRenderer extends JList<String> implements TableCellRende
 		if(value instanceof CalendarDay) {
 			CalendarDay day = (CalendarDay) value;
 			
-//			StringBuilder text = new StringBuilder(day.getDayOfMonth());
-			
-//			if(day.getEvents() != null && !day.isEmpty()) {
 			List<String> text = new ArrayList<>();
-			if(day.getEvents() != null && !day.isEmpty()) {
 			text.add(day.getDayOfMonth());
+
+			if(day.getEvents() != null && !day.isEmpty()) {
 				setOpaque(true);
 				setBackground(Color.ORANGE);
 				for(Event e : day.getEvents()) {
-//					text.append(e.getTittle());
 					text.add(e.getTittle());
 				}
 			} else {
 				setOpaque(false);
 				setBackground(Color.WHITE);
 			}
-//			setText(text.toString());
-//			return this; 
 			setListData(text.toArray(new String[0]));
 			return this;
 		}else {

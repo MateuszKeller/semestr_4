@@ -1,41 +1,21 @@
 package gui;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-
 import dane.Contact;
 import dane.Event;
 import gui.ContactsPane.ContactsRemover;
 import system.Controller;
 import system.events.DisplayedContactsChanged;
 import system.events.DisplayedDateChanged;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 
 public class Application {
@@ -286,7 +266,10 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.addEvent(EventAddingDialog.showDialog());	
+                Event ev = EventAddingDialog.showDialog();
+                if (ev != null) {
+					control.addEvent(ev);
+				}
 			}
 		});
 		
@@ -328,12 +311,27 @@ public class Application {
 			}		
 		});
 		
-		mntmFromXML.addActionListener(new ActionListener(){
-
+		mntmFromXML.addActionListener(new SafeActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				control.showFromXMLWindow();			
-			}			
-		});
+				JFileChooser chooser = new JFileChooser();
+				int userChoice = chooser.showOpenDialog(null);
+
+				if (userChoice == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+
+					if (selectedFile.exists()) {
+						control.importEventsFromXml(selectedFile);
+						JOptionPane.showMessageDialog(null,
+								"Import succeeded.", "Success!", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"File " + selectedFile.getName() + " does not exist!", "Error",
+								JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			}
+		}));
 		
 		mntmFromOutlook.addActionListener(new ActionListener(){
 
@@ -349,12 +347,28 @@ public class Application {
 			}			
 		});
 		
-		mntmToXML.addActionListener(new ActionListener(){
-
+		mntmToXML.addActionListener(new SafeActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				control.showToXMLWindow();			
-			}			
-		});
+				JFileChooser chooser = new JFileChooser();
+				int userChoice = chooser.showSaveDialog(null);
+
+				if (userChoice == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+					if (selectedFile.exists()) {
+						userChoice = JOptionPane.showConfirmDialog(null,
+								"File " + selectedFile.getName() + " already exists, overwrite?",
+								"Overwrite?", JOptionPane.YES_NO_OPTION);
+					}
+
+					if (!selectedFile.exists() || userChoice == JOptionPane.YES_OPTION) {
+						control.exportEventsToXml(selectedFile);
+						JOptionPane.showMessageDialog(null,
+								"Export succeeded.", "Success!", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+			}
+		}));
 		
 		mntmToOutlook.addActionListener(new ActionListener(){
 

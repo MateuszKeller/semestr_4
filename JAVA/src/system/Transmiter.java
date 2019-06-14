@@ -5,11 +5,7 @@ import java.beans.Expression;
 import java.beans.PersistenceDelegate;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -17,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import dane.Event;
 import dane.Alarm;
@@ -187,10 +184,8 @@ public class Transmiter {
 	}
 
 	// XML
-	public void xmlExport(String file, ArrayList<Event> eventy) {
-		System.out.println("----------------------xmlExport:");
+	public void xmlExport(File file, List<Event> eventsToExport) {
 		try {
-
 			XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
 
 			e.setPersistenceDelegate(LocalDateTime.class, // Event -- start, end
@@ -202,6 +197,7 @@ public class Transmiter {
 						}
 					});
 
+			// todo niepotrzebne?
 			e.setPersistenceDelegate(LocalTime.class, // Alarm -- before
 					new PersistenceDelegate() {
 						@Override
@@ -211,24 +207,21 @@ public class Transmiter {
 						}
 					});
 
-			e.writeObject(eventy);
+			e.writeObject(eventsToExport);
 			e.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
+		} catch (Exception e) {
+            throw new RuntimeException(e);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<Event> xmlImport(String file, ArrayList<Event> eventy){  // nie wiem czemu nie dzia³a bezporednio do zmiennej w Managerze
+	public List<Event> xmlImport(File file) {
 		System.out.println("----------------------xmlImport:");
-		try {
-			XMLDecoder d = new XMLDecoder(new BufferedInputStream(new FileInputStream(file)));
-			eventy = (ArrayList<Event>) d.readObject();
-			d.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		try(XMLDecoder d = new XMLDecoder(new BufferedInputStream(new FileInputStream(file)))) {
+			return (ArrayList<Event>) d.readObject();
+		} catch (Exception e) {
+            throw new RuntimeException(e);
 		}
-		return eventy;
 	}
 
 }

@@ -17,7 +17,7 @@ public class Main {
 		
 		manager.importFromDatabase("Kontakty");
 		manager.importFromDatabase("Wydarzenia");
-		manager.exportFromXML("backup.xml");
+//		manager.exportEventsToXml("backup.xml");
 		
 //		System.out.println(manager.getKontakty());
 		System.out.println(manager.getEventy());
