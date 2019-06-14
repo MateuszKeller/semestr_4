@@ -54,23 +54,6 @@ public class ContactsPaneDataModel extends AbstractTableModel {
 		}
 	}
 	
-	static class DeletingButton extends JButton{
-		private final Contact contact;
-		
-		public DeletingButton (Contact c) {
-			super("Delete");
-			this.contact = c;
-			this.addActionListener (new ActionListener() {
-				
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Deleting contact: "+ contact.getName());
-					
-				}
-			});
-		}
-	}
-		
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		Contact c = contacts.get(rowIndex);

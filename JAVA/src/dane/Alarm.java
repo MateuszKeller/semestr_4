@@ -19,7 +19,7 @@ public class Alarm { //implements java.io.Serializable
 	public Alarm(LocalDateTime before) 
 	{
 		this.before = before;
-		this.sound = AppParameters.sound;
+		this.sound = AppParameters.getInstance().getSound();
 		try 
 		{
 			audio = new AudioStream(new FileInputStream(sound) );

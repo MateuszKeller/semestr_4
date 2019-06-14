@@ -11,7 +11,7 @@ public class Main {
 	static Manager manager;
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		AppParameters.getInstance(args[0]);
+		AppParameters.initialize(args);
 		manager = new Manager();
 		//manager.testMain(args);
 		

@@ -26,8 +26,11 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
+import dane.Contact;
 import dane.Event;
+import gui.ContactsPane.ContactsRemover;
 import system.Controller;
+import system.events.DisplayedContactsChanged;
 import system.events.DisplayedDateChanged;
 
 
@@ -35,6 +38,7 @@ public class Application {
 
 	private JFrame frame;
 	private EventsPane eventsPane;
+	private ContactsPane contactsPane;
 	public JFrame getFrame() {
 		return frame;
 	}
@@ -113,6 +117,7 @@ public class Application {
 		control = new Controller();
 		control.registerListener(DisplayedDateChanged.class, calendarTable);
 		control.registerListener(DisplayedDateChanged.class, eventsPane);
+		control.registerListener(DisplayedContactsChanged.class, contactsPane);
 
 		addCalendarListeners();	
 		addMenuListeners();
@@ -189,8 +194,16 @@ public class Application {
 	public JSplitPane createContactsOptionsPane () {
 		JSplitPane contactsView = new JSplitPane();
 		contactsView.setResizeWeight(0.8);
-		JTable contactTable = new JTable(); 
-		contactsView.setLeftComponent(contactTable);
+		ContactsRemover remover = new ContactsRemover() {
+			
+			@Override
+			public void removeContact(Contact con) {
+				control.removeContact(con);
+				
+			}
+		};
+		contactsPane = new ContactsPane(remover); 
+		contactsView.setLeftComponent(contactsPane);
 		
 		JPanel contactsOptionsPane = new JPanel(); 
 		JLabel options = new JLabel("contacts options"); 	
@@ -202,6 +215,7 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				System.out.println("contact adding aplication");
 				control.addContact(ContactAddingDialog.showDialog());
 				
 			}

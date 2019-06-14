@@ -17,7 +17,7 @@ public class Manager {
 	private Duration whenToRemove;// = Duration.ofDays(10);
 
 	public ArrayList<Event> getEventy() { return eventy; }
-	public ArrayList<Contact> getKontakty() { return kontakty; }
+	public ArrayList<Contact> getContacts() { return kontakty; }
 	public Transmiter getTransmiter() { return xPort; }
 	public Duration getWhenToRemove() { return whenToRemove; }
 	public void setWhenToRemove(Duration whenToRemove) { this.whenToRemove = whenToRemove; }
@@ -190,8 +190,11 @@ System.out.println("--------------------DATA--------------------");
 		kontakty.add(c);
 	}
 
-	public void deleteContact(int numberOfContact) {
+	public void removeContact(int numberOfContact) {
 		kontakty.remove(numberOfContact);
+	}
+	public void removeContact(Contact c) {
+		kontakty.remove(c);
 	}
 
 	// FUNCTIONS

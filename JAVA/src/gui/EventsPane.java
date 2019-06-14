@@ -61,7 +61,6 @@ class EventsPane extends JTable implements InternalEventListener {
     public void anEventOccurred(InternalEvent e) {
         if (e instanceof DisplayedDateChanged) {
             DisplayedDateChanged ddc = (DisplayedDateChanged)e;
-//            model.refreshEvents(ddc.getEvents());
             model.setEvents(ddc.getEvents());
             this.resizeAndRepaint();
         }

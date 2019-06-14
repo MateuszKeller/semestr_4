@@ -8,6 +8,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 
 import dane.Contact;
+import system.events.DisplayedContactsChanged;
 import system.events.DisplayedDateChanged;
 import system.events.InternalEvent;
 import system.events.InternalEventListener;
@@ -18,8 +19,10 @@ public class ContactsPane extends JTable implements InternalEventListener{
 	private final ContactsPaneDataModel model = new ContactsPaneDataModel();
 	
 	private class ButtonClicker extends MouseAdapter{
-		public void MouseClicked (MouseEvent e) {
+		@Override
+		public void mouseClicked (MouseEvent e) {
 			if(e.getComponent() instanceof ContactsPane) {
+				System.out.println("mouse");
 				ContactsPane pane = (ContactsPane) e.getComponent();
 				int col = pane.getColumnModel().getColumnIndexAtX(e.getX());
 				int row = e.getY()/pane.getRowHeight();
@@ -53,9 +56,8 @@ public class ContactsPane extends JTable implements InternalEventListener{
 	
 	@Override
 	public void anEventOccurred(InternalEvent e) {
-		if (e instanceof DisplayedDateChanged) {
-            DisplayedDateChanged ddc = (DisplayedDateChanged)e;
-//            model.refreshEvents(ddc.getEvents());
+		if (e instanceof DisplayedContactsChanged) {
+            DisplayedContactsChanged ddc = (DisplayedContactsChanged)e;
             model.setContacts(ddc.getContacts());
             this.resizeAndRepaint();
         }	

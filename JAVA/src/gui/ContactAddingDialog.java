@@ -64,6 +64,7 @@ public class ContactAddingDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public ContactAddingDialog() {
+		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 450, 255);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

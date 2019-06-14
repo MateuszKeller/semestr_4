@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 
 import dane.Contact;
 import dane.Event;
+import system.events.DisplayedContactsChanged;
 import system.events.DisplayedDateChanged;
 import system.events.InternalEvent;
 import system.events.InternalEventListener;
@@ -30,12 +31,17 @@ public class Controller {
 			
 	public void initialize() {
 		refreshEventData();
+		refreshContactData();
 	}
 	
 			
 	private void refreshEventData() {
 		notifyListeners(new DisplayedDateChanged(
 				displayedDate, manager.getEventsInMonth(displayedDate)));
+	}
+	
+	private void refreshContactData() {
+		notifyListeners(new DisplayedContactsChanged(manager.getContacts()));
 	}
 	
 	public void registerListener(Class<? extends InternalEvent> eventType, InternalEventListener listener) {
@@ -105,6 +111,7 @@ public class Controller {
 		manager.addEvent("example event 1", LocalDateTime.of(2019, 6, 20 , 8, 0), LocalDateTime.of(2019, 6, 21, 9, 0), "ex 1", "Polibuda", null, null);
 		manager.addEvent("example event 2", LocalDateTime.of(2019, 6, 21, 8, 0), LocalDateTime.of(2019, 6, 21, 12, 0), "ex 2", "domek", null, null);
 		manager.addEvent("example event 3", LocalDateTime.of(2019, 6, 21, 11, 0), LocalDateTime.of(2019, 7, 10, 9, 0), "ex 3", "Ciechocinek", null, null);
+		manager.addContact("Jan Kowalski", "TomTom", "malpa@malp.pl","123456789" );
 		
 		return manager;
 	}
@@ -121,6 +128,12 @@ public class Controller {
 	
 	public void addContact(Contact c) {
 		manager.addContact(c);
+		refreshContactData();
+	}
+	
+	public void removeContact(Contact c) {
+		manager.removeContact(c);
+		refreshContactData();
 	}
 	
 	public void removeEvent(Event e) {
