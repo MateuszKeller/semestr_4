@@ -15,16 +15,16 @@ import java.util.List;
 class EventsPaneDataModel extends AbstractTableModel {
 
     private List<Event> events = new ArrayList<>();
-    private List<Contact> contacts = new ArrayList<>();
+//    private List<Contact> contacts = new ArrayList<>();
 
 //    public void refreshEvents(List<Event> evs) {
     public void setEvents(List<Event> evs) {
         events = evs;
     }
     
-    public void setContacts (List<Contact> con) {
-    	contacts = con;
-    }
+//    public void setContacts (List<Contact> con) {
+//    	contacts = con;
+//    }
     
     public Event removeEventAtRow(int row) {
     	return events.remove(row);

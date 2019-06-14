@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.time.LocalDate;
-
+import java.time.LocalDateTime;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -161,7 +161,7 @@ public class Application {
 		
 		yearsCombo = new JComboBox<String>(years);
 		yearsCombo.setSelectedIndex(now.getYear() - 2018);
-		monthsCombo.setPreferredSize(new Dimension(100,20)); //ustawiæ wielkoœæ comboboxa!!!
+		monthsCombo.setPreferredSize(new Dimension(100,20));
 		monthsCombo.setPrototypeDisplayValue("xXXxxx");
 		c.gridx = 1; 
 		c.gridy = 0;
@@ -269,7 +269,10 @@ public class Application {
 		
 		mntmSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				control.showSettingsWindow();			
+				LocalDateTime dueTime = SettingsDialog.showSettingsDialog(); 
+				if(dueTime != null) {
+				control.removeOldEvents(dueTime);	
+				}
 			}		
 		});
 		

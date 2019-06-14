@@ -32,7 +32,7 @@ public class Event implements java.io.Serializable {
 	}
 	
 	
-	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place, LocalTime notification)
+	public Event(String tittle, LocalDateTime start, LocalDateTime end, String note, String place, LocalDateTime notification)
 	{
 		this.tittle = tittle;
 		this.start = start;

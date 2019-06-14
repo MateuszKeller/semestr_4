@@ -115,7 +115,7 @@ public class Transmiter {
 					ret += rs.getString("place") + " ";
 				}
 				if (!rs.getString("before").equals("")) { //rs.getString("before") != ""
-					LocalTime t = LocalTime.parse(rs.getString("before"));
+					LocalDateTime t = LocalDateTime.parse(rs.getString("before"));
 					temp.setNotification(new Alarm(t));
 					temp.getNotification().setSound(rs.getString("sound"));
 				}
@@ -162,7 +162,6 @@ public class Transmiter {
 							contact = Integer.toString(j);
 							break;
 						}
-							
 					}
 						
 				}

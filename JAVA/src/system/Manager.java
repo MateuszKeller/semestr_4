@@ -41,7 +41,7 @@ System.out.println("--------------------DATA--------------------");
 		// ------------------------------	
 		System.out.println("--------------------+EVENTY+--------------------");
 
-		LocalTime t = LocalTime.parse("00:30");
+		LocalDateTime t = LocalDateTime.parse("2019-06-17T00:30");
 		Event e1 = new Event("1", sDate, date);
 		e1.setNotification(new Alarm(t));
 		Event e2 = new Event("2", sDate, date);
@@ -63,6 +63,7 @@ System.out.println("--------------------DATA--------------------");
 //			System.out.println(kontakty);
 //			System.out.println("IMPORT:");
 		// ------------------------------
+
 		xPort.bdImportKontakty(kontakty);
 			System.out.println(kontakty);
 		// System.out.println(kontakty); System.out.println("--------------------");
@@ -85,6 +86,7 @@ System.out.println("--------------------DATA--------------------");
 		e4_f.setNote("NOTKA");
 		e4_f.setPerson(kontakty.get(0));
 		e4_f.setNotification(new Alarm(t));
+
 		eventy.add(e4_f);
 		
 		System.out.println("--------------------+XML+--------------------");
@@ -207,6 +209,15 @@ System.out.println("--------------------DATA--------------------");
 
 		}
 
+	}
+	
+	public void removeOldEvents(LocalDateTime dueDate) {
+//		System.out.println(dueDate);
+		for(int i = 0; i < eventy.size(); i ++) {
+			if(eventy.get(i).getEnd().isBefore(dueDate)) {
+				eventy.remove(i);
+			}
+		}
 	}
 
 	public void playAlarm() {

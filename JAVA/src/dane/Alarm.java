@@ -1,4 +1,5 @@
 package dane;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.io.*;
@@ -6,7 +7,7 @@ import sun.audio.*;
 
 public class Alarm { //implements java.io.Serializable
 	
-	LocalTime before;
+	LocalDateTime before;
 	DateTimeFormatter timeFormat;
 	String sound; //"alarm1.wav";
 	AudioStream audio = null;
@@ -15,7 +16,7 @@ public class Alarm { //implements java.io.Serializable
 
 	public Alarm() {}
 	
-	public Alarm(LocalTime before) 
+	public Alarm(LocalDateTime before) 
 	{
 		this.before = before;
 		this.sound = AppParameters.sound;
@@ -28,11 +29,12 @@ public class Alarm { //implements java.io.Serializable
 		} catch (FileNotFoundException e) { e.printStackTrace();}
 		  catch (IOException e) { e.printStackTrace(); }
 	}
-	
-	public LocalTime getBefore() { return before; }
-	public void setBefore(LocalTime before) { this.before = before; }
+	 
+	public LocalDateTime getBefore() { return before; }
+	public void setBefore(LocalDateTime before) { this.before = before; }
 	public String getSound() { return sound; }
 	public void setSound(String sound) { this.sound = sound; }
+
 
 	public String toString()
 	{

@@ -31,6 +31,7 @@ public class Controller {
 	public void initialize() {
 		refreshEventData();
 	}
+	
 			
 	private void refreshEventData() {
 		notifyListeners(new DisplayedDateChanged(
@@ -110,6 +111,11 @@ public class Controller {
 	
 	public void addEvent(Event e) {
 		manager.addEvent(e);
+		refreshEventData();
+	}
+	
+	public void removeOldEvents(LocalDateTime dueTime) {
+		manager.removeOldEvents(dueTime);
 		refreshEventData();
 	}
 	

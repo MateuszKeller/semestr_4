@@ -25,6 +25,8 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.TemporalUnit;
 
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
@@ -52,6 +54,9 @@ public class EventAddingDialog extends JDialog {
 		{"January", "February", "March", "April", 
 				"May", "June", "July", "August", 
 				"September", "October", "November", "December"};
+	private JTextField AlarmTimeTextfield;
+	private JComboBox AlarmTimeCombo;
+	private String [] alarmOptions = {"minutes", "hours", "days"};
 //	private String[]
 	
 	private boolean okClicked = false;
@@ -87,15 +92,34 @@ public class EventAddingDialog extends JDialog {
 				int endMinute = Integer.parseInt(dialog.EndMinuteTextfield.getText());
 				
 				LocalDateTime endTime = LocalDateTime.of(endYear,endMonth, endDay, endHour, endMinute);
-//				if(dialog.setAlarm == 0) {
-//					Event event = new Event(title, startTime, endTime, note, place);
-//					dialog.dispose();
-//					return event;
-//				}else {
-//				
-//				dialog.dispose();
-//				return null;
-			}else {
+				int number;
+				int option;
+				if(dialog.setAlarm == 1) {
+					number = Integer.parseInt(dialog.AlarmTimeTextfield.getText());
+					option = dialog.AlarmTimeCombo.getSelectedIndex();
+					LocalDateTime alarmTime;
+					if(option == 0) {
+						alarmTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
+						alarmTime = alarmTime.minusMinutes(number);
+					} else if(option == 1) {
+						alarmTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute );
+						alarmTime = alarmTime.minusHours(number);
+					} else {
+						alarmTime = LocalDateTime.of(startYear, startMonth, startDay + number, startHour, startMinute );
+						alarmTime = alarmTime.minus(Period.ofDays(number));
+					}
+//					System.out.println("event z alarmem");
+					Event event = new Event(title, startTime, endTime, note, place, alarmTime);
+					dialog.dispose();
+					return event;
+				} else {
+//					System.out.println("event bez alarmu");
+					Event event = new Event(title, startTime, endTime, note, place);
+					dialog.dispose();
+					return event;
+				}
+			} else {
+//				System.out.println("null");
 				return null;
 			}
 			
@@ -396,7 +420,7 @@ public class EventAddingDialog extends JDialog {
 			GridBagConstraints gbc_AlarmRadio = new GridBagConstraints();
 			gbc_AlarmRadio.insets = new Insets(0, 0, 0, 5);
 			gbc_AlarmRadio.gridx = 0;
-			gbc_AlarmRadio.gridy = 15;
+			gbc_AlarmRadio.gridy = 16;
 			AlarmRadio.addItemListener(new ItemListener() {
 				
 				@Override
@@ -409,20 +433,30 @@ public class EventAddingDialog extends JDialog {
 			contentPanel.add(AlarmRadio, gbc_AlarmRadio);
 		}
 		{
-			JComboBox AlarmTimeCombo = new JComboBox();
+			AlarmTimeCombo = new JComboBox(alarmOptions);
 			GridBagConstraints gbc_AlarmTimeCombo = new GridBagConstraints();
 			gbc_AlarmTimeCombo.insets = new Insets(0, 0, 0, 5);
 			gbc_AlarmTimeCombo.fill = GridBagConstraints.HORIZONTAL;
-			gbc_AlarmTimeCombo.gridx = 1;
-			gbc_AlarmTimeCombo.gridy = 15;
+			gbc_AlarmTimeCombo.gridx = 2;
+			gbc_AlarmTimeCombo.gridy = 16;
 			contentPanel.add(AlarmTimeCombo, gbc_AlarmTimeCombo);
+		}
+		{
+			AlarmTimeTextfield = new JTextField();
+			GridBagConstraints gbc_AlarmTimeTextfield = new GridBagConstraints();
+			gbc_AlarmTimeTextfield.insets = new Insets(0, 0, 5, 5);
+			gbc_AlarmTimeTextfield.fill = GridBagConstraints.HORIZONTAL;
+			gbc_AlarmTimeTextfield.gridx = 1;
+			gbc_AlarmTimeTextfield.gridy = 16;
+			contentPanel.add(AlarmTimeTextfield, gbc_AlarmTimeTextfield);
+			EndMinuteTextfield.setColumns(10);
 		}
 		{
 			JLabel BeforeLabel = new JLabel("before");
 			GridBagConstraints gbc_BeforeLabel = new GridBagConstraints();
 			gbc_BeforeLabel.insets = new Insets(0, 0, 0, 5);
-			gbc_BeforeLabel.gridx = 2;
-			gbc_BeforeLabel.gridy = 15;
+			gbc_BeforeLabel.gridx = 3;
+			gbc_BeforeLabel.gridy = 16;
 			contentPanel.add(BeforeLabel, gbc_BeforeLabel);
 		}
 		{
