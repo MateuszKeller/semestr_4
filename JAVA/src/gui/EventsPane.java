@@ -1,6 +1,7 @@
 package gui;
 
 import system.events.DisplayedDateChanged;
+import system.events.DisplayedEventsChanged;
 import system.events.InternalEvent;
 import system.events.InternalEventListener;
 
@@ -59,9 +60,9 @@ class EventsPane extends JTable implements InternalEventListener {
 
     @Override
     public void anEventOccurred(InternalEvent e) {
-        if (e instanceof DisplayedDateChanged) {
-            DisplayedDateChanged ddc = (DisplayedDateChanged)e;
-            model.setEvents(ddc.getEvents());
+        if (e instanceof DisplayedEventsChanged) {
+            DisplayedEventsChanged dec = (DisplayedEventsChanged)e;
+            model.setEvents(dec.getEvents());
             this.resizeAndRepaint();
         }
     }

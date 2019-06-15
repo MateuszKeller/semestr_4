@@ -114,11 +114,14 @@ System.out.println("--------------------DATA--------------------");
 		System.out.println(eventy);
 	}
 
+	public List<Event> getAllEvents(){
+		return eventy;
+	}
+	
 	public List<Event> getEventsInMonth(LocalDate yearAndMonth) {
 		return getEventsInMonth(yearAndMonth.getYear(), yearAndMonth.getMonthValue());
 	}
 	
-//	public ArrayList<Event> getEventsInMonth(int year, int month){
 	public List<Event> getEventsInMonth(int year, int month){
 		ArrayList<Event> events = new ArrayList<Event>(); 
 		for(int i = 0; i < eventy.size(); i++) {
@@ -129,6 +132,51 @@ System.out.println("--------------------DATA--------------------");
 		    }
 		}
 		return events; 
+	}
+	
+	public List<Event> getEventsInYear (LocalDate date) {
+		int year = date.getYear();
+		ArrayList<Event> events = new ArrayList<Event>();
+		for(int i = 0; i < eventy.size(); i++) {
+			if(eventy.get(i).getStart().getYear() == year || eventy.get(i).getEnd().getYear() == year) {
+				events.add(eventy.get(i));
+			}
+		}
+		return events;
+	}
+	
+	public List<Event> getEventsInWeek(LocalDate date){
+		int dayindex = date.getDayOfWeek().getValue() - 1;
+		int day = date.getDayOfMonth();
+		int month = date.getMonthValue();
+		int year = date.getYear();
+		LocalDate startDay = LocalDate.of(year, month, day - dayindex);
+		LocalDate endDay = LocalDate.of(year, month, day + 7 - dayindex);
+		ArrayList<Event> events = new ArrayList<Event>();
+		for(int i = 0; i < eventy.size(); i++) {
+			if(eventy.get(i).getStart().isBefore(endDay) || eventy.get(i).getEnd().isAfter(startDay)) {
+				events.add(eventy.get(i));
+			}		
+		}
+		return events;
+		
+	}
+	
+	public List<Event> getEventsInDay(LocalDate date){
+		int day = date.getDayOfMonth();
+		int month = date.getMonthValue();
+		int year = date.getYear();
+		ArrayList<Event> events = new ArrayList<Event>();
+		for(int i = 0; i < eventy.size(); i++) {
+			if(eventy.get(i).getStart().getYear() == year || eventy.get(i).getEnd().getYear() == year) {
+				if(eventy.get(i).getStart().getMonthValue() == month || eventy.get(i).getEnd().getMonthValue() == month ) {
+					if(eventy.get(i).getStart().getDayOfMonth() == day || eventy.get(i).getEnd().getDayOfMonth() == day) {
+						events.add(eventy.get(i));
+						}
+					}	
+				}		
+		}
+		return events;
 	}
 
 	// EVENTS

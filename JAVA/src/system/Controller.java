@@ -11,10 +11,13 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
+import com.sun.media.sound.ModelAbstractChannelMixer;
+
 import dane.Contact;
 import dane.Event;
 import system.events.DisplayedContactsChanged;
 import system.events.DisplayedDateChanged;
+import system.events.DisplayedEventsChanged;
 import system.events.InternalEvent;
 import system.events.InternalEventListener;
 
@@ -33,12 +36,28 @@ public class Controller {
 	public void initialize() {
 		refreshEventData();
 		refreshContactData();
+		refreshDisplayedEvents(0);
 	}
 	
 			
 	private void refreshEventData() {
 		notifyListeners(new DisplayedDateChanged(
 				displayedDate, manager.getEventsInMonth(displayedDate)));
+	}
+	
+	private void refreshDisplayedEvents(int option) {
+		LocalDate date = LocalDate.now();
+		if(option == 0) {
+			notifyListeners(new DisplayedEventsChanged(manager.getAllEvents()));
+			} else if(option == 1) {
+				notifyListeners(new DisplayedEventsChanged(manager.getEventsInDay(date)));
+			} else if(option == 2) {
+				notifyListeners(new DisplayedEventsChanged(manager.getEventsInWeek(date)));
+			} else if(option == 3) {
+				notifyListeners(new DisplayedEventsChanged(manager.getEventsInMonth(date)));
+			} else if(option == 4) {
+				notifyListeners(new DisplayedEventsChanged(manager.getEventsInYear(date)));
+			}
 	}
 	
 	private void refreshContactData() {
@@ -109,6 +128,10 @@ public class Controller {
 		List<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
 		notifyListeners(new DisplayedDateChanged(displayedDate, events));
 		 		
+	}
+	
+	public void changeDisplayedEvents(int option) {
+		refreshDisplayedEvents(option);
 	}
 	
 	public static Manager createManager() {

@@ -6,6 +6,7 @@ import gui.ContactsPane.ContactsRemover;
 import system.Controller;
 import system.events.DisplayedContactsChanged;
 import system.events.DisplayedDateChanged;
+import system.events.DisplayedEventsChanged;
 
 import javax.swing.*;
 import java.awt.*;
@@ -105,8 +106,9 @@ public class Application {
 		initialize();
 		control = new Controller();
 		control.registerListener(DisplayedDateChanged.class, calendarTable);
-		control.registerListener(DisplayedDateChanged.class, eventsPane);
+//		control.registerListener(DisplayedDateChanged.class, eventsPane);
 		control.registerListener(DisplayedContactsChanged.class, contactsPane);
+		control.registerListener(DisplayedEventsChanged.class, eventsPane);
 
 		addCalendarListeners();	
 		addMenuListeners();
@@ -234,24 +236,56 @@ public class Application {
 		eventsOptionsPane.add(select);
 		
 		allEventsRadio = new JRadioButton("all events");
-		eventsOptionsPane.add(allEventsRadio);//, gbc_ae);
+		eventsOptionsPane.add(allEventsRadio);
+		allEventsRadio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.changeDisplayedEvents(0);
+				
+			}
+		});
 		
 		dayEventsRadio = new JRadioButton("today");
 		eventsOptionsPane.add(dayEventsRadio);
+		dayEventsRadio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.changeDisplayedEvents(1);
+			}
+		});
 		
 		weekEventsRadio = new JRadioButton("this week");
 		eventsOptionsPane.add(weekEventsRadio);
+		weekEventsRadio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.changeDisplayedEvents(2);		
+			}
+		});
 		
 		monthEventsRadio = new JRadioButton("this month");
 		eventsOptionsPane.add(monthEventsRadio);
+		monthEventsRadio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.changeDisplayedEvents(3);
+				
+			}
+		});
 		
 		yearEventsRadio = new JRadioButton("this year");
-		GridBagConstraints gbc_ye = new GridBagConstraints();
-		gbc_ye.insets = new Insets(0, 0, 5, 5);
-		gbc_ye.anchor = GridBagConstraints.WEST;
-		gbc_ye.gridx = 1;
-		gbc_ye.gridy = 7;
 		eventsOptionsPane.add(yearEventsRadio);
+		yearEventsRadio.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				control.changeDisplayedEvents(4);
+			}
+		});
 		
 		ButtonGroup group = new ButtonGroup();
 		group.add(allEventsRadio);
@@ -269,6 +303,17 @@ public class Application {
                 Event ev = EventAddingDialog.showDialog();
                 if (ev != null) {
 					control.addEvent(ev);
+					if(allEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(0);
+					} else if(dayEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(1);
+					} else if(weekEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(2);
+					} else if (monthEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(3);
+					} else if (yearEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(4);
+					}
 				}
 			}
 		});
