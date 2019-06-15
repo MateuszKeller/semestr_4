@@ -7,23 +7,22 @@ import sun.audio.*;
 
 public class Alarm { //implements java.io.Serializable
 	
-	LocalDateTime before;
-	DateTimeFormatter timeFormat;
-	String sound; //"alarm1.wav";
-	AudioStream audio = null;
-	AudioData audioD = null;
-	ContinuousAudioDataStream loop;
+	private LocalDateTime before;
+	private String sound; //"alarm1.wav";
+	private ContinuousAudioDataStream loop;
 
-	public Alarm() {}
+	public Alarm(LocalDateTime before) {
+		this(before, AppParameters.getInstance().getSound());
+	}
 	
-	public Alarm(LocalDateTime before) 
+	public Alarm(LocalDateTime before, String sound)
 	{
 		this.before = before;
 		this.sound = AppParameters.getInstance().getSound();
 		try 
 		{
-			audio = new AudioStream(new FileInputStream(sound) );
-			audioD = audio.getData();
+			AudioStream audio = new AudioStream(new FileInputStream(sound));
+			AudioData audioD = audio.getData();
 			loop = new ContinuousAudioDataStream(audioD); 
 			
 		} catch (FileNotFoundException e) { e.printStackTrace();}
@@ -36,9 +35,9 @@ public class Alarm { //implements java.io.Serializable
 	public void setSound(String sound) { this.sound = sound; }
 
 
-	public String toString()
-	{
+	public String toString(){
 		String ret = "";
+		DateTimeFormatter timeFormat;
 		if(before.getHour() == 0)
 		{
 			timeFormat = DateTimeFormatter.ofPattern("m");
@@ -48,24 +47,18 @@ public class Alarm { //implements java.io.Serializable
 		{
 			timeFormat = DateTimeFormatter.ofPattern("H");
 			ret += before.format(timeFormat) + " godzin przed";
-		}
-			
+		}	
 		return ret;
 	}
 	
-	public void playSound()
-	{
-		
+	public void playSound(){
 		AudioPlayer.player.start(loop);
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-			
-		AudioPlayer.player.stop(loop);
-		
+		AudioPlayer.player.stop(loop);		
 	}
 	
 	public void stopSound()

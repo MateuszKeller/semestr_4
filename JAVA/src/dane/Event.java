@@ -20,8 +20,8 @@ public class Event implements java.io.Serializable {
 		this.tittle = tittle;
 		this.start = start;
 		this.end = end;
-		//this.note = note;
-		//this.place = place;
+		this.note = note;
+		this.place = place;
 	}
 	
 	public Event(String tittle, LocalDateTime start, LocalDateTime end) 

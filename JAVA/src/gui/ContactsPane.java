@@ -65,6 +65,5 @@ public class ContactsPane extends JTable implements InternalEventListener{
 
 	public interface ContactsRemover{
 		void removeContact(Contact con);
-	}
-	
+	}	
 }

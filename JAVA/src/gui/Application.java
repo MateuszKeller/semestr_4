@@ -24,12 +24,11 @@ public class Application {
 	private JFrame frame;
 	private EventsPane eventsPane;
 	private ContactsPane contactsPane;
+	
 	public JFrame getFrame() {
 		return frame;
 	}
 
-	//TODO przenieœæ wszystkie mnitemy itd jako pola klasy
-	//stworzyæ funkcjê dodaj¹c¹ listenery
 	private JMenuBar menuBar;
 	private JMenu mnMain;
 	private JMenuItem mntmSettings;
@@ -106,7 +105,6 @@ public class Application {
 		initialize();
 		control = new Controller();
 		control.registerListener(DisplayedDateChanged.class, calendarTable);
-//		control.registerListener(DisplayedDateChanged.class, eventsPane);
 		control.registerListener(DisplayedContactsChanged.class, contactsPane);
 		control.registerListener(DisplayedEventsChanged.class, eventsPane);
 
@@ -124,11 +122,8 @@ public class Application {
 		JSplitPane calendarView = new JSplitPane();
 		
 		calendarView.setResizeWeight(0.8);
-		calendarTable = new CalendarTable(); 
-		//calendarTable.setRowHeight(calendarTable.getRowHeight() + ((int)frame.getSize().getHeight() - 180 - calendarTable.getRowHeight())/6 );
+		calendarTable = new CalendarTable(); 		
 		
-		
-		//calendarView.setLeftComponent(calendarTable);
 		calendarView.setLeftComponent(new JScrollPane(calendarTable));
 		calendarView.getLeftComponent().addComponentListener(new ComponentAdapter() {
 			@Override
@@ -151,9 +146,7 @@ public class Application {
 		c.gridy = 0;
 		c.anchor = GridBagConstraints.CENTER; 
 		c.fill = GridBagConstraints.NONE;
-		calendarOptionsPane.add(monthsCombo, c);
-		//JLabel options = new JLabel("calendar options"); 	
-		
+		calendarOptionsPane.add(monthsCombo, c);		
 		
 		yearsCombo = new JComboBox<String>(years);
 		yearsCombo.setSelectedIndex(now.getYear() - 2018);
@@ -169,11 +162,20 @@ public class Application {
 		addEventButtonCal.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
-//				control.addEvent(EventAddingDialog.showDialog());		
-//			}	
 				Event e = EventAddingDialog.showDialog();
 				if(e!= null) {
 					control.addEvent(e);
+					if(allEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(0);
+					} else if(dayEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(1);
+					} else if(weekEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(2);
+					} else if (monthEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(3);
+					} else if (yearEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(4);
+					}
 				}
 			}
 		});
@@ -222,7 +224,20 @@ public class Application {
 		eventsPane = new EventsPane(new EventsPane.EventRemover() {
 			@Override
 			public void removeEvent(Event e) {
-				control.removeEvent(e);
+				if(e != null) {
+					control.removeEvent(e);
+					if(allEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(0);
+					} else if(dayEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(1);
+					} else if(weekEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(2);
+					} else if (monthEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(3);
+					} else if (yearEventsRadio.isSelected()) {
+						control.changeDisplayedEvents(4);
+					}
+				}
 			}
 		});
 		eventsView.setLeftComponent(new JScrollPane(eventsPane));
@@ -294,6 +309,8 @@ public class Application {
 		group.add(monthEventsRadio);
 		group.add(yearEventsRadio);
 		
+		allEventsRadio.setSelected(true);
+		
 		eventsOptionsPane.add(addEventButtonEv);
 		
 		addEventButtonEv.addActionListener(new ActionListener() {
@@ -328,10 +345,7 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method 
-				control.changeDisplayedDate(monthsCombo.getSelectedIndex(), yearsCombo.getSelectedIndex());
-				//System.out.println("wykonano");
-				
+				control.changeDisplayedDate(monthsCombo.getSelectedIndex(), yearsCombo.getSelectedIndex());				
 			}
 		});
 		
@@ -381,15 +395,30 @@ public class Application {
 		mntmFromOutlook.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent arg0) {
-				control.showFromOutlookWindow();			
+				control.showFromOutlookWindow();
 			}			
 		});
 		
 		mntmFromDatabase.addActionListener(new ActionListener(){
-
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				control.showFromDatabaseWindow();			
-			}			
+				JFileChooser chooser = new JFileChooser();
+				int userChoice = chooser.showOpenDialog(null);
+
+				if (userChoice == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+
+					if (selectedFile.exists()) {
+						control.importDataFromDatabase(selectedFile.getAbsolutePath());
+                        JOptionPane.showMessageDialog(null,
+								"Import succeeded.", "Success!", JOptionPane.INFORMATION_MESSAGE);
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Database " + selectedFile.getName() + " does not exist!", "Error",
+								JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			}
 		});
 		
 		mntmToXML.addActionListener(new SafeActionListener(new ActionListener(){
@@ -422,12 +451,30 @@ public class Application {
 			}			
 		});
 		
-		mntmToDatabase.addActionListener(new ActionListener(){
-
+		mntmToDatabase.addActionListener(new SafeActionListener(new ActionListener(){
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				control.showToDatabaseWindow();			
-			}			
-		});
+				JFileChooser chooser = new JFileChooser();
+				int userChoice = chooser.showSaveDialog(null);
+
+				if (userChoice == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = chooser.getSelectedFile();
+					if (selectedFile.exists()) {
+						userChoice = JOptionPane.showConfirmDialog(null,
+								"Selected database " + selectedFile.getName() + " will be cleared, continue?",
+								"Overwrite?", JOptionPane.YES_NO_OPTION);
+						if (userChoice == JOptionPane.YES_OPTION) {
+							control.exportDataToDatabase(selectedFile.getAbsolutePath());
+							JOptionPane.showMessageDialog(null,
+									"Export succeeded.", "Success!", JOptionPane.INFORMATION_MESSAGE);
+						}
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"You must select existing database!", "Error", JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		}));
 		
 		mntmAboutProgram.addActionListener(new ActionListener(){
 

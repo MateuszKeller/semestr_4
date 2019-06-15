@@ -13,17 +13,11 @@ import java.awt.event.MouseEvent;
 
 class EventsPane extends JTable implements InternalEventListener {
 
-//    EventsPaneDataModel model = new EventsPaneDataModel();
     private final EventRemover remover; 
     private final EventsPaneDataModel model = new EventsPaneDataModel();
 
-//    static class ButtonRenderer extends JButton implements TableCellRenderer {
-
     private class ButtonClicker extends MouseAdapter{
         @Override
-//        public Component getTableCellRendererComponent(
-//                JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-//            return (JButton)value;
         public void mouseClicked (MouseEvent e) {
         	if (e.getComponent() instanceof EventsPane) {
         		EventsPane evPane = (EventsPane)e.getComponent();
@@ -40,11 +34,9 @@ class EventsPane extends JTable implements InternalEventListener {
         }
     }
 
-//    public EventsPane() {
     public EventsPane(EventRemover remover) {
     	this.remover = remover;
         setModel(model);
-//        setDefaultRenderer(JButton.class, new ButtonRenderer());
         setDefaultRenderer(JLabel.class, (table, value, isSelected, hasFocus, row, column) -> (JLabel)value);
         setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         addMouseListener(new ButtonClicker());

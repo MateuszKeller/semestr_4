@@ -71,5 +71,4 @@ public class ContactsPaneDataModel extends AbstractTableModel {
 		}
 		return null;
 	}
-
 }

@@ -9,30 +9,29 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import dane.AppParameters;
 import dane.Event;
 import dane.Alarm;
 import dane.Contact;
 
 public class Transmiter {
 
-	static String database = "Organizer.accdb";// "Organizer.accdb";
-	static Connection conn;
-	static java.sql.Statement s;
-	static ResultSet rs;
+    private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm");
 
 	// DATABASE
-	public void bdImportKontakty(ArrayList<Contact> kontakty) {
+	public ArrayList<Contact> bdImportKontakty(String baza) {
 		System.out.println("----------------------bdImportKontakty:");
-		try {
-			conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
-			s = conn.createStatement();
-			rs = s.executeQuery("SELECT * FROM Kontakty");
+		ArrayList<Contact> contacts = new ArrayList<>();
+		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
+			Statement s = conn.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM Kontakty");
 
 			String ret;
 			int id = 0;
@@ -51,22 +50,20 @@ public class Transmiter {
 					temp.setPhone(rs.getString("phone"));
 					ret += rs.getString("phone") + " ";
 				}
-				kontakty.add(temp);
+				contacts.add(temp);
 				System.out.println(ret);
 				id++;
 			}
-
-			conn.close();
+			return contacts;
 		} catch (Exception ee) {
-			System.out.println(ee);
+            throw new RuntimeException(ee);
 		}
 	}
 
-	public void bdExportKontakty(ArrayList<Contact> kontakty) {
+	public void bdExportKontakty(ArrayList<Contact> kontakty, String baza) {
 		System.out.println("----------------------bdExportKontakty:");
-		try {
-			conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
-			s = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
+			Statement s = conn.createStatement();
 			s.executeUpdate("DELETE FROM Kontakty");
 
 			for (int i = 0; i < kontakty.size(); i++) {
@@ -79,19 +76,17 @@ public class Transmiter {
 				System.out.println(query);
 				s.executeUpdate(query);
 			}
-
-			conn.close();
 		} catch (Exception ee) {
-			System.out.println(ee);
+            throw new RuntimeException(ee);
 		}
 	}
 
-	public void bdImportEventy(ArrayList<Event> eventy, ArrayList<Contact> kontakty) {
+	public ArrayList<Event> bdImportEventy(String baza) {
 		System.out.println("----------------------bdImportEventy:");
-		try {
-			conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
-			s = conn.createStatement();
-			rs = s.executeQuery("SELECT * FROM Wydarzenia");
+		ArrayList<Event> eventy = new ArrayList<>();
+		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
+			Statement s = conn.createStatement();
+			ResultSet rs = s.executeQuery("SELECT * FROM Wydarzenia");
 
 			String ret;
 			int id = 0;
@@ -113,34 +108,34 @@ public class Transmiter {
 				}
 				if (!rs.getString("before").equals("")) { //rs.getString("before") != ""
 					LocalDateTime t = LocalDateTime.parse(rs.getString("before"));
-					temp.setNotification(new Alarm(t));
-					temp.getNotification().setSound(rs.getString("sound"));
+					String snd = rs.getString("sound");
+					if(snd.equals("")) {
+						snd = AppParameters.getInstance().getSound();
+					}
+					temp.setNotification(new Alarm(t, snd));
 				}
-				if (rs.getInt("contact") != -1) {
-					temp.setPerson(kontakty.get(rs.getInt("contact")));
-					ret += rs.getString("contact") + " ";
-				}
+//				if (rs.getInt("contact") != -1) {
+//					temp.setPerson(kontakty.get(rs.getInt("contact")));
+//					ret += rs.getString("contact") + " ";
+//				}
 
 				eventy.add(temp);
 				System.out.println(ret);
 				id++;
 			}
-
-			conn.close();
+			return eventy;
 		} catch (Exception ee) {
-			System.out.println(ee);
+            throw new RuntimeException(ee);
 		}
 	}
 
-	public void bdExportEventy(ArrayList<Event> eventy, ArrayList<Contact> kontakty) {
+	public void bdExportEventy(ArrayList<Event> eventy, String baza) {
 		System.out.println("----------------------bdExportEventy:");
-		try {
-			conn = DriverManager.getConnection("jdbc:ucanaccess://" + database);
-			s = conn.createStatement();
+		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
+			Statement s = conn.createStatement();
 			s.executeUpdate("DELETE FROM Wydarzenia");
 
 			for (int i = 0; i < eventy.size(); i++) {
-				DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm");
 
 				String query = "INSERT INTO Wydarzenia (tittle, start, end, note, place, contact, sound, before) VALUES (";
 				query += "\"" + eventy.get(i).getTittle() + "\", ";
@@ -150,25 +145,24 @@ public class Transmiter {
 				query += "\"" + eventy.get(i).getPlace() + "\", ";
 
 				String contact = "-1";
-				if (eventy.get(i).getPerson() != null) {
-					//System.out.println("++++++++++++" + eventy.get(i).getTittle() + ":" + eventy.get(i).getPerson());
-					for (int j = 0; j < kontakty.size(); j++)
-					{
-						//System.out.println(j + " " + kontakty.get(j).getName());
-						if (eventy.get(i).getPerson() == kontakty.get(j)) { //System.out.println("JEEEEEEEEEEEEEEEEEEEEJ");
-							contact = Integer.toString(j);
-							break;
-						}
-					}
-						
-				}
+//				if (eventy.get(i).getPerson() != null) {
+//					System.out.println("++++++++++++" + eventy.get(i).getTittle() + ":" + eventy.get(i).getPerson());
+//					for (int j = 0; j < kontakty.size(); j++)
+//					{
+//						System.out.println(j + " " + kontakty.get(j).getName());
+//						if (eventy.get(i).getPerson() == kontakty.get(j)) { //System.out.println("JEEEEEEEEEEEEEEEEEEEEJ");
+//							contact = Integer.toString(j);
+//							break;
+//						}
+//					}
+//
+//				}
 				query += "\"" + contact + "\", ";
 
 				if (eventy.get(i).getNotification() == null)
 					query += "\"\", \"\");";
 				else {
 
-					dateFormat = DateTimeFormatter.ofPattern("HH:mm");
 					query += "\"" + eventy.get(i).getNotification().getSound() + "\",";
 					query += "\"" + eventy.get(i).getNotification().getBefore().format(dateFormat) + "\");";
 					
@@ -176,10 +170,8 @@ public class Transmiter {
 				System.out.println(query);
 				s.executeUpdate(query);
 			}
-
-			conn.close();
 		} catch (Exception ee) {
-			System.out.println(ee);
+            throw new RuntimeException(ee);
 		}
 	}
 
@@ -197,7 +189,6 @@ public class Transmiter {
 						}
 					});
 
-			// todo niepotrzebne?
 			e.setPersistenceDelegate(LocalTime.class, // Alarm -- before
 					new PersistenceDelegate() {
 						@Override

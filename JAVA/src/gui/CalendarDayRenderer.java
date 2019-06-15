@@ -46,6 +46,4 @@ public class CalendarDayRenderer extends JList<String> implements TableCellRende
 			throw new RuntimeException(" value must be CalendarDay Object");
 		}
 	}
-	
-
 }

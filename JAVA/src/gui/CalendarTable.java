@@ -23,7 +23,6 @@ public class CalendarTable extends JTable implements InternalEventListener{
 		setDefaultRenderer(CalendarDay.class, new CalendarDayRenderer());
 		setColumnSelectionAllowed(false);
 		setRowSelectionAllowed(false);
-//		setSelectionBackground(Color.CYAN);
 	}
 
 	@Override

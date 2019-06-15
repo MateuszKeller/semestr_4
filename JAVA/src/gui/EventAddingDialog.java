@@ -9,11 +9,10 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import com.sun.javafx.collections.SetAdapterChange;
-
 import dane.Event;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.GridBagLayout;
@@ -69,9 +68,7 @@ public class EventAddingDialog extends JDialog {
 		try {
 			EventAddingDialog dialog = new EventAddingDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			System.out.println("OK clicked: " + dialog.okClicked);
 			dialog.setVisible(true);
-//			System.out.println("OK clicked: " + dialog.okClicked);
 			if (dialog.okClicked) {
 				String title = dialog.TitleTexfield.getText();
 				String note = dialog.NoteTextfield.getText();
@@ -82,6 +79,26 @@ public class EventAddingDialog extends JDialog {
 				int startDay = Integer.parseInt(dialog.StartDayTextfield.getText());
 				int startHour = Integer.parseInt(dialog.StartHourTextfield.getText());
 				int startMinute = Integer.parseInt(dialog.StartMinuteTextfield.getText());
+				if(startYear < 0) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect start year value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
+				if(startDay < 0 || startDay > 31) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect start day value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
+				if(startHour < 0 || startHour > 23) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect start hour value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
+				if(startMinute < 0 || startMinute > 59) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect start minute value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
 				
 				LocalDateTime startTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute );
 				int endYear = Integer.parseInt(dialog.EndYearTextfield.getText());
@@ -90,6 +107,27 @@ public class EventAddingDialog extends JDialog {
 				int endDay = Integer.parseInt(dialog.EndDayTextfield.getText());
 				int endHour = Integer.parseInt(dialog.EndHourTextfield.getText());
 				int endMinute = Integer.parseInt(dialog.EndMinuteTextfield.getText());
+				
+				if(endYear < 0) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect end year value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
+				if(endDay < 0 || startDay > 31) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect end day value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
+				if(endHour < 0 || startHour > 23) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect end hour value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
+				if(endMinute < 0 || startMinute > 59) {
+					JOptionPane.showMessageDialog(dialog, "Incorrect end minute value");
+					dialog.setVisible(true);
+					dialog.okClicked = false;
+				}
 				
 				LocalDateTime endTime = LocalDateTime.of(endYear,endMonth, endDay, endHour, endMinute);
 				int number;
@@ -108,18 +146,15 @@ public class EventAddingDialog extends JDialog {
 						alarmTime = LocalDateTime.of(startYear, startMonth, startDay + number, startHour, startMinute );
 						alarmTime = alarmTime.minus(Period.ofDays(number));
 					}
-//					System.out.println("event z alarmem");
 					Event event = new Event(title, startTime, endTime, note, place, alarmTime);
 					dialog.dispose();
 					return event;
 				} else {
-//					System.out.println("event bez alarmu");
 					Event event = new Event(title, startTime, endTime, note, place);
 					dialog.dispose();
 					return event;
 				}
 			} else {
-//				System.out.println("null");
 				return null;
 			}
 			
@@ -426,7 +461,6 @@ public class EventAddingDialog extends JDialog {
 				@Override
 				public void itemStateChanged(ItemEvent e) {
 					setAlarm = e.getStateChange();
-//					if (setAlarm == 1) {System.out.println("true");}else {System.out.println("false");}	
 				}
 			});
 			AlarmRadio.setMnemonic(KeyEvent.VK_C);
@@ -481,7 +515,6 @@ public class EventAddingDialog extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					okClicked = true;
 					setVisible(false);
-//					showDialog();	
 				}
 			});
 			
@@ -492,7 +525,6 @@ public class EventAddingDialog extends JDialog {
 				public void actionPerformed(ActionEvent e) {
 					okClicked = false; 
 					setVisible(false);
-//					showDialog();	
 				}
 			});
 		}

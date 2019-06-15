@@ -15,29 +15,21 @@ import java.util.List;
 class EventsPaneDataModel extends AbstractTableModel {
 
     private List<Event> events = new ArrayList<>();
-//    private List<Contact> contacts = new ArrayList<>();
 
-//    public void refreshEvents(List<Event> evs) {
     public void setEvents(List<Event> evs) {
         events = evs;
     }
-    
-//    public void setContacts (List<Contact> con) {
-//    	contacts = con;
-//    }
     
     public Event removeEventAtRow(int row) {
     	return events.remove(row);
     }
 
     private static String[] columns = new String[] {
-//            "Title", "Description", "Start", "End", "Delete"
             "Title", "Description", "Start", "End", ""
     };
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-//        return columnIndex == 4;
     	return false;
     }
 
@@ -61,31 +53,9 @@ class EventsPaneDataModel extends AbstractTableModel {
         if(col < 4) {
             return String.class;
         } else {
-//            return JButton.class;
         	return JLabel.class;
         }
     }
-
-//    static class DeletingButton extends JButton {
-//        private final Event event;
-//
-//        public DeletingButton(Event e) {
-//            super("Delete");
-//            this.event = e;
-//            this.addActionListener(new ActionListener() {
-//                @Override
-//                public void actionPerformed(ActionEvent e) {
-//                    System.out.println("Deleting event: " + event.getTittle());
-//                }
-//            });
-//        }
-//    }
-//
-//    private JButton createDeletingButton() {
-//        return new JButton() {
-//
-//        };
-//    }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {

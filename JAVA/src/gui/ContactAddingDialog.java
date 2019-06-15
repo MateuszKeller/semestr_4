@@ -169,8 +169,7 @@ public class ContactAddingDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					okClicked = true; 
-					setVisible(false);
-					
+					setVisible(false);			
 				}
 			});
 			
@@ -179,8 +178,7 @@ public class ContactAddingDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					okClicked = false; 
-					setVisible(false);
-					
+					setVisible(false);					
 				}
 			});
 		}

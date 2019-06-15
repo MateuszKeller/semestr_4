@@ -4,7 +4,6 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import system.events.InternalEventListener;
 
 public class Controller {
 	
-//	private List <DisplayedDateChangeListener> listeners = new ArrayList<>();
 	private LocalDate displayedDate;
 	private Map<Class<? extends InternalEvent>, List<InternalEventListener>> listenersMap = new HashMap<>();
 	private Manager manager = Controller.createManager();
@@ -74,7 +72,6 @@ public class Controller {
 		else listenersForEvent.add(listener);
 	}
 	
-//	public void notifyListeners(InternalEvent e) {
 	private void notifyListeners(InternalEvent e) {
 		List<InternalEventListener> listenersForEvent = listenersMap.get(e.getClass()); 
 		if(listenersForEvent != null) {
@@ -98,8 +95,10 @@ public class Controller {
 	public void showFromOutlookWindow(){
 		JOptionPane.showMessageDialog(null, "coming soon", "from XML", JOptionPane.INFORMATION_MESSAGE);
 	}
-	public void showFromDatabaseWindow(){
-		showMessage("from Database", "coming soon");
+	public void importDataFromDatabase(String db){
+		manager.importFromDatabase(db);
+		refreshEventData();
+		refreshContactData();
 	}
 
 	public void exportEventsToXml(File file) {
@@ -109,8 +108,9 @@ public class Controller {
 	public void showToOutlookWindow(){
 		showMessage("to Outlook", "coming soon");
 	}
-	public void showToDatabaseWindow(){
-		showMessage("to Database", "coming soon");
+
+	public void exportDataToDatabase(String db){
+		manager.exportToDatabase(db);
 	}
 
 	public void showAboutProgramWindow(){
@@ -118,16 +118,9 @@ public class Controller {
 	}
 
 	public void changeDisplayedDate(int selectedMonth, int selectedYear) {
-//		LocalDate now = LocalDate.now();
-//		LocalDate newDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
-//		ArrayList<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
-//		
-//		notifyListeners(new DisplayedDateChanged(newDate, events));
-		displayedDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);
-			
+		displayedDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);		
 		List<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
-		notifyListeners(new DisplayedDateChanged(displayedDate, events));
-		 		
+		notifyListeners(new DisplayedDateChanged(displayedDate, events));		 		
 	}
 	
 	public void changeDisplayedEvents(int option) {
@@ -136,10 +129,6 @@ public class Controller {
 	
 	public static Manager createManager() {
 		Manager manager = new Manager();
-		manager.addEvent("example event 1", LocalDateTime.of(2019, 6, 20 , 8, 0), LocalDateTime.of(2019, 6, 21, 9, 0), "ex 1", "Polibuda", null, null);
-		manager.addEvent("example event 2", LocalDateTime.of(2019, 6, 21, 8, 0), LocalDateTime.of(2019, 6, 21, 12, 0), "ex 2", "domek", null, null);
-		manager.addEvent("example event 3", LocalDateTime.of(2019, 6, 21, 11, 0), LocalDateTime.of(2019, 7, 10, 9, 0), "ex 3", "Ciechocinek", null, null);
-		manager.addContact("Jan Kowalski", "TomTom", "malpa@malp.pl","123456789" );
 		
 		return manager;
 	}
@@ -167,6 +156,5 @@ public class Controller {
 	public void removeEvent(Event e) {
 		manager.deleteEvent(e);
 		refreshEventData();
-	}
-	
+	}	
 }

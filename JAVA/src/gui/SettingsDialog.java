@@ -37,11 +37,8 @@ public class SettingsDialog extends JDialog {
 		try {
 			SettingsDialog dialog = new SettingsDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-//			System.out.println("OK clicked: " + dialog.okClicked);
 			dialog.setVisible(true);
-//			System.out.println("OK clicked: " + dialog.okClicked); //NIE PRZECHODZI TUTAJ CHOCIAZ ACTION LISTENER PRZESTAWIA NA TRUE WTF?!?!?!
 			if(dialog.okClicked) {
-//				System.out.println("okClicked1");
 				int amount = Integer.parseInt(dialog.amountTextfield.getText());
 				int option = dialog.PeriodCombo.getSelectedIndex();
 				LocalDateTime dueTime;
@@ -129,7 +126,6 @@ public class SettingsDialog extends JDialog {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-//					System.out.println("okClicked");
 					okClicked = true;
 					setVisible(false);
 				}
