@@ -29,6 +29,9 @@ public class Event implements java.io.Serializable {
 		this.tittle = tittle;
 		this.start = start;
 		this.end = end;
+		note = null; 
+		place = null;
+		notification = null;
 	}
 	
 	

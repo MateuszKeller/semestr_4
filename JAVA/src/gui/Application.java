@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -360,6 +361,14 @@ public class Application {
 	}
 	
 	public void addMenuListeners() {
+		mntmClose.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+				
+			}
+		});
 		
 		mntmSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -494,15 +503,18 @@ public class Application {
 		
 		mnMain = new JMenu("Main");
 		menuBar.add(mnMain);
+		mnMain.setMnemonic(KeyEvent.VK_M);
 		
 		mntmSettings = new JMenuItem("Settings");
 		mnMain.add(mntmSettings);
+
 		
 		mntmClose = new JMenuItem("Close");
 		mnMain.add(mntmClose);
 		
 		mnImport = new JMenu("Import");
 		menuBar.add(mnImport);
+		mnImport.setMnemonic(KeyEvent.VK_I);
 		
 		mntmFromXML = new JMenuItem("from XML");
 		mnImport.add(mntmFromXML);
@@ -512,9 +524,11 @@ public class Application {
 		
 		mntmFromDatabase = new JMenuItem("from Database");
 		mnImport.add(mntmFromDatabase);
+		mntmFromDatabase.setMnemonic(KeyEvent.VK_D);
 		
 		mnExport = new JMenu("Export");
 		menuBar.add(mnExport);
+		mnExport.setMnemonic(KeyEvent.VK_E);
 		
 		mntmToXML = new JMenuItem("to XML");
 		mnExport.add(mntmToXML);
@@ -527,6 +541,7 @@ public class Application {
 		
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
+		mnHelp.setMnemonic(KeyEvent.VK_H);
 		
 		mntmAboutProgram = new JMenuItem("About Program");
 		mnHelp.add(mntmAboutProgram);
