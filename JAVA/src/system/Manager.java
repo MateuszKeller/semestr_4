@@ -5,7 +5,12 @@ import java.time.*;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import dane.*;
+import gui.EventEditingDialog;
 import system.Transmiter;
 
 
@@ -21,6 +26,12 @@ public class Manager {
 	public Transmiter getTransmiter() { return xPort; }
 	public Duration getWhenToRemove() { return whenToRemove; }
 	public void setWhenToRemove(Duration whenToRemove) { this.whenToRemove = whenToRemove; }
+	
+	public Manager() {
+		LocalDateTime alarmTime = LocalDateTime.now().plusHours(1).minusDays(2);
+		Event e = new Event("example title" , LocalDateTime.now(), LocalDateTime.now().plusDays(1).plusHours(1), "example note", "example place", LocalDateTime.now().minusMinutes(1));
+		eventy.add(e);
+	}
 
 //	public void testMain(String[] args) {
 //
@@ -181,20 +192,30 @@ public class Manager {
 	}
 
 	// EVENTS
-	public void addEvent(String tittle, LocalDateTime start, LocalDateTime end, String note, String place,
-			Alarm notification, Contact person) {
-		Event temp = new Event(tittle, start, end);
-		if (note != "")
-			temp.setNote(note);
-		if (place != "")
-			temp.setPlace(place);
-		if (notification != null)
-			temp.setNotification(notification);
-		if (person != null)
-			temp.setPerson(person);
-
-		eventy.add(temp);
+//	public void addEvent(String tittle, LocalDateTime start, LocalDateTime end, String note, String place,
+//			Alarm notification, Contact person) {
+//		Event temp = new Event(tittle, start, end);
+//		if (note != "")
+//			temp.setNote(note);
+//		if (place != "")
+//			temp.setPlace(place);
+//		if (notification != null)
+//			temp.setNotification(notification);
+//		if (person != null)
+//			temp.setPerson(person);
+//
+//		eventy.add(temp);
+//	}
+//	
+	////////////////////////////////////////////
+	public void eventEditing() {
+		
+		EventEditingDialog.showDialog(eventy.get(0));
 	}
+	/////////////////////////////////////////////////
+	
+	
+	
 	
 	public void addEvent(Event e) {
 		if(e != null) {
@@ -259,6 +280,20 @@ public class Manager {
 		}
 	}
 
+	public void checkDueAlarms() {
+		Runnable drawRunnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				playAlarm();	
+			}
+		};
+		
+		ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+		exec.scheduleAtFixedRate(drawRunnable, 0, 1, TimeUnit.MINUTES);
+	}
+	
+	
 	public void playAlarm() {
 		Iterator<Event> it = eventy.iterator();
 
@@ -266,12 +301,11 @@ public class Manager {
 			Event e = it.next();
 
 			if (e.getNotification() != null) {
-				LocalDateTime dateOfAlarm = e.getStart();
-				dateOfAlarm = dateOfAlarm.minusHours(e.getNotification().getBefore().getHour());
-				dateOfAlarm = dateOfAlarm.minusMinutes(e.getNotification().getBefore().getMinute());
-
+				LocalDateTime dateOfAlarm = e.getNotification().getBefore();
+				
 				if (dateOfAlarm.isBefore(LocalDateTime.now()))
 					e.playAlarmSound();
+					e.setNotification(null);
 			}
 		}
 	}

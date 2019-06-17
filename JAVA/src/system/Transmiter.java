@@ -8,6 +8,7 @@ import java.beans.XMLEncoder;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.LocalDateTime;
@@ -63,23 +64,41 @@ public class Transmiter {
 	public void bdExportKontakty(ArrayList<Contact> kontakty, String baza) {
 		System.out.println("----------------------bdExportKontakty:");
 		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
-			Statement s = conn.createStatement();
-			s.executeUpdate("DELETE FROM Kontakty");
 
-			for (int i = 0; i < kontakty.size(); i++) {
-				String query = "INSERT INTO Kontakty VALUES (";
-				query += "\"" + kontakty.get(i).getName() + "\", ";
-				query += "\"" + kontakty.get(i).getCompany() + "\", ";
-				query += "\"" + kontakty.get(i).getEmail() + "\", ";
-				query += "\"" + kontakty.get(i).getPhone() + "\");";
+			conn.createStatement().executeUpdate("DELETE FROM Kontakty");
 
-				System.out.println(query);
-				s.executeUpdate(query);
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO Kontakty VALUES (?, ?, ?, ?)");
+			for (Contact contact : kontakty) {
+				ps.setString(1, contact.getName());
+				ps.setString(2, contact.getCompany());
+				ps.setString(3, contact.getEmail());
+				ps.setString(4, contact.getPhone());
+				ps.executeUpdate();
 			}
 		} catch (Exception ee) {
             throw new RuntimeException(ee);
 		}
 	}
+//	public void bdExportKontakty(ArrayList<Contact> kontakty, String baza) {
+//		System.out.println("----------------------bdExportKontakty:");
+//		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
+//			Statement s = conn.createStatement();
+//			s.executeUpdate("DELETE FROM Kontakty");
+//
+//			for (int i = 0; i < kontakty.size(); i++) {
+//				String query = "INSERT INTO Kontakty VALUES (";
+//				query += "\"" + kontakty.get(i).getName() + "\", ";
+//				query += "\"" + kontakty.get(i).getCompany() + "\", ";
+//				query += "\"" + kontakty.get(i).getEmail() + "\", ";
+//				query += "\"" + kontakty.get(i).getPhone() + "\");";
+//
+//				System.out.println(query);
+//				s.executeUpdate(query);
+//			}
+//		} catch (Exception ee) {
+//            throw new RuntimeException(ee);
+//		}
+//	}
 
 	public ArrayList<Event> bdImportEventy(String baza) {
 		System.out.println("----------------------bdImportEventy:");
@@ -112,7 +131,7 @@ public class Transmiter {
 					if(snd.equals("")) {
 						snd = AppParameters.getInstance().getSound();
 					}
-					temp.setNotification(new Alarm(t, snd));
+					temp.setNotification(t);
 				}
 //				if (rs.getInt("contact") != -1) {
 //					temp.setPerson(kontakty.get(rs.getInt("contact")));
@@ -132,19 +151,49 @@ public class Transmiter {
 	public void bdExportEventy(ArrayList<Event> eventy, String baza) {
 		System.out.println("----------------------bdExportEventy:");
 		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
-			Statement s = conn.createStatement();
-			s.executeUpdate("DELETE FROM Wydarzenia");
 
-			for (int i = 0; i < eventy.size(); i++) {
+			conn.createStatement().executeUpdate("DELETE FROM Wydarzenia");
 
-				String query = "INSERT INTO Wydarzenia (tittle, start, end, note, place, contact, sound, before) VALUES (";
-				query += "\"" + eventy.get(i).getTittle() + "\", ";
-				query += "\"" + eventy.get(i).getStart().format(dateFormat) + "\", ";
-				query += "\"" + eventy.get(i).getEnd().format(dateFormat) + "\", ";
-				query += "\"" + eventy.get(i).getNote() + "\", ";
-				query += "\"" + eventy.get(i).getPlace() + "\", ";
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO Wydarzenia " +
+					"(tittle, start, end, note, place, sound, before) VALUES (?, ?, ?, ?, ?, ?, ?);");
+			for (Event event : eventy) {
+				ps.setString(1, event.getTittle());
+				ps.setString(2, event.getStart().format(dateFormat));
+				ps.setString(3, event.getEnd().format(dateFormat));
+				ps.setString(4, event.getNote());
+				ps.setString(5, event.getPlace());
 
-				String contact = "-1";
+				if (event.getNotification() != null) {
+					ps.setString(6, event.getNotification().getSound());
+					ps.setString(7, event.getNotification().getBefore().format(dateFormat));
+				} else {
+					ps.setString(6, "");
+					ps.setString(7, "");
+				}
+				ps.executeUpdate();
+			}
+		} catch (Exception ee) {
+            throw new RuntimeException(ee);
+		}
+	}
+
+	
+//	public void bdExportEventy(ArrayList<Event> eventy, String baza) {
+//		System.out.println("----------------------bdExportEventy:");
+//		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
+//			Statement s = conn.createStatement();
+//			s.executeUpdate("DELETE FROM Wydarzenia");
+//
+//			for (int i = 0; i < eventy.size(); i++) {
+//
+//				String query = "INSERT INTO Wydarzenia (tittle, start, end, note, place, contact, sound, before) VALUES (";
+//				query += "\"" + eventy.get(i).getTittle() + "\", ";
+//				query += "\"" + eventy.get(i).getStart().format(dateFormat) + "\", ";
+//				query += "\"" + eventy.get(i).getEnd().format(dateFormat) + "\", ";
+//				query += "\"" + eventy.get(i).getNote() + "\", ";
+//				query += "\"" + eventy.get(i).getPlace() + "\", ";
+//
+//				String contact = "-1";
 //				if (eventy.get(i).getPerson() != null) {
 //					System.out.println("++++++++++++" + eventy.get(i).getTittle() + ":" + eventy.get(i).getPerson());
 //					for (int j = 0; j < kontakty.size(); j++)
@@ -157,23 +206,23 @@ public class Transmiter {
 //					}
 //
 //				}
-				query += "\"" + contact + "\", ";
-
-				if (eventy.get(i).getNotification() == null)
-					query += "\"\", \"\");";
-				else {
-
-					query += "\"" + eventy.get(i).getNotification().getSound() + "\",";
-					query += "\"" + eventy.get(i).getNotification().getBefore().format(dateFormat) + "\");";
-					
-				}
-				System.out.println(query);
-				s.executeUpdate(query);
-			}
-		} catch (Exception ee) {
-            throw new RuntimeException(ee);
-		}
-	}
+//				query += "\"" + contact + "\", ";
+//
+//				if (eventy.get(i).getNotification() == null)
+//					query += "\"\", \"\");";
+//				else {
+//
+//					query += "\"" + eventy.get(i).getNotification().getSound() + "\",";
+//					query += "\"" + eventy.get(i).getNotification().getBefore().format(dateFormat) + "\");";
+//					
+//				}
+//				System.out.println(query);
+//				s.executeUpdate(query);
+//			}
+//		} catch (Exception ee) {
+//            throw new RuntimeException(ee);
+//		}
+//	}
 
 	// XML
 	public void xmlExport(File file, List<Event> eventsToExport) {

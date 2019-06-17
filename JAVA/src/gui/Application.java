@@ -108,11 +108,16 @@ public class Application {
 		control.registerListener(DisplayedDateChanged.class, calendarTable);
 		control.registerListener(DisplayedContactsChanged.class, contactsPane);
 		control.registerListener(DisplayedEventsChanged.class, eventsPane);
+		
+		control.playAlarms();
 
 		addCalendarListeners();	
 		addMenuListeners();
 		
+		
 		control.initialize();
+//		System.out.println("Hello from app");
+//		control.getManager().eventEditing();
 	}
 
 

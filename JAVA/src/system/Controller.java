@@ -30,6 +30,10 @@ public class Controller {
 		LocalDate now = LocalDate.now();
 		this.displayedDate = LocalDate.of(now.getYear(), now.getMonth(), 1);
 	}
+	
+	public Manager getManager() {
+		return manager;
+	}
 			
 	public void initialize() {
 		refreshEventData();
@@ -157,4 +161,8 @@ public class Controller {
 		manager.deleteEvent(e);
 		refreshEventData();
 	}	
+	
+	public void playAlarms() {
+		manager.checkDueAlarms();
+	}
 }

@@ -75,7 +75,8 @@ public class Event implements java.io.Serializable {
 	public void setPlace(String place) { this.place = place; }
 
 	public Alarm getNotification() { return notification; }
-	public void setNotification(Alarm notification) { this.notification = notification; }
+//	public void setNotification(Alarm notification) { this.notification = notification; }
+	public void setNotification(LocalDateTime date) {this.notification = new Alarm(date);}
 
 	public Contact getPerson() { return person; }
 	public void setPerson(Contact person) { this.person = person; }
