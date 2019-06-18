@@ -144,7 +144,7 @@ public class EventEditingDialog extends JDialog {
 					return eventToEdit;
 				}
 			}else {
-				return null;
+				return eventToEdit;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -370,21 +370,23 @@ public class EventEditingDialog extends JDialog {
 			int option; 
 			int number;
 			alarmCheckbox = new JCheckBox("Alarm");
+			
 			if(e.getNotification().getBefore() != null) {
 				alarmCheckbox.setSelected(true);
 				setAlarm = 1;
 				d1 = Duration.between(e.getStart(), e.getNotification().getBefore());
+				System.out.println(d1.toString());
 				if(d1.compareTo(day) < 0){
 					if(d1.compareTo(hour)<0) {
-						option = 0;
-						number = (int) ChronoUnit.MINUTES.between(e.getNotification().getBefore(), e.getStart());
+						option = 2;
+						number = (int) ChronoUnit.DAYS.between(e.getNotification().getBefore(), e.getStart());
 					} else {
 						option = 1;
 						number = (int) ChronoUnit.HOURS.between(e.getNotification().getBefore(), e.getStart());
 					}
 				}else {
-					option = 2;
-					number = (int) ChronoUnit.DAYS.between(e.getNotification().getBefore(), e.getStart());
+					option = 0;
+					number = (int) ChronoUnit.MINUTES.between(e.getNotification().getBefore(), e.getStart());
 				}
 				
 				

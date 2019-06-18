@@ -29,7 +29,7 @@ public class Manager {
 	
 	public Manager() {
 		LocalDateTime alarmTime = LocalDateTime.now().plusHours(1).minusDays(2);
-		Event e = new Event("example title" , LocalDateTime.now(), LocalDateTime.now().plusDays(1).plusHours(1), "example note", "example place", LocalDateTime.now().minusMinutes(1));
+		Event e = new Event("example title" , LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1).plusDays(4), "example note", "example place", LocalDateTime.now().plusMinutes(1));
 		eventy.add(e);
 	}
 
@@ -303,9 +303,10 @@ public class Manager {
 			if (e.getNotification() != null) {
 				LocalDateTime dateOfAlarm = e.getNotification().getBefore();
 				
-				if (dateOfAlarm.isBefore(LocalDateTime.now()))
+				if (dateOfAlarm.isBefore(LocalDateTime.now())) {
 					e.playAlarmSound();
 					e.setNotification(null);
+				}
 			}
 		}
 	}
@@ -328,4 +329,8 @@ public class Manager {
 		xPort.xmlExport(file, eventy);
 	}
 
+	public void replaceEvent(Event oldEvent, Event newEvent) {
+		eventy.remove(oldEvent);
+		eventy.add(newEvent);
+	}
 }

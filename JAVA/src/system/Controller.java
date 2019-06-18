@@ -23,6 +23,7 @@ import system.events.InternalEventListener;
 public class Controller {
 	
 	private LocalDate displayedDate;
+	private int currentOption = 0;
 	private Map<Class<? extends InternalEvent>, List<InternalEventListener>> listenersMap = new HashMap<>();
 	private Manager manager = Controller.createManager();
 	
@@ -38,7 +39,7 @@ public class Controller {
 	public void initialize() {
 		refreshEventData();
 		refreshContactData();
-		refreshDisplayedEvents(0);
+		refreshDisplayedEvents(currentOption);
 	}
 	
 			
@@ -95,6 +96,7 @@ public class Controller {
 	public void importEventsFromXml(File file){
         manager.importFromXML(file);
         refreshEventData();
+        refreshDisplayedEvents(currentOption);
 	}
 	public void showFromOutlookWindow(){
 		JOptionPane.showMessageDialog(null, "coming soon", "from XML", JOptionPane.INFORMATION_MESSAGE);
@@ -102,6 +104,7 @@ public class Controller {
 	public void importDataFromDatabase(String db){
 		manager.importFromDatabase(db);
 		refreshEventData();
+		refreshDisplayedEvents(currentOption);
 		refreshContactData();
 	}
 
@@ -128,6 +131,7 @@ public class Controller {
 	}
 	
 	public void changeDisplayedEvents(int option) {
+	    currentOption = option;
 		refreshDisplayedEvents(option);
 	}
 	
@@ -140,11 +144,13 @@ public class Controller {
 	public void addEvent(Event e) {
 		manager.addEvent(e);
 		refreshEventData();
+		refreshDisplayedEvents(currentOption);
 	}
 	
 	public void removeOldEvents(LocalDateTime dueTime) {
 		manager.removeOldEvents(dueTime);
 		refreshEventData();
+		refreshDisplayedEvents(currentOption);
 	}
 	
 	public void addContact(Contact c) {
@@ -160,7 +166,14 @@ public class Controller {
 	public void removeEvent(Event e) {
 		manager.deleteEvent(e);
 		refreshEventData();
-	}	
+		refreshDisplayedEvents(currentOption);
+	}
+
+	public void replaceEvent(Event oldEvent, Event newEvent) {
+		manager.replaceEvent(oldEvent, newEvent);
+		refreshEventData();
+		refreshDisplayedEvents(currentOption);
+	}
 	
 	public void playAlarms() {
 		manager.checkDueAlarms();

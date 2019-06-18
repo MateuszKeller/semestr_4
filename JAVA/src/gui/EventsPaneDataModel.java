@@ -20,12 +20,12 @@ class EventsPaneDataModel extends AbstractTableModel {
         events = evs;
     }
     
-    public Event removeEventAtRow(int row) {
-    	return events.remove(row);
+    public Event getEventAtRow(int row) {
+    	return events.get(row);
     }
 
     private static String[] columns = new String[] {
-            "Title", "Description", "Start", "End", ""
+            "Title", "Description", "Start", "End", "", ""
     };
 
     @Override
@@ -65,7 +65,13 @@ class EventsPaneDataModel extends AbstractTableModel {
             case 1: return ev.getNote();
             case 2: return ev.getStart().toString();
             case 3: return ev.getEnd().toString();
-            case 4: JLabel deleter = new JLabel("Delete");
+            case 4: JLabel editor = new JLabel("Edit");
+                    editor.setHorizontalAlignment(JLabel.CENTER);
+                    editor.setOpaque(true);
+                    editor.setBackground(Color.ORANGE);
+                    editor.setForeground(Color.BLACK);
+                    return editor;
+            case 5: JLabel deleter = new JLabel("Delete");
             		deleter.setHorizontalAlignment(JLabel.CENTER);
             		deleter.setOpaque(true);
             		deleter.setBackground(Color.GRAY);

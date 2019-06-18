@@ -230,13 +230,13 @@ public class Application {
 		eventsPane = new EventsPane(new EventsPane.EventRemover() {
 			@Override
 			public void removeEvent(Event e) {
-				if(e != null) {
+				if (e != null) {
 					control.removeEvent(e);
-					if(allEventsRadio.isSelected()) {
+					if (allEventsRadio.isSelected()) {
 						control.changeDisplayedEvents(0);
-					} else if(dayEventsRadio.isSelected()) {
+					} else if (dayEventsRadio.isSelected()) {
 						control.changeDisplayedEvents(1);
-					} else if(weekEventsRadio.isSelected()) {
+					} else if (weekEventsRadio.isSelected()) {
 						control.changeDisplayedEvents(2);
 					} else if (monthEventsRadio.isSelected()) {
 						control.changeDisplayedEvents(3);
@@ -244,6 +244,15 @@ public class Application {
 						control.changeDisplayedEvents(4);
 					}
 				}
+			}
+		}, new EventsPane.EventReplacer() {
+			@Override
+			public void replaceEvent(Event oldEvent) {
+				Event newEvent = new Event(oldEvent.getTittle(), oldEvent.getStart(), oldEvent.getEnd(),
+						oldEvent.getNote(), oldEvent.getPlace(), oldEvent.getNotification().getBefore());
+				newEvent = EventEditingDialog.showDialog(newEvent);
+//				newEvent.setTittle("Lipny tytul!!");
+				control.replaceEvent(oldEvent, newEvent);
 			}
 		});
 		eventsView.setLeftComponent(new JScrollPane(eventsPane));
