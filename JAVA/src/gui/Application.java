@@ -17,7 +17,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -371,8 +374,15 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedDate(monthsCombo.getSelectedIndex(), yearsCombo.getSelectedIndex());				
+				int year; 
+				if(yearsSpinner.getValue()!= null) {
+					year = (int)yearsSpinner.getValue();
+				} else {
+					year = 2018;
+				}
+				control.changeDisplayedDate(monthsCombo.getSelectedIndex(), year);				
 			}
+			
 		});
 		
 //		yearsCombo.addActionListener(new ActionListener() {
@@ -411,6 +421,7 @@ public class Application {
 				
 			}
 		});
+
 		
 		mntmSettings.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -534,11 +545,34 @@ public class Application {
 			}			
 		});
 	}
+
 	
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		/////////////////////
+		
+		frame.addWindowListener( new WindowAdapter()
+		{
+		    public void windowClosing(WindowEvent e)
+		    {
+		        JFrame frame = (JFrame)e.getSource();
+		 
+		        int result = JOptionPane.showConfirmDialog(
+		            frame,
+		            "Are you sure you want to exit the application?",
+		            "Exit Application",
+		            JOptionPane.YES_NO_OPTION);
+		 
+		        if (result == JOptionPane.YES_OPTION)
+		            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		    }
+		});
+		 
+		
+		/////////////////////
 		
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -547,7 +581,9 @@ public class Application {
 		menuBar.add(mnMain);
 		mnMain.setMnemonic(KeyEvent.VK_M);
 		
-		mntmSettings = new JMenuItem("Settings");
+		mntmSettings = new JMenuItem("Settings", KeyEvent.VK_N);
+		KeyStroke f3KeyStroke = KeyStroke.getKeyStroke('S',InputEvent.CTRL_DOWN_MASK);
+		mntmSettings.setAccelerator(f3KeyStroke);
 		mnMain.add(mntmSettings);
 
 		
