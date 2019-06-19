@@ -9,6 +9,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import dane.*;
 import gui.EventEditingDialog;
 import system.Transmiter;
@@ -29,7 +32,7 @@ public class Manager {
 	
 	public Manager() {
 		LocalDateTime alarmTime = LocalDateTime.now().plusHours(1).minusDays(2);
-		Event e = new Event("example title" , LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1).plusDays(4), "example note", "example place", LocalDateTime.now().plusMinutes(1));
+		Event e = new Event("example title" , LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1).plusDays(4), "example note", "example place", LocalDateTime.now().plusSeconds(1));
 		eventy.add(e);
 	}
 
@@ -280,31 +283,32 @@ public class Manager {
 		}
 	}
 
-	public void checkDueAlarms() {
+	public void checkDueAlarms(JFrame frame) {
 		Runnable drawRunnable = new Runnable() {
 			
 			@Override
 			public void run() {
-				playAlarm();	
+				playAlarm(frame);	
 			}
 		};
 		
 		ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-		exec.scheduleAtFixedRate(drawRunnable, 0, 1, TimeUnit.MINUTES);
+		exec.scheduleAtFixedRate(drawRunnable, 0, 20, TimeUnit.SECONDS);
 	}
 	
 	
-	public void playAlarm() {
+	public void playAlarm(JFrame frame) {
 		Iterator<Event> it = eventy.iterator();
 
 		while (it.hasNext()) {
 			Event e = it.next();
 
-			if (e.getNotification() != null) {
+			if (e.getNotification() != null && e.getNotification().getBefore() != null) {
 				LocalDateTime dateOfAlarm = e.getNotification().getBefore();
 				
 				if (dateOfAlarm.isBefore(LocalDateTime.now())) {
 					e.playAlarmSound();
+					JOptionPane.showMessageDialog(frame, "Event " + e.getTittle() + " will begin soon");
 					e.setNotification(null);
 				}
 			}

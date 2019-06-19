@@ -117,6 +117,12 @@ public class EventEditingDialog extends JDialog {
 				}
 				LocalTime newEndTime = LocalTime.of(endHour,endMinute);
 				LocalDateTime newEndDate = dialog.convertToLocalDateTime(endDate, newEndTime);
+				
+				if(newEndDate.isBefore(newStartDate)) {
+					JOptionPane.showMessageDialog(dialog, "Start date cannot be after end date");
+					dialog.setVisible(true);
+					dialog.okClicked = false;	
+				}
 				eventToEdit.setEnd(newEndDate);
 				eventToEdit.setTittle(title);
 				eventToEdit.setNote(note);
@@ -365,7 +371,7 @@ public class EventEditingDialog extends JDialog {
 		
 			
 			Duration d1; 	
-			Duration day = Duration.ofHours(24);
+			Duration day = Duration.ofMinutes(24*60);
 			Duration hour = Duration.ofMinutes(60);
 			int option; 
 			int number;
@@ -374,19 +380,23 @@ public class EventEditingDialog extends JDialog {
 			if(e.getNotification().getBefore() != null) {
 				alarmCheckbox.setSelected(true);
 				setAlarm = 1;
-				d1 = Duration.between(e.getStart(), e.getNotification().getBefore());
+				d1 = Duration.between(e.getNotification().getBefore(),e.getStart());
 				System.out.println(d1.toString());
 				if(d1.compareTo(day) < 0){
-					if(d1.compareTo(hour)<0) {
-						option = 2;
-						number = (int) ChronoUnit.DAYS.between(e.getNotification().getBefore(), e.getStart());
+//					System.out.println("d1  day" + d1.compareTo(day)) ;
+					if(d1.compareTo(hour) < 0) {
+//						System.out.println("d1 < hour");
+						option = 0;
+						number = (int) ChronoUnit.MINUTES.between(e.getNotification().getBefore(), e.getStart());
 					} else {
+//						System.out.println("d1 > hour && < day");
 						option = 1;
 						number = (int) ChronoUnit.HOURS.between(e.getNotification().getBefore(), e.getStart());
 					}
 				}else {
-					option = 0;
-					number = (int) ChronoUnit.MINUTES.between(e.getNotification().getBefore(), e.getStart());
+//					System.out.println("d1 > day");
+					option = 2;
+					number = (int) ChronoUnit.DAYS.between(e.getNotification().getBefore(), e.getStart());
 				}
 				
 				

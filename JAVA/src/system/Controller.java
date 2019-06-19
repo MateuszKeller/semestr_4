@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import com.sun.media.sound.ModelAbstractChannelMixer;
@@ -125,8 +126,8 @@ public class Controller {
 	}
 
 	public void changeDisplayedDate(int selectedMonth, int selectedYear) {
-		displayedDate = LocalDate.of(2018 +selectedYear, selectedMonth+1, 1);		
-		List<Event> events = manager.getEventsInMonth(2018 + selectedYear, selectedMonth + 1);
+		displayedDate = LocalDate.of(selectedYear, selectedMonth+1, 1);		
+		List<Event> events = manager.getEventsInMonth(selectedYear, selectedMonth + 1);
 		notifyListeners(new DisplayedDateChanged(displayedDate, events));		 		
 	}
 	
@@ -175,7 +176,7 @@ public class Controller {
 		refreshDisplayedEvents(currentOption);
 	}
 	
-	public void playAlarms() {
-		manager.checkDueAlarms();
+	public void playAlarms(JFrame frame) {
+		manager.checkDueAlarms(frame);
 	}
 }

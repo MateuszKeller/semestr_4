@@ -9,6 +9,8 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import com.toedter.calendar.JDateChooser;
+
 import dane.Event;
 
 import javax.swing.JLabel;
@@ -23,9 +25,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.temporal.TemporalUnit;
+import java.util.Date;
 
 import javax.swing.JComboBox;
 import javax.swing.JRadioButton;
@@ -49,6 +56,8 @@ public class EventAddingDialog extends JDialog {
 	private JComboBox<String> StartMonthCombo;
 	private JComboBox<String> EndMonthCombo;
 	private JCheckBox AlarmRadio;
+	private JDateChooser endDateChooser;
+	private JDateChooser startDateChooser;
 	private String [] months = 
 		{"January", "February", "March", "April", 
 				"May", "June", "July", "August", 
@@ -64,6 +73,12 @@ public class EventAddingDialog extends JDialog {
 	/**
 	 * Launch the application.
 	 */
+
+	public LocalDateTime convertToLocalDateTime(Date date, LocalTime time) {
+		LocalDate newDate = Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
+		return LocalDateTime.of(newDate, time);
+	}
+	
 	public static Event showDialog() {
 		try {
 			EventAddingDialog dialog = new EventAddingDialog();
@@ -74,21 +89,27 @@ public class EventAddingDialog extends JDialog {
 				String note = dialog.NoteTextfield.getText();
 				String place = dialog.PlaceTextfield.getText();
 				
-				int startYear = Integer.parseInt(dialog.StartYearTextfield.getText());
-				int startMonth = dialog.StartMonthCombo.getSelectedIndex()+1;
-				int startDay = Integer.parseInt(dialog.StartDayTextfield.getText());
+				
+//				
+//				int startYear = Integer.parseInt(dialog.StartYearTextfield.getText());
+//				int startMonth = dialog.StartMonthCombo.getSelectedIndex()+1;
+//				int startDay = Integer.parseInt(dialog.StartDayTextfield.getText());
 				int startHour = Integer.parseInt(dialog.StartHourTextfield.getText());
 				int startMinute = Integer.parseInt(dialog.StartMinuteTextfield.getText());
-				if(startYear < 0) {
-					JOptionPane.showMessageDialog(dialog, "Incorrect start year value");
-					dialog.setVisible(true);
-					dialog.okClicked = false;
-				}
-				if(startDay < 0 || startDay > 31) {
-					JOptionPane.showMessageDialog(dialog, "Incorrect start day value");
-					dialog.setVisible(true);
-					dialog.okClicked = false;
-				}
+				
+				Date startDate = dialog.startDateChooser.getDate();
+				LocalTime newStartTime = LocalTime.of(startHour, startMinute);
+				
+//				if(startYear < 0) {
+//					JOptionPane.showMessageDialog(dialog, "Incorrect start year value");
+//					dialog.setVisible(true);
+//					dialog.okClicked = false;
+//				}
+//				if(startDay < 0 || startDay > 31) {
+//					JOptionPane.showMessageDialog(dialog, "Incorrect start day value");
+//					dialog.setVisible(true);
+//					dialog.okClicked = false;
+//				}
 				if(startHour < 0 || startHour > 23) {
 					JOptionPane.showMessageDialog(dialog, "Incorrect start hour value");
 					dialog.setVisible(true);
@@ -100,24 +121,27 @@ public class EventAddingDialog extends JDialog {
 					dialog.okClicked = false;
 				}
 				
-				LocalDateTime startTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute );
-				int endYear = Integer.parseInt(dialog.EndYearTextfield.getText());
+				LocalDateTime startTime = dialog.convertToLocalDateTime(startDate, newStartTime);
+//				int endYear = Integer.parseInt(dialog.EndYearTextfield.getText());
+//				
+//				int endMonth = dialog.EndMonthCombo.getSelectedIndex()+1;
+//				int endDay = Integer.parseInt(dialog.EndDayTextfield.getText());
 				
-				int endMonth = dialog.EndMonthCombo.getSelectedIndex()+1;
-				int endDay = Integer.parseInt(dialog.EndDayTextfield.getText());
+				Date endDate = dialog.endDateChooser.getDate();
+				
 				int endHour = Integer.parseInt(dialog.EndHourTextfield.getText());
 				int endMinute = Integer.parseInt(dialog.EndMinuteTextfield.getText());
-				
-				if(endYear < 0) {
-					JOptionPane.showMessageDialog(dialog, "Incorrect end year value");
-					dialog.setVisible(true);
-					dialog.okClicked = false;
-				}
-				if(endDay < 0 || startDay > 31) {
-					JOptionPane.showMessageDialog(dialog, "Incorrect end day value");
-					dialog.setVisible(true);
-					dialog.okClicked = false;
-				}
+				LocalTime newEndTime= LocalTime.of(endHour, endMinute);
+//				if(endYear < 0) {
+//					JOptionPane.showMessageDialog(dialog, "Incorrect end year value");
+//					dialog.setVisible(true);
+//					dialog.okClicked = false;
+//				}
+//				if(endDay < 0 || startDay > 31) {
+//					JOptionPane.showMessageDialog(dialog, "Incorrect end day value");
+//					dialog.setVisible(true);
+//					dialog.okClicked = false;
+//				}
 				if(endHour < 0 || startHour > 23) {
 					JOptionPane.showMessageDialog(dialog, "Incorrect end hour value");
 					dialog.setVisible(true);
@@ -129,28 +153,35 @@ public class EventAddingDialog extends JDialog {
 					dialog.okClicked = false;
 				}
 				
-				LocalDateTime endTime = LocalDateTime.of(endYear,endMonth, endDay, endHour, endMinute);
+				LocalDateTime endTime = dialog.convertToLocalDateTime(endDate, newEndTime);
+				
+				if(endTime.isBefore(startTime)) {
+					JOptionPane.showMessageDialog(dialog, "Start date cannot be after end date");
+					dialog.setVisible(true);
+					dialog.okClicked = false;	
+				}
 				int number;
 				int option;
 				if(dialog.setAlarm == 1) {
+			
 					number = Integer.parseInt(dialog.AlarmTimeTextfield.getText());
 					option = dialog.AlarmTimeCombo.getSelectedIndex();
 					LocalDateTime alarmTime;
 					if(option == 0) {
-						alarmTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute);
-						alarmTime = alarmTime.minusMinutes(number);
+						alarmTime = startTime.minusMinutes(number);
 					} else if(option == 1) {
-						alarmTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute );
-						alarmTime = alarmTime.minusHours(number);
+//						alarmTime = LocalDateTime.of(startYear, startMonth, startDay, startHour, startMinute );
+						alarmTime = startTime.minusHours(number);
 					} else {
-						alarmTime = LocalDateTime.of(startYear, startMonth, startDay + number, startHour, startMinute );
-						alarmTime = alarmTime.minus(Period.ofDays(number));
+//						alarmTime = LocalDateTime.of(startYear, startMonth, startDay + number, startHour, startMinute );
+						alarmTime = startTime.minus(Period.ofDays(number));
 					}
+					System.out.println(alarmTime);
 					Event event = new Event(title, startTime, endTime, note, place, alarmTime);
 					dialog.dispose();
 					return event;
 				} else {
-					Event event = new Event(title, startTime, endTime, note, place);
+					Event event = new Event(title, startTime, endTime, note, place,null);
 					dialog.dispose();
 					return event;
 				}
@@ -253,61 +284,82 @@ public class EventAddingDialog extends JDialog {
 			contentPanel.add(StartTimeLabel, gbc_StartTimeLabel);
 		}
 		{
-			JLabel StartDayLabel = new JLabel("Day:");
-			GridBagConstraints gbc_StartDayLabel = new GridBagConstraints();
-			gbc_StartDayLabel.insets = new Insets(0, 0, 5, 5);
-			gbc_StartDayLabel.anchor = GridBagConstraints.WEST;
-			gbc_StartDayLabel.gridx = 1;
-			gbc_StartDayLabel.gridy = 4;
-			contentPanel.add(StartDayLabel, gbc_StartDayLabel);
+			JLabel startDateLabel = new JLabel("Date:");
+			GridBagConstraints gbc_startDateLabel = new GridBagConstraints();
+			gbc_startDateLabel.anchor = GridBagConstraints.NORTHWEST;
+			gbc_startDateLabel.insets = new Insets(0, 0, 5, 5);
+			gbc_startDateLabel.gridx = 1;
+			gbc_startDateLabel.gridy = 5;
+			contentPanel.add(startDateLabel, gbc_startDateLabel);
 		}
 		{
-			StartDayTextfield = new JTextField();
-			GridBagConstraints gbc_StartDayTextfield = new GridBagConstraints();
-			gbc_StartDayTextfield.insets = new Insets(0, 0, 5, 5);
-			gbc_StartDayTextfield.fill = GridBagConstraints.HORIZONTAL;
-			gbc_StartDayTextfield.gridx = 2;
-			gbc_StartDayTextfield.gridy = 4;
-			contentPanel.add(StartDayTextfield, gbc_StartDayTextfield);
-			StartDayTextfield.setColumns(10);
+			startDateChooser = new JDateChooser();
+			GridBagConstraints gbc_startDateChooser = new GridBagConstraints();
+			gbc_startDateChooser.anchor = GridBagConstraints.NORTH;
+			gbc_startDateChooser.insets = new Insets(0, 0, 5, 5);
+			gbc_startDateChooser.fill = GridBagConstraints.HORIZONTAL;
+			gbc_startDateChooser.gridx = 2;
+			gbc_startDateChooser.gridy = 5;
+			contentPanel.add(startDateChooser, gbc_startDateChooser);
 		}
-		{
-			JLabel StartMonthLabel = new JLabel("Month:");
-			GridBagConstraints gbc_StartMonthLabel = new GridBagConstraints();
-			gbc_StartMonthLabel.insets = new Insets(0, 0, 5, 5);
-			gbc_StartMonthLabel.anchor = GridBagConstraints.WEST;
-			gbc_StartMonthLabel.gridx = 1;
-			gbc_StartMonthLabel.gridy = 5;
-			contentPanel.add(StartMonthLabel, gbc_StartMonthLabel);
-		}
-		{
-			StartMonthCombo = new JComboBox<String>(months);
-			GridBagConstraints gbc_StartMonthCombo = new GridBagConstraints();
-			gbc_StartMonthCombo.insets = new Insets(0, 0, 5, 5);
-			gbc_StartMonthCombo.fill = GridBagConstraints.HORIZONTAL;
-			gbc_StartMonthCombo.gridx = 2;
-			gbc_StartMonthCombo.gridy = 5;
-			contentPanel.add(StartMonthCombo, gbc_StartMonthCombo);
-		}
-		{
-			JLabel StartYearLabel = new JLabel("Year:");
-			GridBagConstraints gbc_StartYearLabel = new GridBagConstraints();
-			gbc_StartYearLabel.insets = new Insets(0, 0, 5, 5);
-			gbc_StartYearLabel.anchor = GridBagConstraints.WEST;
-			gbc_StartYearLabel.gridx = 1;
-			gbc_StartYearLabel.gridy = 6;
-			contentPanel.add(StartYearLabel, gbc_StartYearLabel);
-		}
-		{
-			StartYearTextfield = new JTextField();
-			GridBagConstraints gbc_StartYearTextfield = new GridBagConstraints();
-			gbc_StartYearTextfield.insets = new Insets(0, 0, 5, 5);
-			gbc_StartYearTextfield.fill = GridBagConstraints.HORIZONTAL;
-			gbc_StartYearTextfield.gridx = 2;
-			gbc_StartYearTextfield.gridy = 6;
-			contentPanel.add(StartYearTextfield, gbc_StartYearTextfield);
-			StartYearTextfield.setColumns(10);
-		}
+		
+		
+//		{
+//			JLabel StartDayLabel = new JLabel("Day:");
+//			GridBagConstraints gbc_StartDayLabel = new GridBagConstraints();
+//			gbc_StartDayLabel.insets = new Insets(0, 0, 5, 5);
+//			gbc_StartDayLabel.anchor = GridBagConstraints.WEST;
+//			gbc_StartDayLabel.gridx = 1;
+//			gbc_StartDayLabel.gridy = 4;
+//			contentPanel.add(StartDayLabel, gbc_StartDayLabel);
+//		}
+//		{
+//			StartDayTextfield = new JTextField();
+//			GridBagConstraints gbc_StartDayTextfield = new GridBagConstraints();
+//			gbc_StartDayTextfield.insets = new Insets(0, 0, 5, 5);
+//			gbc_StartDayTextfield.fill = GridBagConstraints.HORIZONTAL;
+//			gbc_StartDayTextfield.gridx = 2;
+//			gbc_StartDayTextfield.gridy = 4;
+//			contentPanel.add(StartDayTextfield, gbc_StartDayTextfield);
+//			StartDayTextfield.setColumns(10);
+//		}
+//		{
+//			JLabel StartMonthLabel = new JLabel("Month:");
+//			GridBagConstraints gbc_StartMonthLabel = new GridBagConstraints();
+//			gbc_StartMonthLabel.insets = new Insets(0, 0, 5, 5);
+//			gbc_StartMonthLabel.anchor = GridBagConstraints.WEST;
+//			gbc_StartMonthLabel.gridx = 1;
+//			gbc_StartMonthLabel.gridy = 5;
+//			contentPanel.add(StartMonthLabel, gbc_StartMonthLabel);
+//		}
+//		{
+//			StartMonthCombo = new JComboBox<String>(months);
+//			GridBagConstraints gbc_StartMonthCombo = new GridBagConstraints();
+//			gbc_StartMonthCombo.insets = new Insets(0, 0, 5, 5);
+//			gbc_StartMonthCombo.fill = GridBagConstraints.HORIZONTAL;
+//			gbc_StartMonthCombo.gridx = 2;
+//			gbc_StartMonthCombo.gridy = 5;
+//			contentPanel.add(StartMonthCombo, gbc_StartMonthCombo);
+//		}
+//		{
+//			JLabel StartYearLabel = new JLabel("Year:");
+//			GridBagConstraints gbc_StartYearLabel = new GridBagConstraints();
+//			gbc_StartYearLabel.insets = new Insets(0, 0, 5, 5);
+//			gbc_StartYearLabel.anchor = GridBagConstraints.WEST;
+//			gbc_StartYearLabel.gridx = 1;
+//			gbc_StartYearLabel.gridy = 6;
+//			contentPanel.add(StartYearLabel, gbc_StartYearLabel);
+//		}
+//		{
+//			StartYearTextfield = new JTextField();
+//			GridBagConstraints gbc_StartYearTextfield = new GridBagConstraints();
+//			gbc_StartYearTextfield.insets = new Insets(0, 0, 5, 5);
+//			gbc_StartYearTextfield.fill = GridBagConstraints.HORIZONTAL;
+//			gbc_StartYearTextfield.gridx = 2;
+//			gbc_StartYearTextfield.gridy = 6;
+//			contentPanel.add(StartYearTextfield, gbc_StartYearTextfield);
+//			StartYearTextfield.setColumns(10);
+//		}
 		{
 			JLabel StartHourLabel = new JLabel("Hour:");
 			GridBagConstraints gbc_StartHourLabel = new GridBagConstraints();
@@ -356,62 +408,84 @@ public class EventAddingDialog extends JDialog {
 			gbc_EntTimeLabel.gridy = 9;
 			contentPanel.add(EntTimeLabel, gbc_EntTimeLabel);
 		}
+		/////////////////////
 		{
-			JLabel EndDayLabel = new JLabel("Day:");
-			GridBagConstraints gbc_EndDayLabel = new GridBagConstraints();
-			gbc_EndDayLabel.anchor = GridBagConstraints.WEST;
-			gbc_EndDayLabel.insets = new Insets(0, 0, 5, 5);
-			gbc_EndDayLabel.gridx = 1;
-			gbc_EndDayLabel.gridy = 10;
-			contentPanel.add(EndDayLabel, gbc_EndDayLabel);
+			JLabel startDateLabel = new JLabel("Date:");
+			GridBagConstraints gbc_startDateLabel = new GridBagConstraints();
+			gbc_startDateLabel.anchor = GridBagConstraints.NORTHWEST;
+			gbc_startDateLabel.insets = new Insets(0, 0, 5, 5);
+			gbc_startDateLabel.gridx = 1;
+			gbc_startDateLabel.gridy = 10;
+			contentPanel.add(startDateLabel, gbc_startDateLabel);
 		}
 		{
-			EndDayTextfield = new JTextField();
-			GridBagConstraints gbc_EndDayTextfield = new GridBagConstraints();
-			gbc_EndDayTextfield.insets = new Insets(0, 0, 5, 5);
-			gbc_EndDayTextfield.fill = GridBagConstraints.HORIZONTAL;
-			gbc_EndDayTextfield.gridx = 2;
-			gbc_EndDayTextfield.gridy = 10;
-			contentPanel.add(EndDayTextfield, gbc_EndDayTextfield);
-			EndDayTextfield.setColumns(10);
+			endDateChooser = new JDateChooser();
+			GridBagConstraints gbc_endDateChooser = new GridBagConstraints();
+			gbc_endDateChooser.anchor = GridBagConstraints.NORTH;
+			gbc_endDateChooser.insets = new Insets(0, 0, 5, 5);
+			gbc_endDateChooser.fill = GridBagConstraints.HORIZONTAL;
+			gbc_endDateChooser.gridx = 2;
+			gbc_endDateChooser.gridy = 10;
+			contentPanel.add(endDateChooser, gbc_endDateChooser);
 		}
-		{
-			JLabel EndMonthLabel = new JLabel("Month:");
-			GridBagConstraints gbc_EndMonthLabel = new GridBagConstraints();
-			gbc_EndMonthLabel.anchor = GridBagConstraints.WEST;
-			gbc_EndMonthLabel.insets = new Insets(0, 0, 5, 5);
-			gbc_EndMonthLabel.gridx = 1;
-			gbc_EndMonthLabel.gridy = 11;
-			contentPanel.add(EndMonthLabel, gbc_EndMonthLabel);
-		}
-		{
-			EndMonthCombo = new JComboBox(months);
-			GridBagConstraints gbc_EndMonthCombo = new GridBagConstraints();
-			gbc_EndMonthCombo.insets = new Insets(0, 0, 5, 5);
-			gbc_EndMonthCombo.fill = GridBagConstraints.HORIZONTAL;
-			gbc_EndMonthCombo.gridx = 2;
-			gbc_EndMonthCombo.gridy = 11;
-			contentPanel.add(EndMonthCombo, gbc_EndMonthCombo);
-		}
-		{
-			JLabel EndYearLabel = new JLabel("Year:");
-			GridBagConstraints gbc_EndYearLabel = new GridBagConstraints();
-			gbc_EndYearLabel.anchor = GridBagConstraints.WEST;
-			gbc_EndYearLabel.insets = new Insets(0, 0, 5, 5);
-			gbc_EndYearLabel.gridx = 1;
-			gbc_EndYearLabel.gridy = 12;
-			contentPanel.add(EndYearLabel, gbc_EndYearLabel);
-		}
-		{
-			EndYearTextfield = new JTextField();
-			GridBagConstraints gbc_EndYearTextfield = new GridBagConstraints();
-			gbc_EndYearTextfield.insets = new Insets(0, 0, 5, 5);
-			gbc_EndYearTextfield.fill = GridBagConstraints.HORIZONTAL;
-			gbc_EndYearTextfield.gridx = 2;
-			gbc_EndYearTextfield.gridy = 12;
-			contentPanel.add(EndYearTextfield, gbc_EndYearTextfield);
-			EndYearTextfield.setColumns(10);
-		}
+		////////////////////////////////////
+		
+//		{
+//			JLabel EndDayLabel = new JLabel("Day:");
+//			GridBagConstraints gbc_EndDayLabel = new GridBagConstraints();
+//			gbc_EndDayLabel.anchor = GridBagConstraints.WEST;
+//			gbc_EndDayLabel.insets = new Insets(0, 0, 5, 5);
+//			gbc_EndDayLabel.gridx = 1;
+//			gbc_EndDayLabel.gridy = 10;
+//			contentPanel.add(EndDayLabel, gbc_EndDayLabel);
+//		}
+//		{
+//			EndDayTextfield = new JTextField();
+//			GridBagConstraints gbc_EndDayTextfield = new GridBagConstraints();
+//			gbc_EndDayTextfield.insets = new Insets(0, 0, 5, 5);
+//			gbc_EndDayTextfield.fill = GridBagConstraints.HORIZONTAL;
+//			gbc_EndDayTextfield.gridx = 2;
+//			gbc_EndDayTextfield.gridy = 10;
+//			contentPanel.add(EndDayTextfield, gbc_EndDayTextfield);
+//			EndDayTextfield.setColumns(10);
+//		}
+//		{
+//			JLabel EndMonthLabel = new JLabel("Month:");
+//			GridBagConstraints gbc_EndMonthLabel = new GridBagConstraints();
+//			gbc_EndMonthLabel.anchor = GridBagConstraints.WEST;
+//			gbc_EndMonthLabel.insets = new Insets(0, 0, 5, 5);
+//			gbc_EndMonthLabel.gridx = 1;
+//			gbc_EndMonthLabel.gridy = 11;
+//			contentPanel.add(EndMonthLabel, gbc_EndMonthLabel);
+//		}
+//		{
+//			EndMonthCombo = new JComboBox(months);
+//			GridBagConstraints gbc_EndMonthCombo = new GridBagConstraints();
+//			gbc_EndMonthCombo.insets = new Insets(0, 0, 5, 5);
+//			gbc_EndMonthCombo.fill = GridBagConstraints.HORIZONTAL;
+//			gbc_EndMonthCombo.gridx = 2;
+//			gbc_EndMonthCombo.gridy = 11;
+//			contentPanel.add(EndMonthCombo, gbc_EndMonthCombo);
+//		}
+//		{
+//			JLabel EndYearLabel = new JLabel("Year:");
+//			GridBagConstraints gbc_EndYearLabel = new GridBagConstraints();
+//			gbc_EndYearLabel.anchor = GridBagConstraints.WEST;
+//			gbc_EndYearLabel.insets = new Insets(0, 0, 5, 5);
+//			gbc_EndYearLabel.gridx = 1;
+//			gbc_EndYearLabel.gridy = 12;
+//			contentPanel.add(EndYearLabel, gbc_EndYearLabel);
+//		}
+//		{
+//			EndYearTextfield = new JTextField();
+//			GridBagConstraints gbc_EndYearTextfield = new GridBagConstraints();
+//			gbc_EndYearTextfield.insets = new Insets(0, 0, 5, 5);
+//			gbc_EndYearTextfield.fill = GridBagConstraints.HORIZONTAL;
+//			gbc_EndYearTextfield.gridx = 2;
+//			gbc_EndYearTextfield.gridy = 12;
+//			contentPanel.add(EndYearTextfield, gbc_EndYearTextfield);
+//			EndYearTextfield.setColumns(10);
+//		}
 		{
 			JLabel EndHourLabel = new JLabel("Hour:");
 			GridBagConstraints gbc_EndHourLabel = new GridBagConstraints();
@@ -467,7 +541,7 @@ public class EventAddingDialog extends JDialog {
 			contentPanel.add(AlarmRadio, gbc_AlarmRadio);
 		}
 		{
-			AlarmTimeCombo = new JComboBox(alarmOptions);
+			AlarmTimeCombo = new JComboBox<String>(alarmOptions);
 			GridBagConstraints gbc_AlarmTimeCombo = new GridBagConstraints();
 			gbc_AlarmTimeCombo.insets = new Insets(0, 0, 0, 5);
 			gbc_AlarmTimeCombo.fill = GridBagConstraints.HORIZONTAL;

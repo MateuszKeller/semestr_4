@@ -9,6 +9,9 @@ import system.events.DisplayedDateChanged;
 import system.events.DisplayedEventsChanged;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -63,6 +66,7 @@ public class Application {
 				"September", "October", "November", "December"};
 	private String [] years = {"2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"};
 	private JComboBox<String> monthsCombo; 
+	private JSpinner yearsSpinner;
 	private JComboBox<String> yearsCombo;
 
 	/**
@@ -109,7 +113,7 @@ public class Application {
 		control.registerListener(DisplayedContactsChanged.class, contactsPane);
 		control.registerListener(DisplayedEventsChanged.class, eventsPane);
 		
-		control.playAlarms();
+		control.playAlarms(frame);
 
 		addCalendarListeners();	
 		addMenuListeners();
@@ -154,13 +158,20 @@ public class Application {
 		c.fill = GridBagConstraints.NONE;
 		calendarOptionsPane.add(monthsCombo, c);		
 		
-		yearsCombo = new JComboBox<String>(years);
-		yearsCombo.setSelectedIndex(now.getYear() - 2018);
-		monthsCombo.setPreferredSize(new Dimension(100,20));
-		monthsCombo.setPrototypeDisplayValue("xXXxxx");
+		SpinnerModel yearsModel = new SpinnerNumberModel(LocalDate.now().getYear(),LocalDate.now().getYear() - 100, LocalDate.now().getYear()+100, 1 );
+		yearsSpinner = new JSpinner(yearsModel);
+		
 		c.gridx = 1; 
 		c.gridy = 0;
-		calendarOptionsPane.add(yearsCombo, c);
+		calendarOptionsPane.add(yearsSpinner,c);
+		
+//		yearsCombo = new JComboBox<String>(years);
+//		yearsCombo.setSelectedIndex(now.getYear() - 2018);
+//		monthsCombo.setPreferredSize(new Dimension(100,20));
+//		monthsCombo.setPrototypeDisplayValue("xXXxxx");
+//		c.gridx = 1; 
+//		c.gridy = 0;
+//		calendarOptionsPane.add(yearsCombo, c);
 		
 		c.gridx = 1; 
 		c.gridy = 1;
@@ -364,14 +375,31 @@ public class Application {
 			}
 		});
 		
-		yearsCombo.addActionListener(new ActionListener() {
+//		yearsCombo.addActionListener(new ActionListener() {
+//			
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),yearsCombo.getSelectedIndex());
+//				
+//			}
+//		});
+		
+		yearsSpinner.addChangeListener(new ChangeListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),yearsCombo.getSelectedIndex());
+			public void stateChanged(ChangeEvent e) {
+//				System.out.println(yearsSpinner.getValue());
+				int year; 
+				if(yearsSpinner.getValue()!= null) {
+					year = (int)yearsSpinner.getValue();
+				} else {
+					year = 2018;
+				}
+				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),year);
 				
 			}
 		});
+
 	}
 	
 	public void addMenuListeners() {
