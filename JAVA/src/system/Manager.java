@@ -2,13 +2,10 @@ package system;
 
 import java.io.File;
 import java.time.*;
-import java.time.chrono.ChronoLocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -16,127 +13,71 @@ import dane.*;
 import gui.EventEditingDialog;
 import system.Transmiter;
 
-
+/**
+ * main class of logic layer of this program, handles all changes in data and logic classes, communicates with GUI via Controller object
+ * @author Mateusz Keller
+ * @author Marta Bielecka
+ *
+ */
 public class Manager {
 
+	/**
+	 * list of events
+	 */
 	private ArrayList<Event> eventy = new ArrayList<>();
+	/**
+	 * list of contacts
+	 */
 	private ArrayList<Contact> kontakty = new ArrayList<>();
+	/**
+	 * Transmiter object responsible for i/o operations and streams handling
+	 */
 	private Transmiter xPort = new Transmiter();
-	private Duration whenToRemove = Duration.ofDays(10);
-
-	public ArrayList<Event> getEventy() { return eventy; }
-	public ArrayList<Contact> getContacts() { return kontakty; }
-	public Transmiter getTransmiter() { return xPort; }
-	public Duration getWhenToRemove() { return whenToRemove; }
-	public void setWhenToRemove(Duration whenToRemove) { this.whenToRemove = whenToRemove; }
 	
-	public Manager() {
-		LocalDateTime alarmTime = LocalDateTime.now().plusHours(1).minusDays(2);
-		Event e = new Event("example title" , LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1).plusDays(4), "example note", "example place", LocalDateTime.now().plusSeconds(1));
-		eventy.add(e);
-	}
+	/**
+	 * returns list of all events
+	 * @return list of all events
+	 */
+	public ArrayList<Event> getEventy() { return eventy; }
+	/**
+	 * returns list of contacts
+	 * @return list of contacts
+	 */
+	public ArrayList<Contact> getContacts() { return kontakty; }
+	/**
+	 * returns Transmiter object
+	 * @return value of xPort field
+	 */
+	public Transmiter getTransmiter() { return xPort; }
+	
+	/**
+	 * constructs new Manager object
+	 */
+	public Manager() {}
 
-//	public void testMain(String[] args) {
-//
-//System.out.println("--------------------DATA--------------------");
-//
-//		LocalDateTime date = LocalDateTime.now();
-//		LocalDateTime sDate = LocalDateTime.parse("2019-05-31T01:56:00");
-//		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("EEEE dd MMMM HH:mm");
-//
-//		// ------------------------------
-////		String fDate = date.format(dateFormat);
-////			System.out.println("date: " + date);
-////			System.out.println("fDate: " + fDate);
-////			System.out.println("sDate: " + sDate.toString());
-////
-////			fDate = sDate.format(dateFormat);
-////			System.out.println("fDate z sDate: " + fDate);
-//		// ------------------------------
-//		System.out.println("--------------------+EVENTY+--------------------");
-//
-//		LocalDateTime t = LocalDateTime.parse("2019-06-17T00:30");
-//		Event e1 = new Event("1", sDate, date);
-//		e1.setNotification(new Alarm(t));
-//		Event e2 = new Event("2", sDate, date);
-//
-//		eventy.add(e1);
-//		eventy.add(e2);
-//			//Event e3 = e1;
-//			//eventy.remove(e3);
-//		// ------------------------------
-////			System.out.println("EVENTY:" + eventy);
-////
-////			System.out.println("--------------------");
-////			removeExpiredEvents();
-////			System.out.println("--------------------");
-////			System.out.println("EVENTY PO R_EXP_EV:" + eventy);
-//			// ------------------------------
-//		System.out.println("--------------------+KONTAKTY+--------------------");
-//		// ------------------------------
-////			System.out.println(kontakty);
-////			System.out.println("IMPORT:");
-//		// ------------------------------
-//
-//		xPort.bdImportKontakty(kontakty);
-//			System.out.println(kontakty);
-//		// System.out.println(kontakty); System.out.println("--------------------");
-//
-//		System.out.println("--------------------+CZAS+--------------------");
-////		LocalDateTime test = LocalDateTime.now();
-////		test = test.minusHours(0);
-////		test = test.minusMinutes(t.getMinute());
-//
-//		// System.out.println("T: " + test);
-//		playAlarm();
-//
-//		//e3.setNotification(new Alarm(t));
-//		//e3.playAlarmSound();
-//
-//		sDate = LocalDateTime.parse("2019-06-01T00:00:00");
-//		LocalDateTime eDate = LocalDateTime.parse("2019-06-02T12:00:00");
-//		Event e4_f = new Event("TEST e4_f", sDate, eDate);
-//		e4_f.setPlace("MSC");
-//		e4_f.setNote("NOTKA");
-//		e4_f.setPerson(kontakty.get(0));
-//		e4_f.setNotification(new Alarm(t));
-//
-//		eventy.add(e4_f);
-//
-//		System.out.println("--------------------+XML+--------------------");
-//
-//		File xmlFile = new File("test.xml");
-//		xPort.xmlExport(xmlFile, eventy);
-////		eventy.clear();
-////		eventy = xPort.xmlImport(xmlFile, eventy);
-//
-////			System.out.println("EVENTY PO xmlImport: " + eventy);
-//
-//		System.out.println("--------------------+BD+--------------------");
-//
-////			System.out.println(kontakty);
-//		//xPort.bdExportKontakty(kontakty);
-//
-//		xPort.bdImportEventy(eventy, kontakty);
-////			System.out.println(eventy);
-//
-//		//xPort.bdExportEventy(eventy, kontakty);
-//
-////		eventy.clear();
-////		System.out.println(eventy);
-////
-////		xPort.bdImportEventy(eventy, kontakty);
-//		System.out.println(eventy);
-//	}
-
+	/**
+	 * returns all events
+	 * @return list of all events
+	 */
 	public List<Event> getAllEvents(){
 		return eventy;
 	}
 	
+	/**
+	 * returns events in given month
+	 * @param yearAndMonth month to return events list for
+	 * @return list of all events in given month
+	 */
 	public List<Event> getEventsInMonth(LocalDate yearAndMonth) {
 		return getEventsInMonth(yearAndMonth.getYear(), yearAndMonth.getMonthValue());
 	}
 	
+	/**
+	 * returns events in given month
+	 * @param year year of events to return
+	 * @param month month of events to return
+	 * @return list of events in given month and year
+	 */
 	public List<Event> getEventsInMonth(int year, int month){
 		ArrayList<Event> events = new ArrayList<Event>(); 
 		for(int i = 0; i < eventy.size(); i++) {
@@ -149,6 +90,11 @@ public class Manager {
 		return events; 
 	}
 	
+	/**
+	 * returns events in given year
+	 * @param date date indicating year we want to get events for
+	 * @return list of events in given year
+	 */
 	public List<Event> getEventsInYear (LocalDate date) {
 		int year = date.getYear();
 		ArrayList<Event> events = new ArrayList<Event>();
@@ -160,6 +106,11 @@ public class Manager {
 		return events;
 	}
 	
+	/**
+	 * returns events in given week
+	 * @param date date indicating week to get events for
+	 * @return list of events in given week
+	 */
 	public List<Event> getEventsInWeek(LocalDate date){
 		int dayindex = date.getDayOfWeek().getValue() - 1;
 		int day = date.getDayOfMonth();
@@ -177,6 +128,11 @@ public class Manager {
 		return events;		
 	}
 	
+	/**
+	 * returns events in given day
+	 * @param date date indicating day to get events for
+	 * @return list of events in given day
+	 */
 	public List<Event> getEventsInDay(LocalDate date){
 		int day = date.getDayOfMonth();
 		int month = date.getMonthValue();
@@ -194,47 +150,46 @@ public class Manager {
 		return events;
 	}
 
-	// EVENTS
-//	public void addEvent(String tittle, LocalDateTime start, LocalDateTime end, String note, String place,
-//			Alarm notification, Contact person) {
-//		Event temp = new Event(tittle, start, end);
-//		if (note != "")
-//			temp.setNote(note);
-//		if (place != "")
-//			temp.setPlace(place);
-//		if (notification != null)
-//			temp.setNotification(notification);
-//		if (person != null)
-//			temp.setPerson(person);
-//
-//		eventy.add(temp);
-//	}
-//	
-	////////////////////////////////////////////
+	/**
+	 * shows event editing dialog
+	 */
 	public void eventEditing() {
-		
 		EventEditingDialog.showDialog(eventy.get(0));
 	}
-	/////////////////////////////////////////////////
 	
-	
-	
-	
+	/**
+	 * adds new event to event list
+	 * @param e event to add
+	 */
 	public void addEvent(Event e) {
 		if(e != null) {
 		eventy.add(e);
 		}
 	}
 
+	/**
+	 * deletes event from event list
+	 * @param numberOfEvent index of event to delete
+	 */
 	public void deleteEvent(int numberOfEvent) {
 		eventy.remove(numberOfEvent);
 	}
 	
+	/**
+	 * deletes event from event list
+	 * @param e event to delete
+	 */
 	public void deleteEvent(Event e) {
 		eventy.remove(e);
 	}
 
-	// CONTACTS
+	/**
+	 * adds new contact with given data to the contact list
+	 * @param name name of contact to add
+	 * @param company company in contact to add
+	 * @param email e-mail address in contact to add
+	 * @param phone phone number of contact to add
+	 */
 	public void addContact(String name, String company, String email, String phone) {
 		Contact temp = new Contact(name);
 
@@ -248,33 +203,34 @@ public class Manager {
 		kontakty.add(temp);
 	}
 	
+	/**
+	 * adds contact to the contacts list 
+	 * @param c contact to add
+	 */
 	public void addContact(Contact c) {
 		kontakty.add(c);
 	}
 
+	/**
+	 * removes contact from the contacts list
+	 * @param numberOfContact index of contact to remove
+	 */
 	public void removeContact(int numberOfContact) {
 		kontakty.remove(numberOfContact);
 	}
+	
+	/**
+	 * removes contact from the contacts list
+	 * @param c contact to remove
+	 */
 	public void removeContact(Contact c) {
 		kontakty.remove(c);
 	}
 
-	// FUNCTIONS
-	public void removeExpiredEvents() {
-		Iterator<Event> it = eventy.iterator();
-
-		while (it.hasNext()) {
-			Event e = it.next();
-			Duration duration = Duration.between(LocalDateTime.now(), e.getStart());
-
-			System.out.println("duration" + duration);
-			if (duration.compareTo(whenToRemove) > 0)
-				it.remove();
-
-		}
-
-	}
-	
+	/**
+	 * removes expired events beginning before given date
+	 * @param dueDate date before which old events should be removed
+	 */
 	public void removeOldEvents(LocalDateTime dueDate) {
 		for(int i = 0; i < eventy.size(); i ++) {
 			if(eventy.get(i).getEnd().isBefore(dueDate)) {
@@ -283,6 +239,10 @@ public class Manager {
 		}
 	}
 
+	/**
+	 * invokes playAlarm method repeatedly
+	 * @param frame
+	 */
 	public void checkDueAlarms(JFrame frame) {
 		Runnable drawRunnable = new Runnable() {
 			
@@ -296,7 +256,10 @@ public class Manager {
 		exec.scheduleAtFixedRate(drawRunnable, 0, 20, TimeUnit.SECONDS);
 	}
 	
-	
+	/**
+	 * checks if any event on the list has alarm to display. If so plays sound and shows dialog with information about coming event
+	 * @param frame component in which message dialog will be displayed
+	 */
 	public void playAlarm(JFrame frame) {
 		Iterator<Event> it = eventy.iterator();
 
@@ -315,24 +278,45 @@ public class Manager {
 		}
 	}
 	
+	/**
+	 * imports contacts and events from database of given name
+	 * @param baza name of database file to import data from
+	 */
 	public void importFromDatabase(String baza) {
         kontakty = xPort.bdImportKontakty(baza);
         eventy = xPort.bdImportEventy(baza);
 	}
 	
+	/**
+	 * exports contacts and events to database of given name
+	 * @param baza database to export data to
+	 */
 	public void exportToDatabase(String baza) {
         xPort.bdExportKontakty(kontakty, baza);
         xPort.bdExportEventy(eventy, baza);
 	}
 	
+	/**
+	 * imports events from given XML file
+	 * @param file file to import events from
+	 */
 	public void importFromXML(File file) {
 		eventy = new ArrayList<>(xPort.xmlImport(file));
 	}
 
+	/**
+	 * exports events to given XML file
+	 * @param file file to export events to
+	 */
 	public void exportEventsToXml(File file) {
 		xPort.xmlExport(file, eventy);
 	}
 
+	/**
+	 * replaces one event with another on the events list
+	 * @param oldEvent event to remove from the list
+	 * @param newEvent event to add to the list
+	 */
 	public void replaceEvent(Event oldEvent, Event newEvent) {
 		eventy.remove(oldEvent);
 		eventy.add(newEvent);

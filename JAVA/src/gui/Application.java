@@ -25,55 +25,149 @@ import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-
+/**
+ * main GUI class of the program, sets up main visual components, adds ActionListeners to the Menu components and Buttons. Communicates with logic elements via Controller class, invoking its methods inside ActionListeners
+ * @author Marta Bielecka
+ *
+ */
 public class Application {
 
+	/**
+	 * main frame of the application, containing all other elements
+	 */
 	private JFrame frame;
+	/**
+	 * main panel of event view, containing table with events and components responsible for adding, editing, filtering and deleting events 
+	 */
 	private EventsPane eventsPane;
+	/**
+	 * main panel of contacts view, containing table with contacts and components responsible for adding and deleting contacts
+	 */
 	private ContactsPane contactsPane;
 	
+	/**
+	 * returns main frame of the application
+	 * @return main frame
+	 */
 	public JFrame getFrame() {
 		return frame;
 	}
 
+	/**
+	 * menu bar of the application, containing JMenu components, responsible for application options
+	 */
 	private JMenuBar menuBar;
+	/**
+	 * component of main menu option
+	 */
 	private JMenu mnMain;
+	/**
+	 * component responsible for access to setting dialog
+	 */
 	private JMenuItem mntmSettings;
+	/**
+	 * component responsible for closing application 
+	 */
 	private JMenuItem mntmClose;
+	/**
+	 * component responsible for opening import option, holding components responsible for import (from XML and database)
+	 */
 	private JMenu mnImport;
+	/**
+	 * component responsible for calling method importing from XML file
+	 */
 	private JMenuItem mntmFromXML;
-	private JMenuItem mntmFromOutlook;
+	/**
+	 * component responsible for calling method importing from database
+	 */
 	private JMenuItem mntmFromDatabase;
+	/**
+	 * component responsible for opening export option, holding components responsible for export (to XML and database)
+	 */
 	private JMenu mnExport;
+	/**
+	 * component responsible for calling method exporting to XML file
+	 */
 	private JMenuItem mntmToXML;
-	private JMenuItem mntmToOutlook;
+	/**
+	 * component responsible for calling method exporting to database
+	 */
 	private JMenuItem mntmToDatabase;
+	/**
+	 * component activating help options
+	 */
 	private JMenu mnHelp;
+	/**
+	 * component responsible for showing dialog with informations about program
+	 */
 	private JMenuItem mntmAboutProgram;
+	/**
+	 * component containing all other application components, dividing main frame into three main parts - calendar view, contacts view and events view
+	 */
 	private JTabbedPane mainPane;
 
+	/**
+	 * component containing calendar view and controls to change displayed date and to add event
+	 */
 	private CalendarTable calendarTable;
-	private JTable contactsTable;
+	/**
+	 * Controller object, responsible for communication between Application class and logic classes 
+	 */
 	private Controller control;
-	private JButton addEventButtonCal; 
+	/**
+	 * JButton component responsible for showing event adding dialog from calendar panel
+	 */
+	private JButton addEventButtonCal;
+	/**
+	 * JButton component responsible for showing contact adding dialog from contacts panel
+	 */
 	private JButton addContactButton; 
+	/**
+	 * JButton component responsible for showing event adding dialog from events panel
+	 */
 	private JButton addEventButtonEv;
+	/**
+	 * JRadioButton component calling method showing all events
+	 */
 	private JRadioButton allEventsRadio;
+	/**
+	 * JRadioButton component calling method showing events in current day
+	 */
 	private JRadioButton dayEventsRadio; 
+	/**
+	 * JRadioButton component calling method showing events in current week
+	 */
 	private JRadioButton weekEventsRadio;
+	/**
+	 * JRadioButton component calling method showing events in current month
+	 */
 	private JRadioButton monthEventsRadio;
+	/**
+	 * JRadioButton component calling method showing events in current year
+	 */
 	private JRadioButton yearEventsRadio;
+	/**
+	 * table of string objects containing months' names
+	 */
 	private String [] months = 
 		{"January", "February", "March", "April", 
 				"May", "June", "July", "August", 
 				"September", "October", "November", "December"};
-	private String [] years = {"2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"};
+	/**
+	 * component allowing to change month to display in calendar panel
+	 */
 	private JComboBox<String> monthsCombo; 
+	/**
+	 * component allowing to change year to display in calendar panel
+	 */
 	private JSpinner yearsSpinner;
-	private JComboBox<String> yearsCombo;
+	/**
+	 * option which events to display in event panel
+	 */
+	private int filterOptions = 0; 
 
 	/**
-	 * Launch the application.
+	 * launch the application, sets main frame of the application visible
 	 */
 	public void mainApplication(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -88,13 +182,28 @@ public class Application {
 		});
 	}
 
+	/**
+	 * implementation of ActionListener class wrapped in exception catcher, allowing to catch all thrown exceptions. Implements design pattern "wrapper".
+	 * @author Marta Bielecka
+	 *
+	 */
 	static private class SafeActionListener implements ActionListener {
-		
+		/**
+		 * ActionListener to be wrapped into exception
+		 */
 		private final ActionListener wrapped; 
 		
+		/**
+		 * constructs SafeActionListener object with given ActionListener
+		 * @param wrapped - ActionListener object to be wrapped
+		 */
 		public SafeActionListener(ActionListener wrapped) {
 			this.wrapped = wrapped;
 		}
+		
+		/**
+		 * method setting action to be performed in ActionListener, containing exception catching
+		 */
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
@@ -107,7 +216,7 @@ public class Application {
 	}
 	
 	/**
-	 * Create the application.
+	 * Create the application. Constructs Controller object and registers listeners to certain actions, calls function playing alarm sounds. Sets up all components of GUI.
 	 */
 	public Application() {
 		initialize();
@@ -120,17 +229,14 @@ public class Application {
 
 		addCalendarListeners();	
 		addMenuListeners();
-		
-		
+				
 		control.initialize();
-//		System.out.println("Hello from app");
-//		control.getManager().eventEditing();
 	}
 
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
+/**
+ * creates calendar panel with calendar view and calendar options
+ * @return calendar panel to be added to main frame
+ */	
 	public JSplitPane createCalendarOptionsPane () {
 		JSplitPane calendarView = new JSplitPane();
 		
@@ -162,19 +268,10 @@ public class Application {
 		calendarOptionsPane.add(monthsCombo, c);		
 		
 		SpinnerModel yearsModel = new SpinnerNumberModel(LocalDate.now().getYear(),LocalDate.now().getYear() - 100, LocalDate.now().getYear()+100, 1 );
-		yearsSpinner = new JSpinner(yearsModel);
-		
+		yearsSpinner = new JSpinner(yearsModel);	
 		c.gridx = 1; 
 		c.gridy = 0;
 		calendarOptionsPane.add(yearsSpinner,c);
-		
-//		yearsCombo = new JComboBox<String>(years);
-//		yearsCombo.setSelectedIndex(now.getYear() - 2018);
-//		monthsCombo.setPreferredSize(new Dimension(100,20));
-//		monthsCombo.setPrototypeDisplayValue("xXXxxx");
-//		c.gridx = 1; 
-//		c.gridy = 0;
-//		calendarOptionsPane.add(yearsCombo, c);
 		
 		c.gridx = 1; 
 		c.gridy = 1;
@@ -185,17 +282,7 @@ public class Application {
 				Event e = EventAddingDialog.showDialog();
 				if(e!= null) {
 					control.addEvent(e);
-					if(allEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(0);
-					} else if(dayEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(1);
-					} else if(weekEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(2);
-					} else if (monthEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(3);
-					} else if (yearEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(4);
-					}
+					control.changeDisplayedEvents(filterOptions);
 				}
 			}
 		});
@@ -204,6 +291,10 @@ public class Application {
 		return calendarView;	
 	}
 	
+	/**
+	 * creates contacts panel with contacts view and contacts options
+	 * @return contacts panel to be added to main frame
+	 */
 	public JSplitPane createContactsOptionsPane () {
 		JSplitPane contactsView = new JSplitPane();
 		contactsView.setResizeWeight(0.8);
@@ -229,8 +320,7 @@ public class Application {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("contact adding aplication");
-				control.addContact(ContactAddingDialog.showDialog());
-				
+				control.addContact(ContactAddingDialog.showDialog());			
 			}
 		});
 		
@@ -238,6 +328,10 @@ public class Application {
 		return contactsView;
 	}
 	
+	/**
+	 * creates events panel with events view and events options
+	 * @return events panel to be added to main frame
+	 */
 	public JSplitPane createEventsOptionsPane () {
 		JSplitPane eventsView = new JSplitPane();
 		eventsView.setResizeWeight(0.8);		
@@ -246,17 +340,7 @@ public class Application {
 			public void removeEvent(Event e) {
 				if (e != null) {
 					control.removeEvent(e);
-					if (allEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(0);
-					} else if (dayEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(1);
-					} else if (weekEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(2);
-					} else if (monthEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(3);
-					} else if (yearEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(4);
-					}
+					control.changeDisplayedEvents(filterOptions);
 				}
 			}
 		}, new EventsPane.EventReplacer() {
@@ -265,7 +349,6 @@ public class Application {
 				Event newEvent = new Event(oldEvent.getTittle(), oldEvent.getStart(), oldEvent.getEnd(),
 						oldEvent.getNote(), oldEvent.getPlace(), oldEvent.getNotification().getBefore());
 				newEvent = EventEditingDialog.showDialog(newEvent);
-//				newEvent.setTittle("Lipny tytul!!");
 				control.replaceEvent(oldEvent, newEvent);
 			}
 		});
@@ -285,7 +368,8 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedEvents(0);
+				filterOptions = 0;
+				control.changeDisplayedEvents(filterOptions);
 				
 			}
 		});
@@ -296,7 +380,8 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedEvents(1);
+				filterOptions = 1;
+				control.changeDisplayedEvents(filterOptions);
 			}
 		});
 		
@@ -306,7 +391,8 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedEvents(2);		
+				filterOptions = 2;
+				control.changeDisplayedEvents(filterOptions);		
 			}
 		});
 		
@@ -316,7 +402,8 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedEvents(3);
+				filterOptions = 3;
+				control.changeDisplayedEvents(filterOptions);
 				
 			}
 		});
@@ -327,7 +414,8 @@ public class Application {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				control.changeDisplayedEvents(4);
+				filterOptions = 4;
+				control.changeDisplayedEvents(filterOptions);
 			}
 		});
 		
@@ -349,17 +437,7 @@ public class Application {
                 Event ev = EventAddingDialog.showDialog();
                 if (ev != null) {
 					control.addEvent(ev);
-					if(allEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(0);
-					} else if(dayEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(1);
-					} else if(weekEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(2);
-					} else if (monthEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(3);
-					} else if (yearEventsRadio.isSelected()) {
-						control.changeDisplayedEvents(4);
-					}
+					control.changeDisplayedEvents(filterOptions);
 				}
 			}
 		});
@@ -368,7 +446,9 @@ public class Application {
 		return eventsView;
 	}
 	
-	
+	/**
+	 * adds ActionListeners to components, allowing to change displayed date
+	 */
 	public void addCalendarListeners() {
 		monthsCombo.addActionListener(new ActionListener() {
 			
@@ -385,40 +465,38 @@ public class Application {
 			
 		});
 		
-//		yearsCombo.addActionListener(new ActionListener() {
-//			
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),yearsCombo.getSelectedIndex());
-//				
-//			}
-//		});
-		
 		yearsSpinner.addChangeListener(new ChangeListener() {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-//				System.out.println(yearsSpinner.getValue());
 				int year; 
 				if(yearsSpinner.getValue()!= null) {
 					year = (int)yearsSpinner.getValue();
 				} else {
 					year = 2018;
 				}
-				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),year);
-				
+				control.changeDisplayedDate(monthsCombo.getSelectedIndex(),year);		
 			}
 		});
-
 	}
 	
+	/**
+	 * adds ActionListeners to menu components
+	 */
 	public void addMenuListeners() {
 		mntmClose.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-				
+			public void actionPerformed(ActionEvent e) {			
+				int result = JOptionPane.showConfirmDialog(
+			            frame,
+			            "Are you sure you want to exit the application?",
+			            "Exit Application",
+			            JOptionPane.YES_NO_OPTION);
+			 
+			        if (result == JOptionPane.YES_OPTION) {
+			        	System.exit(0);
+			        }	
 			}
 		});
 
@@ -453,13 +531,6 @@ public class Application {
 				}
 			}
 		}));
-		
-		mntmFromOutlook.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {
-				control.showFromOutlookWindow();
-			}			
-		});
 		
 		mntmFromDatabase.addActionListener(new ActionListener(){
 			@Override
@@ -506,13 +577,6 @@ public class Application {
 			}
 		}));
 		
-		mntmToOutlook.addActionListener(new ActionListener(){
-
-			public void actionPerformed(ActionEvent arg0) {
-				control.showToOutlookWindow();			
-			}			
-		});
-		
 		mntmToDatabase.addActionListener(new SafeActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -546,13 +610,14 @@ public class Application {
 		});
 	}
 
+	/**
+	 * Initialize the contents of the frame.
+	 */
 	
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 800, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		/////////////////////
 		
 		frame.addWindowListener( new WindowAdapter()
 		{
@@ -570,9 +635,6 @@ public class Application {
 		            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		    }
 		});
-		 
-		
-		/////////////////////
 		
 		menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -582,59 +644,57 @@ public class Application {
 		mnMain.setMnemonic(KeyEvent.VK_M);
 		
 		mntmSettings = new JMenuItem("Settings", KeyEvent.VK_N);
-		KeyStroke f3KeyStroke = KeyStroke.getKeyStroke('S',InputEvent.CTRL_DOWN_MASK);
-		mntmSettings.setAccelerator(f3KeyStroke);
+		KeyStroke settingsKeyStroke = KeyStroke.getKeyStroke('S',InputEvent.CTRL_DOWN_MASK);
+		mntmSettings.setAccelerator(settingsKeyStroke);
 		mnMain.add(mntmSettings);
 
 		
 		mntmClose = new JMenuItem("Close");
+		KeyStroke closeKeyStroke = KeyStroke.getKeyStroke('X',InputEvent.CTRL_DOWN_MASK);
+		mntmClose.setAccelerator(closeKeyStroke);
 		mnMain.add(mntmClose);
 		
 		mnImport = new JMenu("Import");
-		menuBar.add(mnImport);
 		mnImport.setMnemonic(KeyEvent.VK_I);
+		menuBar.add(mnImport);
 		
 		mntmFromXML = new JMenuItem("from XML");
+		KeyStroke fromXMLKeyStroke = KeyStroke.getKeyStroke('I', InputEvent.CTRL_DOWN_MASK);
+		mntmFromXML.setAccelerator(fromXMLKeyStroke);
 		mnImport.add(mntmFromXML);
-		
-		mntmFromOutlook = new JMenuItem("from Outlook");
-		mnImport.add(mntmFromOutlook);
 		
 		mntmFromDatabase = new JMenuItem("from Database");
 		mnImport.add(mntmFromDatabase);
-		mntmFromDatabase.setMnemonic(KeyEvent.VK_D);
 		
 		mnExport = new JMenu("Export");
 		menuBar.add(mnExport);
-		mnExport.setMnemonic(KeyEvent.VK_E);
 		
 		mntmToXML = new JMenuItem("to XML");
 		mnExport.add(mntmToXML);
-		
-		mntmToOutlook = new JMenuItem("to Outlook");
-		mnExport.add(mntmToOutlook);
 		
 		mntmToDatabase = new JMenuItem("to Database");
 		mnExport.add(mntmToDatabase);
 		
 		mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
-		mnHelp.setMnemonic(KeyEvent.VK_H);
 		
 		mntmAboutProgram = new JMenuItem("About Program");
 		mnHelp.add(mntmAboutProgram);
 	
 		addEventButtonCal = new JButton("add event");
+		addEventButtonCal.setMnemonic(KeyEvent.VK_N);
+		
 		addEventButtonEv = new JButton("add event");
+		addEventButtonEv.setMnemonic(KeyEvent.VK_N);
+		
 		addContactButton = new JButton("add contact");
+		addContactButton.setMnemonic(KeyEvent.VK_N);
 		
 		mainPane = new JTabbedPane(JTabbedPane.TOP);
 		frame.add(mainPane);
 		
 		mainPane.addTab("Calendar", createCalendarOptionsPane());
 		mainPane.addTab("Contacts", createContactsOptionsPane());
-		mainPane.addTab("Events", createEventsOptionsPane());
-		
+		mainPane.addTab("Events", createEventsOptionsPane());	
 	}
-
 }

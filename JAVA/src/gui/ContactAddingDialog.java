@@ -7,35 +7,59 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import dane.Contact;
-
-import java.awt.GridLayout;
 import java.awt.GridBagLayout;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JTextField;
 
+import dane.Contact;
+
+/**
+ * this class is responsible for contact adding dialog looks and function
+ * @author Marta Bielecka
+ *
+ */
 public class ContactAddingDialog extends JDialog {
 
+	/**
+	 * main panel of the dialog, containing all other elements
+	 */
 	private final JPanel contentPanel = new JPanel();
+	/**
+	 * textfield where user can type new contact's name
+	 */
 	private JTextField nameTextfield;
+	/**
+	 * textfield where user can type new contact's company name
+	 */
 	private JTextField companyTextfield;
+	/**
+	 * textfield where user can type new contact's phone number
+	 */
 	private JTextField phoneNumberTextfield;
+	/**
+	 * textfield where user can type new contact's e-mail address
+	 */
 	private JTextField emailTextfield;
+	/**
+	 * JButton confirming new contact's creation, clicking it constructs new contact with given data and closes the dialog
+	 */
 	private JButton okButton;
+	/**
+	 * JButton canceling inserted changes, clicking it closes the dialog without creating new contact
+	 */
 	private JButton cancelButton;
+	/**
+	 * variable showing, if okButton was clicked by user
+	 */
 	private boolean okClicked = false;
 
 	/**
-	 * Launch the application.
+	 * shows dialog, sets it visible and, if okButton was clicked by user, creates new contact with data typed in by the user.
+	 * Returns newly created Contact object
 	 */
 	public static Contact showDialog() {
 		try {
@@ -61,7 +85,8 @@ public class ContactAddingDialog extends JDialog {
 	}
 
 	/**
-	 * Create the dialog.
+	 * Creates the dialog
+	 * sets all components and defines the consequences of clicking okButton or cancelButton
 	 */
 	public ContactAddingDialog() {
 		setModalityType(ModalityType.APPLICATION_MODAL);

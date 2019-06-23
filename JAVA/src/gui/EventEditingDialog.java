@@ -38,37 +38,101 @@ import dane.Event;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 
+/**
+ * this class is responsible for event editing dialog looks and functions
+ * @author Marta Bielecka
+ *
+ */
 public class EventEditingDialog extends JDialog {
 
+	/**
+	 * main panel of this dialog, containing all other components
+	 */
 	private final JPanel contentPanel = new JPanel();
+	/**
+	 * textfield where user can change title of edited event
+	 */
 	private JTextField titleTextfield;
+	/**
+	 * textfield where user can change note about edited event
+	 */
 	private JTextField noteTextfield;
+	/**
+	 * textfield where user can change place of edited event
+	 */
 	private JTextField placeTextfield;
+	/**
+	 * textfield where user can change start hour of edited event
+	 */
 	private JTextField startHourTextfield;
+	/**
+	 * textfield where user can change start minute of edited event
+	 */
 	private JTextField startMinuteTextfield;
+	/**
+	 * textfield where user can change end hour of edited event
+	 */
 	private JTextField endHourTextfield;
+	/**
+	 * textfield where user can change end minute of edited event
+	 */
 	private JTextField endMinuteTextfield;
+	/**
+	 * textfield where user can change amount of units of time before start time of edited event, when added alarm shoud be displayed
+	 */
 	private JTextField alarmTextfield;
+	/**
+	 * component to choose new start date of edited event
+	 */
 	private JDateChooser startDateChooser;
+	/**
+	 * component to choose new end date of edited event
+	 */
 	private JDateChooser endDateChooser;
-	private JComboBox alarmCombo; 
+	/**
+	 * allows user choose time units in which time of alarm set before beginning of the event is counted
+	 */
+	private JComboBox<String> alarmCombo; 
+	/**
+	 * checkbox indicating, if edited event should be constructed with alarm to display
+	 */
 	private JCheckBox alarmCheckbox;
+	/**
+	 * JButton confirming event's edition , clicking it applies inserted changes and closes the dialog
+	 */
 	private JButton okButton;
+	/**
+	 * JButton canceling inserted changes, clicking it closes the dialog without applying changes
+	 */
 	private JButton cancelButton;
+	/**
+	 * String objects table with names of time units to show in AlarmTimeCombo
+	 */
 	private String [] alarmOptions = {"minutes", "hours", "days"};
+	/**
+	 * boolean variable showing if okButton was clicked by user
+	 */
 	private boolean okClicked = false;
+	/**
+	 * boolean variable showing if alarm checkbox was selected by user
+	 */
 	private int setAlarm = 0;
 
-
 	/**
-	 * Launch the application.
+	 * Converts given Date and LocalTime objects to LocalDateTime object
+	 * @param date date to be converted to LocalDateTime
+	 * @param time time to be converted to LocalDateTime
+	 * @return LocalDateTime object obtained from given components
 	 */
 	public LocalDateTime convertToLocalDateTime(Date date, LocalTime time) {
 		LocalDate newDate = Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
-		return LocalDateTime.of(newDate, time);
-		
+		return LocalDateTime.of(newDate, time);	
 	}
 	
+	/**
+	 * shows dialog, sets it visible and, if okButton was clicked by user, applies inserted changes to the event.
+	 * @return newly created Event object
+	 */
 	public static Event showDialog(Event eventToEdit) {
 		try {
 			EventEditingDialog dialog = new EventEditingDialog(eventToEdit);
@@ -159,7 +223,7 @@ public class EventEditingDialog extends JDialog {
 	}
 
 	/**
-	 * Create the dialog.
+	 * Create the dialog. initializes and adds all components to main panel of this dialog. Defines the consequences of clicking okButton or cancelButton
 	 */
 	public EventEditingDialog(Event e) {
 		setModalityType(ModalityType.APPLICATION_MODAL);
@@ -290,8 +354,6 @@ public class EventEditingDialog extends JDialog {
 			contentPanel.add(startMinuteLabel, gbc_startMinuteLabel);
 		}
 		{
-//			System.out.println("Hello");
-//			System.out.println(Integer.toString(e.getStart().getMinute()));
 			startMinuteTextfield = new JTextField(Integer.toString(e.getStart().getMinute()));
 			GridBagConstraints gbc_startMinuteTextfield = new GridBagConstraints();
 			gbc_startMinuteTextfield.insets = new Insets(0, 0, 5, 5);
@@ -367,9 +429,7 @@ public class EventEditingDialog extends JDialog {
 			gbc_endMinuteTextfield.gridy = 11;
 			contentPanel.add(endMinuteTextfield, gbc_endMinuteTextfield);
 			endMinuteTextfield.setColumns(10);
-		}
-		
-			
+		}	
 			Duration d1; 	
 			Duration day = Duration.ofMinutes(24*60);
 			Duration hour = Duration.ofMinutes(60);
@@ -383,24 +443,17 @@ public class EventEditingDialog extends JDialog {
 				d1 = Duration.between(e.getNotification().getBefore(),e.getStart());
 				System.out.println(d1.toString());
 				if(d1.compareTo(day) < 0){
-//					System.out.println("d1  day" + d1.compareTo(day)) ;
 					if(d1.compareTo(hour) < 0) {
-//						System.out.println("d1 < hour");
 						option = 0;
 						number = (int) ChronoUnit.MINUTES.between(e.getNotification().getBefore(), e.getStart());
 					} else {
-//						System.out.println("d1 > hour && < day");
 						option = 1;
 						number = (int) ChronoUnit.HOURS.between(e.getNotification().getBefore(), e.getStart());
 					}
 				}else {
-//					System.out.println("d1 > day");
 					option = 2;
 					number = (int) ChronoUnit.DAYS.between(e.getNotification().getBefore(), e.getStart());
-				}
-				
-				
-				
+				}			
 			}else {
 				alarmCheckbox.setSelected(false);
 				setAlarm = 0;

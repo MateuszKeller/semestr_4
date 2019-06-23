@@ -22,13 +22,24 @@ import dane.Event;
 import dane.Alarm;
 import dane.Contact;
 
+/**
+ * class is responsible for import/export from/to database or XML. It opens streams, handles them and closes. Formats data to be send and recieved ones. 
+ * @author Marta Bielecka
+ *
+ */
 public class Transmiter {
 
+	/**
+	 * pattern for dates formatting
+	 */
     private static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("YYYY-MM-dd'T'HH:mm");
 
-	// DATABASE
+	/**
+	 * imports contacts from database in given file
+	 * @param baza String object containing name of a file with database
+	 * @return list of imported contacts
+	 */
 	public ArrayList<Contact> bdImportKontakty(String baza) {
-		System.out.println("----------------------bdImportKontakty:");
 		ArrayList<Contact> contacts = new ArrayList<>();
 		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
 			Statement s = conn.createStatement();
@@ -61,8 +72,12 @@ public class Transmiter {
 		}
 	}
 
+	/**
+	 * exports given list of contacts to database.
+	 * @param kontakty list of contacts to be exported 
+	 * @param baza name of a file with database
+	 */
 	public void bdExportKontakty(ArrayList<Contact> kontakty, String baza) {
-		System.out.println("----------------------bdExportKontakty:");
 		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
 
 			conn.createStatement().executeUpdate("DELETE FROM Kontakty");
@@ -79,29 +94,13 @@ public class Transmiter {
             throw new RuntimeException(ee);
 		}
 	}
-//	public void bdExportKontakty(ArrayList<Contact> kontakty, String baza) {
-//		System.out.println("----------------------bdExportKontakty:");
-//		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
-//			Statement s = conn.createStatement();
-//			s.executeUpdate("DELETE FROM Kontakty");
-//
-//			for (int i = 0; i < kontakty.size(); i++) {
-//				String query = "INSERT INTO Kontakty VALUES (";
-//				query += "\"" + kontakty.get(i).getName() + "\", ";
-//				query += "\"" + kontakty.get(i).getCompany() + "\", ";
-//				query += "\"" + kontakty.get(i).getEmail() + "\", ";
-//				query += "\"" + kontakty.get(i).getPhone() + "\");";
-//
-//				System.out.println(query);
-//				s.executeUpdate(query);
-//			}
-//		} catch (Exception ee) {
-//            throw new RuntimeException(ee);
-//		}
-//	}
 
+	/**
+	 * import events from database in given file
+	 * @param baza name of a file with database
+	 * @return list of events imported from database
+	 */
 	public ArrayList<Event> bdImportEventy(String baza) {
-		System.out.println("----------------------bdImportEventy:");
 		ArrayList<Event> eventy = new ArrayList<>();
 		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
 			Statement s = conn.createStatement();
@@ -133,10 +132,6 @@ public class Transmiter {
 					}
 					temp.setNotification(t);
 				}
-//				if (rs.getInt("contact") != -1) {
-//					temp.setPerson(kontakty.get(rs.getInt("contact")));
-//					ret += rs.getString("contact") + " ";
-//				}
 
 				eventy.add(temp);
 				System.out.println(ret);
@@ -148,8 +143,12 @@ public class Transmiter {
 		}
 	}
 
+	/**
+	 * exports list of events to database
+	 * @param eventy list of events to be exported to database
+	 * @param baza name of a file with database
+	 */
 	public void bdExportEventy(ArrayList<Event> eventy, String baza) {
-		System.out.println("----------------------bdExportEventy:");
 		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
 
 			conn.createStatement().executeUpdate("DELETE FROM Wydarzenia");
@@ -177,54 +176,11 @@ public class Transmiter {
 		}
 	}
 
-	
-//	public void bdExportEventy(ArrayList<Event> eventy, String baza) {
-//		System.out.println("----------------------bdExportEventy:");
-//		try (Connection conn = DriverManager.getConnection("jdbc:ucanaccess://" + baza)){
-//			Statement s = conn.createStatement();
-//			s.executeUpdate("DELETE FROM Wydarzenia");
-//
-//			for (int i = 0; i < eventy.size(); i++) {
-//
-//				String query = "INSERT INTO Wydarzenia (tittle, start, end, note, place, contact, sound, before) VALUES (";
-//				query += "\"" + eventy.get(i).getTittle() + "\", ";
-//				query += "\"" + eventy.get(i).getStart().format(dateFormat) + "\", ";
-//				query += "\"" + eventy.get(i).getEnd().format(dateFormat) + "\", ";
-//				query += "\"" + eventy.get(i).getNote() + "\", ";
-//				query += "\"" + eventy.get(i).getPlace() + "\", ";
-//
-//				String contact = "-1";
-//				if (eventy.get(i).getPerson() != null) {
-//					System.out.println("++++++++++++" + eventy.get(i).getTittle() + ":" + eventy.get(i).getPerson());
-//					for (int j = 0; j < kontakty.size(); j++)
-//					{
-//						System.out.println(j + " " + kontakty.get(j).getName());
-//						if (eventy.get(i).getPerson() == kontakty.get(j)) { //System.out.println("JEEEEEEEEEEEEEEEEEEEEJ");
-//							contact = Integer.toString(j);
-//							break;
-//						}
-//					}
-//
-//				}
-//				query += "\"" + contact + "\", ";
-//
-//				if (eventy.get(i).getNotification() == null)
-//					query += "\"\", \"\");";
-//				else {
-//
-//					query += "\"" + eventy.get(i).getNotification().getSound() + "\",";
-//					query += "\"" + eventy.get(i).getNotification().getBefore().format(dateFormat) + "\");";
-//					
-//				}
-//				System.out.println(query);
-//				s.executeUpdate(query);
-//			}
-//		} catch (Exception ee) {
-//            throw new RuntimeException(ee);
-//		}
-//	}
-
-	// XML
+	/**
+	 * exports list of events to XML file
+	 * @param file file to export events to
+	 * @param eventsToExport list of events to export
+	 */
 	public void xmlExport(File file, List<Event> eventsToExport) {
 		try {
 			XMLEncoder e = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(file)));
@@ -254,6 +210,11 @@ public class Transmiter {
 		}
 	}
 
+	/**
+	 * imports list of events from XML file
+	 * @param file file to import events from
+	 * @return list imported of events 
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Event> xmlImport(File file) {
 		System.out.println("----------------------xmlImport:");
@@ -263,5 +224,4 @@ public class Transmiter {
             throw new RuntimeException(e);
 		}
 	}
-
 }

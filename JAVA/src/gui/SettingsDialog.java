@@ -19,19 +19,45 @@ import java.time.LocalDateTime;
 
 import javax.swing.JComboBox;
 
+/**
+ * this class is responsible for settings dialog looks and functions
+ * @author Marta Bielecka
+ *
+ */
 public class SettingsDialog extends JDialog {
 
+	/**
+	 * main panel of this dialog, containing all other components
+	 */
 	private final JPanel contentPanel = new JPanel();
+	/**
+	 * textfield where user can type amount of time units after which old events are deleted
+	 */
 	private JTextField amountTextfield;
+	/**
+	 * allows user choose time units to be counted before old events are deleted
+	 */
 	private JComboBox PeriodCombo;
+	/**
+	 * JButton component confirming that events older than given amount of time should be deleted
+	 */
 	JButton okButton;
+	/**
+	 * JButton canceling inserted data, closes settings dialog without deleting any events
+	 */
 	JButton cancelButton;
+	/**
+	 * table of Sring objects containing names of time units to be chosen by user
+	 */
 	private String[] options = new String[] {"days", "months", "years"};
+	/**
+	 * boolean variable indicating, if okButton was clicked by user
+	 */
 	private boolean okClicked = false;
 	
 
 	/**
-	 * Launch the application.
+	 * Launch the dialog, returns LocalDateTime object indicating moment in time before which expired events should be deleted
 	 */
 	public static LocalDateTime showSettingsDialog() {
 		try {
@@ -64,7 +90,7 @@ public class SettingsDialog extends JDialog {
 	}
 
 	/**
-	 * Create the dialog.
+	 * Create the dialog. Sets up all components. Defines consequences of clicking okButton and cancelButton.
 	 */
 	public SettingsDialog() {
 		setModalityType(ModalityType.APPLICATION_MODAL);

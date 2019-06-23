@@ -5,21 +5,31 @@ import java.awt.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 import dane.Event;
 
+/**
+ * this class is used to enable change of color in calendar table cells, having connected event. Class implements interface TableCellRenderer
+ * @author Marta Bielecka 
+ *
+ */
 public class CalendarDayRenderer extends JList<String> implements TableCellRenderer{
 
+	/**
+	 * constructs CalendarDayRenderer object and sets basic attributes. By default background and border are initialized with null and setFocusabe is set to "false"
+	 */
 	public CalendarDayRenderer() {
 		setBackground(null);
 		setBorder(null);
 		setFocusable(false);
 	}
 	
+	/**
+	 * sets table cell appearance depending on its content, if CalendarDay object connected with current cell contains any Events in the list of events, background color is set to orange, otherwise it is white
+	 */
 	@Override
 	public Component getTableCellRendererComponent(
 			JTable table, Object value, boolean isSelected, boolean hasFocus,
